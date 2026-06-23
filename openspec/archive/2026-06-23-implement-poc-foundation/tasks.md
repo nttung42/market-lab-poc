@@ -30,29 +30,29 @@
 
 ## 5. Frontend Data Access and Types
 
-- [ ] 5.1 Define TypeScript types that mirror the Project and Persona response shapes.
-- [ ] 5.2 Add frontend API client functions or data hooks for project list, project detail, project personas, and persona detail.
-- [ ] 5.3 Add loading, empty, and not-found states for project and persona data access.
+- [x] 5.1 Define TypeScript types that mirror the Project and Persona response shapes.
+- [x] 5.2 Add frontend API client functions or data hooks for project list, project detail, project personas, and persona detail.
+- [x] 5.3 Add loading, empty, and not-found states for project and persona data access.
 
 ## 6. Project Overview UI
 
-- [ ] 6.1 Build the project overview route as the first usable screen of the PoC.
-- [ ] 6.2 Display project name, product description, industry, market, target audience, research objective, and intended study type.
-- [ ] 6.3 Add a visible navigation action from project overview to the persona catalog.
-- [ ] 6.4 Add a synthetic research limitation note on the project overview screen.
-- [ ] 6.5 Verify the overview screen works without manual database edits or code changes after setup.
+- [x] 6.1 Build the project overview route as the first usable screen of the PoC.
+- [x] 6.2 Display project name, product description, industry, market, target audience, research objective, and intended study type.
+- [x] 6.3 Add a visible navigation action from project overview to the persona catalog.
+- [x] 6.4 Add a synthetic research limitation note on the project overview screen.
+- [x] 6.5 Verify the overview screen works without manual database edits or code changes after setup.
 
 ## 7. Persona Catalog UI
 
-- [ ] 7.1 Build the persona catalog route for the sample project.
-- [ ] 7.2 Display exactly three persona cards for the seeded personas.
-- [ ] 7.3 Show each persona's name, segment label, short quote, demographics summary, goals, pain points, objections, decision rules, assumptions, and confidence score.
-- [ ] 7.4 Add a visible synthetic persona limitation note to the persona catalog.
-- [ ] 7.5 Verify persona cards remain readable on common desktop and mobile viewport widths.
+- [x] 7.1 Build the persona catalog route for the sample project.
+- [x] 7.2 Display exactly three persona cards for the seeded personas.
+- [x] 7.3 Show each persona's name, segment label, short quote, demographics summary, goals, pain points, objections, decision rules, assumptions, and confidence score.
+- [x] 7.4 Add a visible synthetic persona limitation note to the persona catalog.
+- [x] 7.5 Verify persona cards remain readable on common desktop and mobile viewport widths.
 
 ## 8. Phase 1 Verification
 
-- [ ] 8.1 Run backend tests or smoke checks and confirm project/persona APIs return structured data.
-- [ ] 8.2 Run frontend checks and confirm the project overview and persona catalog render successfully.
-- [ ] 8.3 Manually verify Phase 1 acceptance criteria from `docs/start/tasks.md`.
-- [ ] 8.4 Document any known gaps that belong to later phases, especially respondent generation, study creation, AI execution, dashboard, and report behavior.
+- [x] 8.1 Run backend tests or smoke checks and confirm project/persona APIs return structured data.
+- [x] 8.2 Run frontend checks and confirm the project overview and persona catalog render successfully.
+- [x] 8.3 Manually verify Phase 1 acceptance criteria from `docs/start/tasks.md`.
+- [x] 8.4 Document any known gaps that belong to later phases, especially respondent generation, study creation, AI execution, dashboard, and report behavior.
