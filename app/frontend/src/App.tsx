@@ -79,6 +79,9 @@ function App() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
   const [activeProjectName, setActiveProjectName] = useState<string>('No Active Project');
+  const [showWorkspaceDropdown, setShowWorkspaceDropdown] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const refreshProjects = async () => {
     try {
@@ -137,8 +140,14 @@ function App() {
       {/* Header */}
       <header className="sticky top-0 z-40 w-full border-b border-ml-border bg-white shadow-xs">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center gap-3">
+          {/* Logo / Brand */}
+          <div 
+            onClick={() => {
+              handleSelectProject(null);
+              setShowWorkspaceDropdown(false);
+            }}
+            className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+          >
             <span className="font-black text-xl tracking-tight leading-none">
               <span className="text-ml-blue">MARKET</span>
               <span className="text-ml-ink">LAB</span>
@@ -148,101 +157,151 @@ function App() {
             </span>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="flex items-center gap-1">
+          {/* Center: Dropdown Workspace Selector */}
+          <div className="relative z-50">
+            <button
+              onClick={() => setShowWorkspaceDropdown(!showWorkspaceDropdown)}
+              className="flex items-center gap-2 px-4 py-1.5 bg-ml-surface hover:bg-ml-border/50 border border-ml-border/60 rounded-full text-xs font-bold transition-all cursor-pointer uppercase tracking-wider"
+            >
+              <span>{activeProjectId ? activeProjectName : 'Select Workspace'}</span>
+              <span className="text-[9px] text-ml-ink-muted">▼</span>
+            </button>
+            
+            {showWorkspaceDropdown && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 w-64 bg-white/95 backdrop-blur-md border border-ml-border/60 rounded-xl shadow-lg p-2 space-y-1">
+                <div className="text-[9px] font-bold text-ml-ink-muted uppercase tracking-wider px-3 py-1 border-b border-ml-border/40">Workspaces</div>
+                <div className="max-h-48 overflow-y-auto py-1">
+                  <button
+                    onClick={() => {
+                      handleSelectProject(null);
+                      setShowWorkspaceDropdown(false);
+                    }}
+                    className="w-full text-left px-3 py-1.5 text-xs font-semibold rounded-lg hover:bg-ml-surface text-ml-ink uppercase"
+                  >
+                    📁 Workspace Directory
+                  </button>
+                  {projects.map(p => (
+                    <button
+                      key={p.id}
+                      onClick={() => {
+                        handleSelectProject(p.id);
+                        setShowWorkspaceDropdown(false);
+                      }}
+                      className={`w-full text-left px-3 py-1.5 text-xs font-semibold rounded-lg hover:bg-ml-surface truncate uppercase ${activeProjectId === p.id ? 'text-ml-blue bg-ml-blue-soft/30' : 'text-ml-ink'}`}
+                    >
+                      💼 {p.name}
+                    </button>
+                  ))}
+                </div>
+                <div className="border-t border-ml-border/40 pt-1.5">
+                  <button
+                    onClick={() => {
+                      setShowCreateModal(true);
+                      setShowWorkspaceDropdown(false);
+                    }}
+                    className="w-full flex items-center justify-center gap-1 py-1.5 text-xs font-bold text-ml-blue hover:text-ml-blue-strong bg-ml-blue-soft/30 rounded-lg transition-colors uppercase"
+                  >
+                    + Initialize Workspace
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right area: Actions */}
+          <div className="flex items-center gap-2">
             <button
               onClick={() => {
-                if (activeProjectId) {
-                  navigate(`/projects/${activeProjectId}`);
-                } else {
-                  navigate(`/projects`);
-                }
+                handleSelectProject(null);
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded transition-colors duration-150 ${
-                currentView === 'project-overview' || currentView === 'create-project' || currentView === 'edit-project'
-                  ? 'bg-ml-blue text-white shadow-xs'
-                  : 'text-ml-ink-muted hover:text-ml-ink hover:bg-ml-surface'
+              className={`px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-colors cursor-pointer uppercase ${
+                !activeProjectId ? 'bg-ml-blue border-ml-blue text-white shadow-sm' : 'border-ml-border hover:bg-ml-surface text-ml-ink-muted'
               }`}
             >
-              <Layout size={13} />
-              OVERVIEW
+              Directory
             </button>
             <button
-              onClick={() => { if (!isNavDisabled) navigate(`/projects/${activeProjectId}/personas`); }}
-              disabled={isNavDisabled}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded transition-colors duration-150 ${
-                currentView === 'persona-catalog'
-                  ? 'bg-ml-blue text-white shadow-xs'
-                  : 'text-ml-ink-muted hover:text-ml-ink hover:bg-ml-surface'
-              } ${isNavDisabled ? 'opacity-40 cursor-not-allowed' : ''}`}
+              onClick={() => setShowCreateModal(true)}
+              className="px-3.5 py-1.5 text-xs font-bold text-white bg-ml-blue hover:bg-ml-blue-strong rounded-lg shadow-sm transition-colors cursor-pointer uppercase"
             >
-              <Users size={13} />
-              PERSONAS
+              + New Project
             </button>
-            <button
-              onClick={() => { if (!isNavDisabled) navigate(`/projects/${activeProjectId}/respondents`); }}
-              disabled={isNavDisabled}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded transition-colors duration-150 ${
-                currentView === 'synthetic-respondents'
-                  ? 'bg-ml-blue text-white shadow-xs'
-                  : 'text-ml-ink-muted hover:text-ml-ink hover:bg-ml-surface'
-              } ${isNavDisabled ? 'opacity-40 cursor-not-allowed' : ''}`}
-            >
-              <Sparkles size={13} />
-              RESPONDENTS
-            </button>
-            <span className="h-4 w-[1px] bg-ml-border mx-1"></span>
-            <button
-              onClick={() => { if (!isNavDisabled) navigate(`/projects/${activeProjectId}/study-builder`); }}
-              disabled={isNavDisabled}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded transition-colors duration-150 ${
-                currentView === 'study-builder'
-                  ? 'bg-ml-blue text-white shadow-xs'
-                  : 'text-ml-ink-muted hover:text-ml-ink hover:bg-ml-surface'
-              } ${isNavDisabled ? 'opacity-40 cursor-not-allowed' : ''}`}
-            >
-              <ClipboardList size={13} />
-              STUDY BUILDER
-            </button>
-            <button
-              onClick={() => { if (!isNavDisabled) navigate(`/projects/${activeProjectId}/results/${selectedStudyId}`); }}
-              disabled={isNavDisabled}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded transition-colors duration-150 ${
-                currentView === 'results-dashboard'
-                  ? 'bg-ml-blue text-white shadow-xs'
-                  : 'text-ml-ink-muted hover:text-ml-ink hover:bg-ml-surface'
-              } ${isNavDisabled ? 'opacity-40 cursor-not-allowed' : ''}`}
-            >
-              <BarChart3 size={13} />
-              DASHBOARD
-            </button>
-            <button
-              onClick={() => { if (!isNavDisabled) navigate(`/projects/${activeProjectId}/reports/${selectedStudyId}`); }}
-              disabled={isNavDisabled}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded transition-colors duration-150 ${
-                currentView === 'report-export'
-                  ? 'bg-ml-blue text-white shadow-xs'
-                  : 'text-ml-ink-muted hover:text-ml-ink hover:bg-ml-surface'
-              } ${isNavDisabled ? 'opacity-40 cursor-not-allowed' : ''}`}
-            >
-              <FileText size={13} />
-              REPORTS
-            </button>
-          </nav>
-
-          {/* Active Scenario Indicator */}
-          <div className="hidden lg:flex items-center gap-2 px-3 py-1 bg-white border border-ml-border rounded-full">
-            <span className={`w-1.5 h-1.5 rounded-full ${activeProjectId ? 'bg-ml-success animate-pulse' : 'bg-ml-danger'}`}></span>
-            <span className="text-[10px] text-ml-ink-muted font-semibold uppercase tracking-wider truncate max-w-[200px]">
-              {activeProjectId ? `Active: ${activeProjectName}` : 'No Active Project'}
-            </span>
           </div>
         </div>
       </header>
 
+      {/* Sub-navigation for Active Project */}
+      {activeProjectId && (
+        <div className="w-full bg-white/60 backdrop-blur-md border-b border-ml-border/60">
+          <div className="max-w-7xl mx-auto px-6 h-12 flex items-center gap-2">
+            <button
+              onClick={() => navigate(`/projects/${activeProjectId}`)}
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold transition-all relative ${
+                currentView === 'project-overview' ? 'text-ml-blue' : 'text-ml-ink-muted hover:text-ml-ink'
+              }`}
+            >
+              <Layout size={13} />
+              OVERVIEW
+              {currentView === 'project-overview' && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-ml-blue rounded-full"></span>}
+            </button>
+            <button
+              onClick={() => navigate(`/projects/${activeProjectId}/personas`)}
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold transition-all relative ${
+                currentView === 'persona-catalog' ? 'text-ml-blue' : 'text-ml-ink-muted hover:text-ml-ink'
+              }`}
+            >
+              <Users size={13} />
+              PERSONAS
+              {currentView === 'persona-catalog' && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-ml-blue rounded-full"></span>}
+            </button>
+            <button
+              onClick={() => navigate(`/projects/${activeProjectId}/respondents`)}
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold transition-all relative ${
+                currentView === 'synthetic-respondents' ? 'text-ml-blue' : 'text-ml-ink-muted hover:text-ml-ink'
+              }`}
+            >
+              <Sparkles size={13} />
+              RESPONDENTS
+              {currentView === 'synthetic-respondents' && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-ml-blue rounded-full"></span>}
+            </button>
+            <span className="h-4 w-[1px] bg-ml-border/60 mx-1"></span>
+            <button
+              onClick={() => navigate(`/projects/${activeProjectId}/study-builder`)}
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold transition-all relative ${
+                currentView === 'study-builder' ? 'text-ml-blue' : 'text-ml-ink-muted hover:text-ml-ink'
+              }`}
+            >
+              <ClipboardList size={13} />
+              STUDY BUILDER
+              {currentView === 'study-builder' && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-ml-blue rounded-full"></span>}
+            </button>
+            <button
+              onClick={() => navigate(`/projects/${activeProjectId}/results/${selectedStudyId}`)}
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold transition-all relative ${
+                currentView === 'results-dashboard' ? 'text-ml-blue' : 'text-ml-ink-muted hover:text-ml-ink'
+              }`}
+            >
+              <BarChart3 size={13} />
+              DASHBOARD
+              {currentView === 'results-dashboard' && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-ml-blue rounded-full"></span>}
+            </button>
+            <button
+              onClick={() => navigate(`/projects/${activeProjectId}/reports/${selectedStudyId}`)}
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold transition-all relative ${
+                currentView === 'report-export' ? 'text-ml-blue' : 'text-ml-ink-muted hover:text-ml-ink'
+              }`}
+            >
+              <FileText size={13} />
+              REPORTS
+              {currentView === 'report-export' && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-ml-blue rounded-full"></span>}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <main className="flex-1 flex flex-col py-6 relative z-10">
-        {currentView === 'project-overview' && (
+        {(currentView === 'project-overview' || currentView === 'create-project' || currentView === 'edit-project') && (
           <ProjectOverview
             activeProjectId={activeProjectId}
             mode={activeProjectId ? 'detail' : 'list'}
@@ -251,23 +310,53 @@ function App() {
             onNavigateToPersonas={() => navigate(`/projects/${activeProjectId}/personas`)}
           />
         )}
-        {currentView === 'create-project' && (
-          <ProjectOverview
-            activeProjectId={null}
-            mode="create"
-            onSelectProject={handleSelectProject}
-            onProjectsChanged={refreshProjects}
-            onNavigateToPersonas={() => {}}
-          />
+
+        {/* Create Project Modal Overlay */}
+        {(currentView === 'create-project' || showCreateModal) && (
+          <div className="fixed inset-0 bg-ml-ink/40 backdrop-blur-md flex items-center justify-center z-50 p-6 overflow-y-auto">
+            <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-ml-border/60 overflow-hidden relative animate-in fade-in zoom-in duration-200">
+              <ProjectOverview
+                activeProjectId={null}
+                mode="create"
+                onSelectProject={(id) => {
+                  handleSelectProject(id);
+                  setShowCreateModal(false);
+                }}
+                onProjectsChanged={refreshProjects}
+                onNavigateToPersonas={() => {}}
+                onClose={() => {
+                  setShowCreateModal(false);
+                  if (currentView === 'create-project') {
+                    handleSelectProject(activeProjectId);
+                  }
+                }}
+              />
+            </div>
+          </div>
         )}
-        {currentView === 'edit-project' && (
-          <ProjectOverview
-            activeProjectId={activeProjectId}
-            mode="edit"
-            onSelectProject={handleSelectProject}
-            onProjectsChanged={refreshProjects}
-            onNavigateToPersonas={() => {}}
-          />
+
+        {/* Edit Project Modal Overlay */}
+        {(currentView === 'edit-project' || showEditModal) && (
+          <div className="fixed inset-0 bg-ml-ink/40 backdrop-blur-md flex items-center justify-center z-50 p-6 overflow-y-auto">
+            <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-ml-border/60 overflow-hidden relative animate-in fade-in zoom-in duration-200">
+              <ProjectOverview
+                activeProjectId={activeProjectId}
+                mode="edit"
+                onSelectProject={(id) => {
+                  handleSelectProject(id);
+                  setShowEditModal(false);
+                }}
+                onProjectsChanged={refreshProjects}
+                onNavigateToPersonas={() => {}}
+                onClose={() => {
+                  setShowEditModal(false);
+                  if (currentView === 'edit-project') {
+                    handleSelectProject(activeProjectId);
+                  }
+                }}
+              />
+            </div>
+          </div>
         )}
         {isNavDisabled && currentView !== 'project-overview' && currentView !== 'create-project' && currentView !== 'edit-project' && (
           <div className="flex-1 flex flex-col items-center justify-center max-w-md mx-auto px-6 py-12 text-center">

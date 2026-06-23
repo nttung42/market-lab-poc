@@ -19,7 +19,8 @@ import {
   Trash2, 
   Edit, 
   Folder, 
-  RefreshCw
+  RefreshCw,
+  X
 } from 'lucide-react';
 
 interface ProjectOverviewProps {
@@ -28,6 +29,7 @@ interface ProjectOverviewProps {
   onSelectProject: (projectId: string | null) => void;
   onProjectsChanged: () => void;
   onNavigateToPersonas: () => void;
+  onClose?: () => void;
 }
 
 export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
@@ -36,6 +38,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
   onSelectProject,
   onProjectsChanged,
   onNavigateToPersonas,
+  onClose,
 }) => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [project, setProject] = useState<Project | null>(null);
@@ -179,23 +182,32 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
   if (mode === 'create' || mode === 'edit') {
     if (loading && mode === 'edit') {
       return (
-        <div className="flex-1 max-w-2xl mx-auto w-full px-6 py-12 animate-pulse space-y-8">
-          <div className="h-10 bg-ml-border rounded-lg w-2/3"></div>
+        <div className="w-full p-8 animate-pulse space-y-8">
+          <div className="h-8 bg-ml-border rounded-lg w-2/3"></div>
           <div className="h-64 bg-ml-border rounded-lg"></div>
         </div>
       );
     }
 
     return (
-      <div className="flex-1 max-w-2xl mx-auto w-full px-6 py-8 space-y-6 text-ml-ink">
-        <div className="flex items-center gap-2 border-b border-ml-border pb-5">
-          <h1 className="text-2xl font-black tracking-tight uppercase flex items-center gap-2">
-            {mode === 'edit' ? <Edit className="text-ml-blue" size={26} /> : <Plus className="text-ml-blue" size={26} />}
+      <div className="w-full p-6 md:p-8 space-y-6 text-ml-ink">
+        <div className="flex items-center justify-between border-b border-ml-border/60 pb-4">
+          <h2 className="text-sm font-black uppercase tracking-wider flex items-center gap-1.5">
+            {mode === 'edit' ? <Edit className="text-ml-blue" size={16} /> : <Plus className="text-ml-blue" size={16} />}
             {mode === 'edit' ? 'Edit Research Workspace' : 'Initialize Research Workspace'}
-          </h1>
+          </h2>
+          {onClose && (
+            <button 
+              type="button"
+              onClick={onClose}
+              className="p-1.5 hover:bg-ml-surface rounded-full text-ml-ink-muted transition-colors cursor-pointer"
+            >
+              <X size={16} />
+            </button>
+          )}
         </div>
 
-        <div className="bg-white border border-ml-border rounded-lg p-8 shadow-xs">
+        <div>
           <form onSubmit={handleCreateOrUpdate} className="space-y-5 text-xs font-medium">
             <div className="space-y-1">
               <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block">Product Name / Concept</label>
@@ -283,11 +295,13 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
               </select>
             </div>
 
-            <div className="flex gap-3 pt-3">
+             <div className="flex gap-3 pt-3">
               <button
                 type="button"
                 onClick={() => {
-                  if (mode === 'edit' && activeProjectId) {
+                  if (onClose) {
+                    onClose();
+                  } else if (mode === 'edit' && activeProjectId) {
                     onSelectProject(activeProjectId);
                   } else {
                     onSelectProject(null);
@@ -373,8 +387,8 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                     onClick={() => {
                       onSelectProject(proj.id);
                     }}
-                    className={`group p-6 bg-white border rounded-lg shadow-2xs hover:shadow-xs transition-all duration-150 cursor-pointer relative overflow-hidden flex flex-col justify-between gap-4 ${
-                      isActive ? 'border-ml-blue border-l-4 border-l-ml-blue' : 'border-ml-border hover:border-ml-blue/40'
+                    className={`group p-6 glass-card hover:bg-white/80 transition-all duration-150 cursor-pointer relative overflow-hidden flex flex-col justify-between gap-4 ${
+                      isActive ? 'border-ml-blue border-l-4 border-l-ml-blue shadow-md' : 'hover:border-ml-blue/40'
                     }`}
                   >
                     <div className="space-y-2">
@@ -472,7 +486,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
   return (
     <div className="flex-1 max-w-5xl mx-auto w-full px-6 py-8 space-y-8 text-ml-ink">
       {/* Hero Section */}
-      <div className="relative overflow-hidden rounded-lg border border-ml-border bg-white p-8 md:p-12 border-l-4 border-l-ml-blue shadow-xs">
+      <div className="relative overflow-hidden rounded-xl border-l-4 border-l-ml-blue glass-panel p-8 md:p-12 shadow-sm">
         <div className="relative space-y-4 max-w-3xl">
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-block px-3 py-1 text-xs font-bold tracking-wider text-ml-blue bg-ml-blue-soft border border-ml-blue/20 rounded-full uppercase">
@@ -497,7 +511,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
       {/* Grid of details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Core Metadata */}
-        <div className="rounded-lg border border-ml-border bg-white p-6 space-y-6">
+        <div className="rounded-xl glass-panel p-6 space-y-6 shadow-sm">
           <h2 className="text-lg font-bold text-ml-ink border-b border-ml-border pb-3 flex items-center gap-2">
             <BookOpen className="text-ml-blue" size={20} />
             Market Context
@@ -536,7 +550,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
         </div>
 
         {/* Research Objective */}
-        <div className="rounded-lg border border-ml-border bg-white p-6 space-y-6 flex flex-col justify-between">
+        <div className="rounded-xl glass-panel p-6 space-y-6 flex flex-col justify-between shadow-sm">
           <div className="space-y-6">
             <h2 className="text-lg font-bold text-ml-ink border-b border-ml-border pb-3 flex items-center gap-2">
               <Target className="text-ml-blue" size={20} />
