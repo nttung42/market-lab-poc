@@ -40,3 +40,20 @@ body {
   background-color: rgba(57, 130, 203, 0.2);
   color: var(--ml-blue-strong);
 }
+
+@media print {
+  body {
+    background-color: white !important;
+    color: #1b2229 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  header, footer, nav, button, .print\:hidden {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}
+

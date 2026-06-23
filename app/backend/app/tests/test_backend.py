@@ -156,3 +156,144 @@ def test_required_field_validation():
             assumptions=["A1"],
             confidence_score=150.0 # Bounded ge=0, le=100
         )
+
+
+def test_generate_respondents_success():
+    # Call generate endpoint with 2 respondents per persona
+    response = client.post(
+        "/api/projects/english-learning-app-poc/respondents/generate",
+        json={"count_per_persona": 2}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    # 3 personas * 2 respondents each = 6 respondents total
+    assert len(data) == 6
+    
+    for r in data:
+        assert "id" in r
+        assert r["project_id"] == "english-learning-app-poc"
+        assert r["persona_id"] is not None
+        assert r["name"] is not None
+        assert isinstance(r["age"], int)
+        assert r["location"] is not None
+        assert r["budget"] is not None
+        assert r["motivation"] is not None
+        assert r["tech_savviness"] is not None
+        assert r["risk_attitude"] is not None
+        assert r["channel"] is not None
+        assert isinstance(r["decision_rules"], list)
+
+
+def test_get_respondents_success():
+    # Make sure we can retrieve the generated respondents
+    response = client.get("/api/projects/english-learning-app-poc/respondents")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 6
+
+
+def test_generate_respondents_project_not_found():
+    response = client.post(
+        "/api/projects/non-existent-project/respondents/generate",
+        json={"count_per_persona": 2}
+    )
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Project not found"
+
+
+def test_get_respondents_project_not_found():
+    response = client.get("/api/projects/non-existent-project/respondents")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Project not found"
+
+
+def test_project_crud():
+    # 1. Create Project
+    response = client.post(
+        "/api/projects",
+        json={
+            "name": "Test Project",
+            "product_description": "A test product desc",
+            "industry": "Software",
+            "market": "Global",
+            "target_audience": "Developers",
+            "research_objective": "Validate pricing",
+            "study_type": "Synthetic Concept / Message Test"
+        }
+    )
+    assert response.status_code == 200
+    project = response.json()
+    assert "project-" in project["id"]
+    assert project["name"] == "Test Project"
+    
+    # 2. Update Project
+    response = client.put(
+        f"/api/projects/{project['id']}",
+        json={
+            "name": "Updated Test Project",
+            "product_description": "Updated test product desc",
+            "industry": "Software",
+            "market": "Global",
+            "target_audience": "Developers",
+            "research_objective": "Validate pricing",
+            "study_type": "Synthetic Concept / Message Test"
+        }
+    )
+    assert response.status_code == 200
+    assert response.json()["name"] == "Updated Test Project"
+    
+    # 3. Create Persona for this Project
+    response = client.post(
+        f"/api/projects/{project['id']}/personas",
+        json={
+            "name": "Test Persona",
+            "segment": "Developers segment",
+            "quote": "I love testing",
+            "demographics": ["Dev"],
+            "goals": ["Build fast"],
+            "pain_points": ["Bugs"],
+            "motivations": ["Praise"],
+            "buying_behavior": ["Online"],
+            "decision_rules": ["Free tier"],
+            "objections": ["Expensive"],
+            "channels": ["Github"],
+            "assumptions": ["Fast is better"],
+            "confidence_score": 90.0
+        }
+    )
+    assert response.status_code == 200
+    persona = response.json()
+    assert persona["name"] == "Test Persona"
+    
+    # 4. Update Persona
+    response = client.put(
+        f"/api/personas/{persona['id']}",
+        json={
+            "name": "Updated Test Persona",
+            "segment": "Developers segment",
+            "quote": "I love testing",
+            "demographics": ["Dev"],
+            "goals": ["Build fast"],
+            "pain_points": ["Bugs"],
+            "motivations": ["Praise"],
+            "buying_behavior": ["Online"],
+            "decision_rules": ["Free tier"],
+            "objections": ["Expensive"],
+            "channels": ["Github"],
+            "assumptions": ["Fast is better"],
+            "confidence_score": 95.0
+        }
+    )
+    assert response.status_code == 200
+    assert response.json()["name"] == "Updated Test Persona"
+    assert response.json()["confidence_score"] == 95.0
+    
+    # 5. Delete Persona
+    response = client.delete(f"/api/personas/{persona['id']}")
+    assert response.status_code == 200
+    
+    # 6. Delete Project
+    response = client.delete(f"/api/projects/{project['id']}")
+    assert response.status_code == 200
+
+

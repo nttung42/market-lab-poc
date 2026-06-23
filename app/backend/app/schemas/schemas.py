@@ -50,3 +50,138 @@ class Project(ProjectBase):
 
     class Config:
         from_attributes = True
+
+
+class RespondentBase(BaseModel):
+    name: str = Field(..., min_length=1)
+    age: int = Field(..., ge=0)
+    location: str = Field(..., min_length=1)
+    budget: str = Field(..., min_length=1)
+    motivation: str = Field(..., min_length=1)
+    tech_savviness: str = Field(..., min_length=1)
+    risk_attitude: str = Field(..., min_length=1)
+    channel: str = Field(..., min_length=1)
+    decision_rules: List[str] = Field(..., min_items=0)
+
+class RespondentCreate(RespondentBase):
+    id: str
+    persona_id: str
+    project_id: str
+
+class Respondent(RespondentBase):
+    id: str
+    persona_id: str
+    project_id: str
+
+    class Config:
+        from_attributes = True
+
+class RespondentGenerateRequest(BaseModel):
+    count_per_persona: int = Field(10, ge=1, le=50)
+
+
+class QuestionOptionBase(BaseModel):
+    text: str = Field(..., min_length=1)
+    value: str = Field(..., min_length=1)
+    position: int = 0
+
+class QuestionOptionCreate(QuestionOptionBase):
+    id: str
+
+class QuestionOption(QuestionOptionBase):
+    id: str
+    question_id: str
+
+    class Config:
+        from_attributes = True
+
+class QuestionBase(BaseModel):
+    text: str = Field(..., min_length=1)
+    type: str = Field(..., min_length=1)  # single_choice, multi_choice, likert, open_text
+    position: int = 0
+
+class QuestionCreate(QuestionBase):
+    id: str
+    options: List[QuestionOptionCreate] = []
+
+class Question(QuestionBase):
+    id: str
+    study_id: str
+    options: List[QuestionOption] = []
+
+    class Config:
+        from_attributes = True
+
+class StudyBase(BaseModel):
+    title: str = Field(..., min_length=1)
+
+class StudyCreate(StudyBase):
+    id: str
+    project_id: str
+    status: str = "draft"
+    created_at: str
+
+class Study(StudyBase):
+    id: str
+    project_id: str
+    status: str
+    created_at: str
+    questions: List[Question] = []
+
+    class Config:
+        from_attributes = True
+
+class ResponseBase(BaseModel):
+    answer: str
+
+class ResponseCreate(ResponseBase):
+    id: str
+    study_id: str
+    respondent_id: str
+    question_id: str
+
+class Response(ResponseBase):
+    id: str
+    study_id: str
+    respondent_id: str
+    question_id: str
+    respondent: Respondent
+
+    class Config:
+        from_attributes = True
+
+class StudyRunRequest(BaseModel):
+    persona_ids: List[str] = []
+
+class ChoiceResult(BaseModel):
+    option: str
+    count: int
+    percentage: float
+
+class QuestionResult(BaseModel):
+    question_id: str
+    question_text: str
+    question_type: str
+    total_responses: int
+    results: List[ChoiceResult] = []
+    average_rating: float = 0.0
+
+class QualitativeTheme(BaseModel):
+    theme: str
+    description: str
+    objections: List[str] = []
+    quotes: List[str] = []
+
+class RecommendationItem(BaseModel):
+    priority: str
+    title: str
+    details: str
+
+class StudyResults(BaseModel):
+    study_id: str
+    total_respondents: int
+    quantitative: List[QuestionResult]
+    qualitative_themes: List[QualitativeTheme]
+    recommendations: List[RecommendationItem]
+
+

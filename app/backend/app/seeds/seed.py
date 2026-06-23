@@ -197,8 +197,117 @@ def seed_db(db: Session):
             db.commit()
             print(f"Seeded persona: {p_data['id']}")
         else:
-            # Optionally update fields to ensure fresh seed values
             for key, val in p_data.items():
                 setattr(existing_persona, key, val)
             db.commit()
             print(f"Persona {p_data['id']} updated with seed data.")
+
+    # Idempotent Respondent Seeding
+    from app.models.models import Respondent, Study, Question, QuestionOption, Response
+    existing_respondents = db.query(Respondent).filter(Respondent.project_id == project_id).all()
+    if not existing_respondents:
+        from app.services.respondent_generator import generate_mock_respondents
+        personas = db.query(Persona).filter(Persona.project_id == project_id).all()
+        for persona in personas:
+            # Generate 5 respondents per persona for seed
+            generated = generate_mock_respondents(persona, 5)
+            for r_data in generated:
+                db_resp = Respondent(
+                    id=r_data["id"],
+                    persona_id=r_data["persona_id"],
+                    project_id=r_data["project_id"],
+                    name=r_data["name"],
+                    age=r_data["age"],
+                    location=r_data["location"],
+                    budget=r_data["budget"],
+                    motivation=r_data["motivation"],
+                    tech_savviness=r_data["tech_savviness"],
+                    risk_attitude=r_data["risk_attitude"],
+                    channel=r_data["channel"],
+                    decision_rules=r_data["decision_rules"]
+                )
+                db.add(db_resp)
+        db.commit()
+        print("Seeded 15 synthetic respondents.")
+
+    # Idempotent Study Seeding
+    study_id = "study-concept-test"
+    existing_study = db.query(Study).filter(Study.id == study_id).first()
+    if not existing_study:
+        study = Study(
+            id=study_id,
+            project_id=project_id,
+            title="Initial Value Proposition Concept Test",
+            status="completed",
+            created_at=datetime.utcnow().isoformat()
+        )
+        db.add(study)
+        db.commit()
+
+        # Seed Questions
+        q1 = Question(
+            id="q-price",
+            study_id=study_id,
+            text="How important is a free-tier or pricing below 100k VND ($4) per month to your decision to use this app?",
+            type="likert",
+            position=0
+        )
+        q2 = Question(
+            id="q-feature",
+            study_id=study_id,
+            text="Which feature would make you most likely to practice English speaking on this app daily?",
+            type="single_choice",
+            position=1
+        )
+        q3 = Question(
+            id="q-objection",
+            study_id=study_id,
+            text="What is your main concern or hesitation about using an AI-powered speaking practice application?",
+            type="open_text",
+            position=2
+        )
+        db.add_all([q1, q2, q3])
+        db.commit()
+
+        # Seed Question Options for q2
+        opts = [
+            ("Specialized IELTS speaking mock tests", "ielts"),
+            ("Job interview mock simulator with formal business feedback", "job-interview"),
+            ("Casual, game-like conversations with cute AI friends", "casual-game"),
+            ("Daily vocabulary challenges & streaks", "vocab-streaks")
+        ]
+        for idx, (text, value) in enumerate(opts):
+            db.add(QuestionOption(
+                id=f"opt-{value}",
+                question_id="q-feature",
+                text=text,
+                value=value,
+                position=idx
+            ))
+        db.commit()
+
+        # Seed responses for all seeded respondents
+        from app.services.study_simulator import generate_mock_answer
+        db_respondents = db.query(Respondent).filter(Respondent.project_id == project_id).all()
+        db_personas = db.query(Persona).filter(Persona.project_id == project_id).all()
+        personas_dict = {p.id: p for p in db_personas}
+        db_questions = [q1, q2, q3]
+
+        # Fetch questions with loaded options relation
+        db_questions = db.query(Question).filter(Question.study_id == study_id).all()
+
+        import uuid
+        for resp in db_respondents:
+            p_obj = personas_dict[resp.persona_id]
+            for q in db_questions:
+                ans = generate_mock_answer(resp, p_obj, q)
+                db.add(Response(
+                    id=f"resp-ans-{uuid.uuid4().hex[:8]}",
+                    study_id=study_id,
+                    respondent_id=resp.id,
+                    question_id=q.id,
+                    answer=ans
+                ))
+        db.commit()
+        print("Seeded survey questions and study responses.")
+

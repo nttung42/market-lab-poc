@@ -1,0 +1,3 @@
+OPENAI_API_KEY=sk-31d6ace01bdd1a2c-ndxlob-a92701ed\
+OPENAI_BASE_URL=http://localhost:20128/v1
+MODEL_NAME=free-combo
