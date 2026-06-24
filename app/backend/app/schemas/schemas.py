@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional, Dict, Any
 
 class PersonaBase(BaseModel):
     name: str = Field(..., min_length=1)
@@ -15,6 +15,13 @@ class PersonaBase(BaseModel):
     channels: List[str] = Field(..., min_items=1)
     assumptions: List[str] = Field(..., min_items=1)
     confidence_score: float = Field(..., ge=0.0, le=100.0)
+    
+    # New structured columns (optional)
+    jtbd: Optional[Dict[str, Any]] = None
+    psychographics: Optional[Dict[str, Any]] = None
+    product_fit: Optional[Dict[str, Any]] = None
+    journey_map: Optional[List[Dict[str, Any]]] = None
+    validation: Optional[Dict[str, Any]] = None
 
 class PersonaCreate(PersonaBase):
     id: str

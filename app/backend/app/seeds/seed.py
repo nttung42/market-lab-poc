@@ -79,7 +79,37 @@ def seed_db(db: Session):
                 "Assumes AI speech evaluation might not be accurate for Vietnamese accents",
                 "Expects paid apps to have refund policies"
             ],
-            "confidence_score": 85.0
+            "confidence_score": 85.0,
+            "jtbd": {
+                "functional_job": "Improve everyday English speaking communication to meet graduation criteria without high costs.",
+                "emotional_job": "Feel confident speaking English, avoiding embarrassment or anxiety about pronunciation.",
+                "social_job": "Be respected by peers and fit into English-speaking study groups.",
+                "success_criteria": ["Understand daily topics", "Accurate enough pronunciation", "Save money"]
+            },
+            "psychographics": {
+                "personality_traits": ["Pragmatic", "Budget-conscious", "Slightly anxious", "Diligent"],
+                "core_values": ["Safety", "Frugality", "Growth"],
+                "risk_tolerance": "Low",
+                "tech_savviness": "Medium"
+            },
+            "product_fit": {
+                "must_haves": ["Free tier", "Clear pricing structure", "Self-paced exercises"],
+                "nice_to_haves": ["Gamification features", "Peer comparisons"],
+                "deal_breakers": ["Hidden auto-renewals", "Forced card details upfront"],
+                "alternatives": ["Duolingo (Free)", "YouTube lessons", "Traditional textbook study"]
+            },
+            "journey_map": [
+                {"stage": "Awareness", "goals": ["Find speaking resources"], "pain_points": ["Centers are too expensive"], "touchpoints": ["TikTok ads", "Classmate recommendation"]},
+                {"stage": "Consideration", "goals": ["Compare English speaking apps"], "pain_points": ["Fear of paywalls"], "touchpoints": ["App Store reviews"]},
+                {"stage": "Conversion", "goals": ["Install and try out"], "pain_points": ["Don't want to input card info"], "touchpoints": ["Onboarding signup"]},
+                {"stage": "Onboarding", "goals": ["Complete first lesson"], "pain_points": ["App feels too pushy"], "touchpoints": ["First speaking evaluation"]},
+                {"stage": "Retention", "goals": ["Learn daily speaking habit"], "pain_points": ["Losing motivation"], "touchpoints": ["Streak notifications", "Simple badges"]}
+            ],
+            "validation": {
+                "is_human_validated": False,
+                "evidence_sources": ["EdTech Market Report 2026", "Student Survey (50 respondents)"],
+                "last_validated_at": None
+            }
         },
         {
             "id": "persona-career-focused",
@@ -132,7 +162,37 @@ def seed_db(db: Session):
                 "Assumes high price correlates with premium quality",
                 "Assumes AI can effectively simulate a real job interviewer"
             ],
-            "confidence_score": 90.0
+            "confidence_score": 90.0,
+            "jtbd": {
+                "functional_job": "Master professional English communication and mock interviews to secure a high-paying MNC internship.",
+                "emotional_job": "Feel ready and composed when interviewed by foreign managers.",
+                "social_job": "Stand out as a competent, global-minded professional among applicants.",
+                "success_criteria": ["IELTS Speaking Band 6.5+", "Fluent business presentations", "Pass mock job interviews"]
+            },
+            "psychographics": {
+                "personality_traits": ["Ambitious", "Goal-oriented", "Rational", "Determined"],
+                "core_values": ["Achievement", "Efficiency", "Professionalism"],
+                "risk_tolerance": "High",
+                "tech_savviness": "High"
+            },
+            "product_fit": {
+                "must_haves": ["Mock interview simulations", "Granular accent & grammar analytics", "Business vocabulary"],
+                "nice_to_haves": ["CV scanning / pitch prep", "Industry-specific interview tracks"],
+                "deal_breakers": ["Overly gamified interfaces", "Lack of professional mock scenarios", "No business-level tracks"],
+                "alternatives": ["Speaking center tutors", "Mock interview websites", "Self-practice in front of mirror"]
+            },
+            "journey_map": [
+                {"stage": "Awareness", "goals": ["Improve interview English"], "pain_points": ["Traditional apps are too simple/basic"], "touchpoints": ["LinkedIn posts", "Tech review channels"]},
+                {"stage": "Consideration", "goals": ["Evaluate professional mock tools"], "pain_points": ["High price tags"], "touchpoints": ["Feature detail lists"]},
+                {"stage": "Conversion", "goals": ["Purchase premium annual subscription"], "pain_points": ["Is the simulation realistic enough?"], "touchpoints": ["Checkout page"]},
+                {"stage": "Onboarding", "goals": ["Run first mock interview"], "pain_points": ["Understanding feedback metrics"], "touchpoints": ["Interview simulator onboarding"]},
+                {"stage": "Retention", "goals": ["Complete 3 mock interviews per week"], "pain_points": ["Lack of customized scenarios"], "touchpoints": ["Weekly progress report emails"]}
+            ],
+            "validation": {
+                "is_human_validated": False,
+                "evidence_sources": ["LinkedIn Student Placement Survey", "HR Interview Guidelines"],
+                "last_validated_at": None
+            }
         },
         {
             "id": "persona-casual-learner",
@@ -185,7 +245,37 @@ def seed_db(db: Session):
                 "Assumes app will keep me motivated with game-like lessons",
                 "Assumes standard pronunciation is sufficient"
             ],
-            "confidence_score": 80.0
+            "confidence_score": 80.0,
+            "jtbd": {
+                "functional_job": "Improve pronunciation of slang and pop-culture terms to watch movies without subtitles.",
+                "emotional_job": "Enjoy learning as a relaxing, stress-free hobby rather than academic work.",
+                "social_job": "Connect with international students and participate in global pop-culture discussions.",
+                "success_criteria": ["Understand movie quotes", "Stay motivated for 10+ days", "Have fun"]
+            },
+            "psychographics": {
+                "personality_traits": ["Creative", "Impulsive", "Leisure-oriented", "Visual thinker"],
+                "core_values": ["Fun", "Convenience", "Self-expression"],
+                "risk_tolerance": "Medium",
+                "tech_savviness": "High"
+            },
+            "product_fit": {
+                "must_haves": ["Modern/clean visual style", "Gamified elements (streaks, badges)", "Lessons under 15 minutes"],
+                "nice_to_haves": ["Expressive natural AI voice", "Pop-culture vocabulary"],
+                "deal_breakers": ["Boring grammar drills", "Intrusive pushy streak warnings", "Strict exam/test formats"],
+                "alternatives": ["Duolingo", "YouTube vloggers", "Netflix with bilingual subtitles"]
+            },
+            "journey_map": [
+                {"stage": "Awareness", "goals": ["Find a fun English app"], "pain_points": ["Apps feel like boring classroom study"], "touchpoints": ["Instagram feeds", "TikTok influencers"]},
+                {"stage": "Consideration", "goals": ["Try out visual interface"], "pain_points": ["UI looks outdated"], "touchpoints": ["App Store screenshots"]},
+                {"stage": "Conversion", "goals": ["Subscribe to premium monthly trial"], "pain_points": ["Unnatural voice synthesis"], "touchpoints": ["Onboarding welcome page"]},
+                {"stage": "Onboarding", "goals": ["Do a quick 5-min talk game"], "pain_points": ["Too much text upfront"], "touchpoints": ["First speaking game"]},
+                {"stage": "Retention", "goals": ["Keep a 14-day speaking streak"], "pain_points": ["Streak pressure causes stress"], "touchpoints": ["Badge notifications", "Daily casual topics"]}
+            ],
+            "validation": {
+                "is_human_validated": False,
+                "evidence_sources": ["App Store Review Sentiment Analysis", "Casual Learner Focus Group (3 members)"],
+                "last_validated_at": None
+            }
         }
     ]
 

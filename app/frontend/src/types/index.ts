@@ -14,6 +14,35 @@ export interface Persona {
   channels: string[];
   assumptions: string[];
   confidence_score: number;
+  jtbd?: {
+    functional_job: string;
+    emotional_job: string;
+    social_job: string;
+    success_criteria: string[];
+  };
+  psychographics?: {
+    personality_traits: string[];
+    core_values: string[];
+    risk_tolerance: string;
+    tech_savviness: string;
+  };
+  product_fit?: {
+    must_haves: string[];
+    nice_to_haves: string[];
+    deal_breakers: string[];
+    alternatives: string[];
+  };
+  journey_map?: {
+    stage: string;
+    goals: string[];
+    pain_points: string[];
+    touchpoints: string[];
+  }[];
+  validation?: {
+    is_human_validated: boolean;
+    evidence_sources: string[];
+    last_validated_at?: string;
+  };
 }
 
 export interface Project {

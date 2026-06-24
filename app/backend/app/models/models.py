@@ -42,6 +42,13 @@ class Persona(Base):
     assumptions = Column(JSON, nullable=False)
     
     confidence_score = Column(Float, nullable=False)
+    
+    # New structured marketing/product columns (nullable for backward compatibility)
+    jtbd = Column(JSON, nullable=True)
+    psychographics = Column(JSON, nullable=True)
+    product_fit = Column(JSON, nullable=True)
+    journey_map = Column(JSON, nullable=True)
+    validation = Column(JSON, nullable=True)
 
     project = relationship("Project", back_populates="personas")
     respondents = relationship("Respondent", back_populates="persona", cascade="all, delete-orphan")

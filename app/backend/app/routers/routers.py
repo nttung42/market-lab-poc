@@ -531,7 +531,13 @@ def create_project_persona(project_id: str, persona_data: schemas.PersonaBase, d
         objections=persona_data.objections,
         channels=persona_data.channels,
         assumptions=persona_data.assumptions,
-        confidence_score=persona_data.confidence_score
+        confidence_score=persona_data.confidence_score,
+        # New structured columns
+        jtbd=persona_data.jtbd,
+        psychographics=persona_data.psychographics,
+        product_fit=persona_data.product_fit,
+        journey_map=persona_data.journey_map,
+        validation=persona_data.validation
     )
     db.add(db_persona)
     db.commit()
@@ -557,6 +563,13 @@ def update_persona(persona_id: str, persona_data: schemas.PersonaBase, db: Sessi
     db_persona.channels = persona_data.channels
     db_persona.assumptions = persona_data.assumptions
     db_persona.confidence_score = persona_data.confidence_score
+    
+    # New structured columns
+    db_persona.jtbd = persona_data.jtbd
+    db_persona.psychographics = persona_data.psychographics
+    db_persona.product_fit = persona_data.product_fit
+    db_persona.journey_map = persona_data.journey_map
+    db_persona.validation = persona_data.validation
     
     db.commit()
     db.refresh(db_persona)
