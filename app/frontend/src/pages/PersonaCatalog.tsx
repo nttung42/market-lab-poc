@@ -11,7 +11,6 @@ import {
   Quote, 
   CheckCircle2, 
   AlertTriangle, 
-  Lightbulb, 
   Compass, 
   Award,
   Plus,
@@ -23,14 +22,10 @@ import {
   ChevronRight,
   ChevronLeft,
   User,
-  FileText,
   Activity,
   Check,
   Zap,
-  HelpCircle,
-  Clock,
-  ArrowRight,
-  TrendingUp
+  Clock
 } from 'lucide-react';
 
 interface PersonaCatalogProps {
@@ -461,7 +456,7 @@ export const PersonaCatalog: React.FC<PersonaCatalogProps> = ({ projectId }) => 
               setFormIncome('Low');
               setFormJtbdFunctional('Practice speaking casual conversations with natural, emotional AI characters.');
               setFormJtbdEmotional('Enjoy learning English as a relaxing hobby, avoiding academic pressure.');
-              setFormSocial('Make friends with foreign students and follow global art communities.');
+              setFormJtbdSocial('Make friends with foreign students and follow global art communities.');
               setFormJtbdSuccessCriteria('Understanding Netflix shows without sub\nMaintaining a daily learning streak\nTalking naturally about design');
               setFormGoals('Practice everyday conversations\nImprove pop-culture slang\nBuild a stress-free daily habit');
               setFormMotivations('Watch movies subtitle-free\nEnjoy foreign music\nTravel abroad comfortably');
@@ -517,6 +512,12 @@ export const PersonaCatalog: React.FC<PersonaCatalogProps> = ({ projectId }) => 
 
   return (
     <div className="flex-1 max-w-7xl mx-auto w-full px-6 py-8 space-y-8 text-ml-ink">
+      {error && (
+        <div className="p-4 bg-ml-danger/10 border border-ml-danger/20 text-ml-danger rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+          <AlertTriangle size={16} />
+          {error}
+        </div>
+      )}
       
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-5 border-b border-ml-border">
@@ -1525,7 +1526,7 @@ export const PersonaCatalog: React.FC<PersonaCatalogProps> = ({ projectId }) => 
                       ) : (
                         <div className="text-center py-6 text-ml-ink-muted">
                           <Activity className="mx-auto text-ml-border mb-1" size={20} />
-                          <span className="text-[10px] font-bold">No journey path defined. Edit to configure Awareness -> Retention steps.</span>
+                          <span className="text-[10px] font-bold">No journey path defined. Edit to configure Awareness &rarr; Retention steps.</span>
                         </div>
                       )}
                     </div>

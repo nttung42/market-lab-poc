@@ -1,9 +1,11 @@
 import pytest
 import asyncio
 from unittest.mock import AsyncMock, patch
+from app.config import LLMConfigurationError
+from app.infra.ai.gateway import LLMExecutionResult
+from app.infra.ai.schemas import RespondentGenerationOutput, RespondentOutput
 from app.models.models import Persona
 from app.services.respondent_generator import (
-    generate_mock_respondents,
     generate_respondents,
     generate_respondents_from_llm,
 )
@@ -30,64 +32,62 @@ def mock_persona():
     )
 
 
-def test_generate_mock_respondents(mock_persona):
-    count = 5
-    respondents = generate_mock_respondents(mock_persona, count)
-
-    assert len(respondents) == count
-    for r in respondents:
-        assert r["persona_id"] == mock_persona.id
-        assert r["project_id"] == mock_persona.project_id
-        assert "name" in r
-        assert 18 <= r["age"] <= 22  # price-sensitive range in mock generator
-        assert r["budget"] == "Low"
-        assert r["tech_savviness"] in ["Low", "Medium", "High"]
-        assert r["risk_attitude"] in ["Risk-averse", "Neutral", "Risk-seeking"]
-        assert r["channel"] in mock_persona.channels
-        assert len(r["decision_rules"]) > 0
-
-
-def test_generate_respondents_fallback_when_no_api_key(mock_persona):
-    # Ensure no API key environment variables are set
-    with patch.dict("os.environ", {}, clear=True):
-        respondents = asyncio.run(generate_respondents(mock_persona, 3))
-        assert len(respondents) == 3
-        # Should have fallen back to mock generator
-        assert respondents[0]["budget"] == "Low"
-
-
-class MockResponse:
-    def __init__(self, json_data, status_code=200):
-        self._json_data = json_data
-        self.status_code = status_code
-
-    def json(self):
-        return self._json_data
-
-    def raise_for_status(self):
-        if self.status_code >= 400:
-            import httpx
-            raise httpx.HTTPStatusError("Error", request=None, response=None)
+def test_generate_respondents_requires_api_key(mock_persona):
+    mock_gateway = AsyncMock()
+    mock_gateway.generate_structured.side_effect = LLMConfigurationError(
+        "No API key configured for alias 'respondent-generator'. Set one of: "
+        "LLM_ALIAS_RESPONDENT_GENERATOR_API_KEY, GROQ_API_KEY."
+    )
+    with patch("app.services.respondent_generator.get_llm_gateway", return_value=mock_gateway):
+        with pytest.raises(
+            LLMConfigurationError,
+            match="No API key configured for alias 'respondent-generator'",
+        ):
+            asyncio.run(generate_respondents(mock_persona, 3))
 
 
 def test_generate_respondents_from_llm_success(mock_persona):
-    llm_response_json = {
-        "choices": [
-            {
-                "message": {
-                    "content": '{\n  "respondents": [\n    {\n      "name": "Nguyen Van A",\n      "age": 20,\n      "location": "Hanoi, Vietnam",\n      "budget": "Low",\n      "motivation": "Practice for graduation",\n      "tech_savviness": "High",\n      "risk_attitude": "Neutral",\n      "channel": "TikTok",\n      "decision_rules": ["Must be free"]\n    }\n  ]\n}'
+    mock_gateway = AsyncMock()
+    mock_gateway.generate_structured.return_value = LLMExecutionResult(
+        parsed=RespondentGenerationOutput(
+            respondents=[
+                RespondentOutput(
+                    name="Nguyen Van A",
+                    age=20,
+                    location="Hanoi, Vietnam",
+                    budget="Low",
+                    motivation="Practice for graduation",
+                    tech_savviness="High",
+                    risk_attitude="Neutral",
+                    channel="TikTok",
+                    decision_rules=["Must be free"],
+                )
+            ]
+        ),
+        request_payload={"task_name": "respondent_generation"},
+        raw_response={"choices": []},
+        parsed_output={
+            "respondents": [
+                {
+                    "name": "Nguyen Van A",
+                    "age": 20,
+                    "location": "Hanoi, Vietnam",
+                    "budget": "Low",
+                    "motivation": "Practice for graduation",
+                    "tech_savviness": "High",
+                    "risk_attitude": "Neutral",
+                    "channel": "TikTok",
+                    "decision_rules": ["Must be free"],
                 }
-            }
-        ]
-    }
+            ]
+        },
+        provider="openai",
+        model_alias="respondent-generator",
+        resolved_model="openai/gpt-4o-mini",
+        usage=None,
+    )
 
-    mock_client = AsyncMock()
-    mock_client.__aenter__.return_value = mock_client
-    mock_client.post.return_value = MockResponse(llm_response_json, status_code=200)
-
-    with patch("httpx.AsyncClient", return_value=mock_client), patch.dict(
-        "os.environ", {"OPENAI_API_KEY": "test-key"}
-    ):
+    with patch("app.services.respondent_generator.get_llm_gateway", return_value=mock_gateway):
         respondents = asyncio.run(generate_respondents_from_llm(mock_persona, 1))
         assert len(respondents) == 1
         assert respondents[0]["name"] == "Nguyen Van A"
@@ -96,16 +96,41 @@ def test_generate_respondents_from_llm_success(mock_persona):
         assert respondents[0]["decision_rules"] == ["Must be free"]
 
 
-def test_generate_respondents_fallback_on_llm_error(mock_persona):
-    mock_client = AsyncMock()
-    mock_client.__aenter__.return_value = mock_client
-    mock_client.post.side_effect = Exception("API Timeout")
+def test_generate_respondents_propagates_llm_error(mock_persona):
+    mock_gateway = AsyncMock()
+    mock_gateway.generate_structured.side_effect = Exception("API Timeout")
 
-    with patch("httpx.AsyncClient", return_value=mock_client), patch.dict(
-        "os.environ", {"OPENROUTER_API_KEY": "test-key"}
-    ):
-        # Even if LLM fails, generate_respondents should handle it and return mock respondents
-        respondents = asyncio.run(generate_respondents(mock_persona, 2))
-        assert len(respondents) == 2
-        assert respondents[0]["persona_id"] == mock_persona.id
+    with patch("app.services.respondent_generator.get_llm_gateway", return_value=mock_gateway):
+        with pytest.raises(Exception, match="API Timeout"):
+            asyncio.run(generate_respondents(mock_persona, 2))
 
+
+def test_generate_respondents_rejects_wrong_count(mock_persona):
+    mock_gateway = AsyncMock()
+    mock_gateway.generate_structured.return_value = LLMExecutionResult(
+        parsed=RespondentGenerationOutput(
+            respondents=[
+                RespondentOutput(
+                    name="Nguyen Van A",
+                    age=20,
+                    location="Hanoi, Vietnam",
+                    budget="Low",
+                    motivation="Practice for graduation",
+                    tech_savviness="High",
+                    risk_attitude="Neutral",
+                    channel="TikTok",
+                    decision_rules=["Must be free"],
+                )
+            ]
+        ),
+        request_payload={"task_name": "respondent_generation"},
+        raw_response={"choices": []},
+        parsed_output={"respondents": [{"name": "Nguyen Van A"}]},
+        provider="openai",
+        model_alias="respondent-generator",
+        resolved_model="openai/gpt-4o-mini",
+        usage=None,
+    )
+    with patch("app.services.respondent_generator.get_llm_gateway", return_value=mock_gateway):
+        with pytest.raises(RuntimeError, match="expected 2"):
+            asyncio.run(generate_respondents(mock_persona, 2))

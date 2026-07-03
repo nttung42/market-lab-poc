@@ -10,11 +10,11 @@ setup:
 
 start-backend:
 	@echo "Starting backend server..."
-	./app/backend/.venv/Scripts/uvicorn app.main:app --app-dir app/backend --reload --port 8000 --host 127.0.0.1
+	./app/backend/.venv/Scripts/uvicorn app.main:app --app-dir app/backend --reload --port 8000 --host 0.0.0.0
 
 start-frontend:
 	@echo "Starting frontend dev server..."
-	cd app/frontend && npm run dev
+	cd app/frontend && npm run dev -- --host 0.0.0.0
 
 test:
 	@echo "Running backend tests..."

@@ -2,8 +2,12 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from unittest.mock import AsyncMock, patch
+from app.config import LLMConfigurationError
 from app.db.database import Base, get_db
 from app.models import models
+from app.infra.ai.gateway import LLMExecutionResult
+from app.infra.ai.schemas import RespondentGenerationOutput, RespondentOutput, StudyAnswerOutput
 from app.main import app
 from app.seeds.seed import seed_db
 from app.schemas.schemas import ProjectCreate, PersonaCreate
@@ -35,14 +39,12 @@ app.dependency_overrides[get_db] = override_get_db
 
 @pytest.fixture(scope="module", autouse=True)
 def setup_test_db():
-    # Create tables
+    Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
-    # Seed database
     seed_db(db)
     db.close()
     yield
-    # Drop tables after tests
     Base.metadata.drop_all(bind=engine)
 
 
@@ -160,11 +162,41 @@ def test_required_field_validation():
 
 
 def test_generate_respondents_success():
-    # Call generate endpoint with 2 respondents per persona
-    response = client.post(
-        "/api/projects/english-learning-app-poc/respondents/generate",
-        json={"count_per_persona": 2}
-    )
+    async def fake_execution(persona, count):
+        respondents = [
+            RespondentOutput(
+                name=f"{persona.name} Respondent {idx}",
+                age=20 + idx,
+                location="Hanoi, Vietnam",
+                budget="Medium",
+                motivation="Practice speaking",
+                tech_savviness="High",
+                risk_attitude="Neutral",
+                channel=persona.channels[0] if persona.channels else "TikTok",
+                decision_rules=["Rule 1", "Rule 2", "Rule 3"],
+            )
+            for idx in range(count)
+        ]
+        return LLMExecutionResult(
+            parsed=RespondentGenerationOutput(respondents=respondents),
+            request_payload={"task_name": "respondent_generation"},
+            raw_response={"choices": []},
+            parsed_output={"respondents": [r.model_dump() for r in respondents]},
+            provider="openai",
+            model_alias="respondent-generator",
+            resolved_model="openai/gpt-4o-mini",
+            usage={"total_tokens": 10},
+        )
+
+    with patch(
+        "app.features.respondents.service.generate_respondents_execution",
+        new=AsyncMock(side_effect=fake_execution),
+    ):
+        response = client.post(
+            "/api/projects/english-learning-app-poc/respondents/generate",
+            json={"count_per_persona": 2}
+        )
+
     assert response.status_code == 200
     data = response.json()
     # 3 personas * 2 respondents each = 6 respondents total
@@ -184,6 +216,34 @@ def test_generate_respondents_success():
         assert r["channel"] is not None
         assert isinstance(r["decision_rules"], list)
 
+    db = TestingSessionLocal()
+    try:
+        ai_runs = db.query(models.AIRun).filter(
+            models.AIRun.task_type == "respondent_generation"
+        ).all()
+        assert len(ai_runs) == 3
+        assert all(run.status == "completed" for run in ai_runs)
+    finally:
+        db.close()
+
+
+def test_generate_respondents_requires_llm_config():
+    with patch(
+        "app.features.respondents.service.generate_respondents_execution",
+        new=AsyncMock(
+            side_effect=LLMConfigurationError(
+                "No API key configured for alias 'respondent-generator'. Set one of: "
+                "LLM_ALIAS_RESPONDENT_GENERATOR_API_KEY, GROQ_API_KEY."
+            )
+        ),
+    ):
+        response = client.post(
+            "/api/projects/english-learning-app-poc/respondents/generate",
+            json={"count_per_persona": 2}
+        )
+    assert response.status_code == 503
+    assert "respondent-generator" in response.json()["detail"]
+
 
 def test_get_respondents_success():
     # Make sure we can retrieve the generated respondents
@@ -191,6 +251,63 @@ def test_get_respondents_success():
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 6
+
+
+def test_run_study_success():
+    async def fake_answer_execution(respondent, persona, question, project_desc):
+        if question.type == "likert":
+            answer = "4"
+        elif question.type == "single_choice":
+            answer = question.options[0].value
+        else:
+            answer = "Synthetic concern about price transparency."
+
+        parsed = StudyAnswerOutput(answer=answer)
+        return LLMExecutionResult(
+            parsed=parsed,
+            request_payload={"task_name": "study_simulation"},
+            raw_response={"choices": []},
+            parsed_output={"answer": answer, "response_id": f"{respondent.id}-{question.id}"},
+            provider="openai",
+            model_alias="study-simulator",
+            resolved_model="openai/gpt-4o-mini",
+            usage={"total_tokens": 5},
+        )
+
+    with patch(
+        "app.features.studies.service.simulate_respondent_answer_execution",
+        new=AsyncMock(side_effect=fake_answer_execution),
+    ):
+        response = client.post(
+            "/api/studies/study-concept-test/run",
+            json={"persona_ids": []},
+        )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 18
+
+    db = TestingSessionLocal()
+    try:
+        study = db.query(models.Study).filter(models.Study.id == "study-concept-test").first()
+        assert study.status == "completed"
+        ai_run = db.query(models.AIRun).filter(
+            models.AIRun.task_type == "study_simulation",
+            models.AIRun.study_id == "study-concept-test",
+        ).order_by(models.AIRun.created_at.desc()).first()
+        assert ai_run is not None
+        assert ai_run.status == "completed"
+    finally:
+        db.close()
+
+
+def test_get_study_results_success():
+    response = client.get("/api/studies/study-concept-test/results")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["study_id"] == "study-concept-test"
+    assert data["total_respondents"] == 6
+    assert len(data["quantitative"]) == 3
 
 
 def test_generate_respondents_project_not_found():
@@ -296,5 +413,3 @@ def test_project_crud():
     # 6. Delete Project
     response = client.delete(f"/api/projects/{project['id']}")
     assert response.status_code == 200
-
-

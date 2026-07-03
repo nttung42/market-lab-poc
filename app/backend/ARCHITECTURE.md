@@ -98,3 +98,50 @@ Persona records must include stable ID, project ID, name, segment label, quote, 
 - Source: Phase 1 OpenSpec, `docs/start/README.md`, and `docs/start/tech-stack.md`.
 - Applies when: implementing backend behavior.
 - Expires when: superseding specs replace these rules.
+
+## Backend Module Shape
+
+Use feature-oriented backend modules for non-trivial flows:
+
+- `features/<feature>/router.py` or shared route registration for HTTP transport only.
+- `features/<feature>/service.py` for orchestration and business rules.
+- `features/<feature>/repository.py` for persistence helpers.
+- `infra/ai/*` for provider adapters, prompt builders, AI schemas, and telemetry.
+- `core/*` for config, shared errors, and backend-wide primitives.
+
+- Source: `openspec/changes/refactor-backend-feature-ai-architecture/`.
+- Applies when: refactoring or extending backend workflows.
+- Expires when: the backend adopts a different modular boundary.
+
+## AI Alias Pattern
+
+Feature services must call the backend AI gateway using stable internal aliases such as:
+
+- `respondent-generator`
+- `study-simulator`
+
+Provider model names belong in backend config, not in feature logic. The current backend standard uses Groq with env vars shaped like:
+
+```text
+GROQ_API_KEY
+LLM_ALIAS_RESPONDENT_GENERATOR_PROVIDER
+LLM_ALIAS_RESPONDENT_GENERATOR_MODEL
+LLM_ALIAS_STUDY_SIMULATOR_PROVIDER
+LLM_ALIAS_STUDY_SIMULATOR_MODEL
+```
+
+Example:
+
+```text
+GROQ_API_KEY
+LLM_ALIAS_RESPONDENT_GENERATOR_PROVIDER=groq
+LLM_ALIAS_RESPONDENT_GENERATOR_MODEL=openai/gpt-oss-120b
+LLM_ALIAS_STUDY_SIMULATOR_PROVIDER=groq
+LLM_ALIAS_STUDY_SIMULATOR_MODEL=openai/gpt-oss-120b
+```
+
+This keeps provider swaps scoped to infrastructure/config changes instead of feature rewrites.
+
+- Source: `openspec/changes/refactor-backend-feature-ai-architecture/`.
+- Applies when: adding or changing AI-backed backend workflows.
+- Expires when: backend AI orchestration is redesigned.

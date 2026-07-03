@@ -192,3 +192,28 @@ class StudyResults(BaseModel):
     recommendations: List[RecommendationItem]
 
 
+class AIRunBase(BaseModel):
+    task_type: str
+    status: str
+    model_alias: str
+    provider: str
+    resolved_model: str
+    project_id: Optional[str] = None
+    study_id: Optional[str] = None
+    persona_id: Optional[str] = None
+    request_payload: Optional[Dict[str, Any]] = None
+    raw_response: Optional[Dict[str, Any]] = None
+    parsed_output: Optional[Dict[str, Any]] = None
+    usage: Optional[Dict[str, Any]] = None
+    error_detail: Optional[str] = None
+    created_at: str
+    started_at: Optional[str] = None
+    completed_at: Optional[str] = None
+
+
+class AIRun(AIRunBase):
+    id: str
+
+    class Config:
+        from_attributes = True
+

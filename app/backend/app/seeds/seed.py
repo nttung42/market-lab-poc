@@ -292,35 +292,8 @@ def seed_db(db: Session):
             db.commit()
             print(f"Persona {p_data['id']} updated with seed data.")
 
-    # Idempotent Respondent Seeding
-    from app.models.models import Respondent, Study, Question, QuestionOption, Response
-    existing_respondents = db.query(Respondent).filter(Respondent.project_id == project_id).all()
-    if not existing_respondents:
-        from app.services.respondent_generator import generate_mock_respondents
-        personas = db.query(Persona).filter(Persona.project_id == project_id).all()
-        for persona in personas:
-            # Generate 5 respondents per persona for seed
-            generated = generate_mock_respondents(persona, 5)
-            for r_data in generated:
-                db_resp = Respondent(
-                    id=r_data["id"],
-                    persona_id=r_data["persona_id"],
-                    project_id=r_data["project_id"],
-                    name=r_data["name"],
-                    age=r_data["age"],
-                    location=r_data["location"],
-                    budget=r_data["budget"],
-                    motivation=r_data["motivation"],
-                    tech_savviness=r_data["tech_savviness"],
-                    risk_attitude=r_data["risk_attitude"],
-                    channel=r_data["channel"],
-                    decision_rules=r_data["decision_rules"]
-                )
-                db.add(db_resp)
-        db.commit()
-        print("Seeded 15 synthetic respondents.")
-
     # Idempotent Study Seeding
+    from app.models.models import Study, Question, QuestionOption
     study_id = "study-concept-test"
     existing_study = db.query(Study).filter(Study.id == study_id).first()
     if not existing_study:
@@ -328,7 +301,7 @@ def seed_db(db: Session):
             id=study_id,
             project_id=project_id,
             title="Initial Value Proposition Concept Test",
-            status="completed",
+            status="draft",
             created_at=datetime.utcnow().isoformat()
         )
         db.add(study)
@@ -375,29 +348,4 @@ def seed_db(db: Session):
                 position=idx
             ))
         db.commit()
-
-        # Seed responses for all seeded respondents
-        from app.services.study_simulator import generate_mock_answer
-        db_respondents = db.query(Respondent).filter(Respondent.project_id == project_id).all()
-        db_personas = db.query(Persona).filter(Persona.project_id == project_id).all()
-        personas_dict = {p.id: p for p in db_personas}
-        db_questions = [q1, q2, q3]
-
-        # Fetch questions with loaded options relation
-        db_questions = db.query(Question).filter(Question.study_id == study_id).all()
-
-        import uuid
-        for resp in db_respondents:
-            p_obj = personas_dict[resp.persona_id]
-            for q in db_questions:
-                ans = generate_mock_answer(resp, p_obj, q)
-                db.add(Response(
-                    id=f"resp-ans-{uuid.uuid4().hex[:8]}",
-                    study_id=study_id,
-                    respondent_id=resp.id,
-                    question_id=q.id,
-                    answer=ans
-                ))
-        db.commit()
-        print("Seeded survey questions and study responses.")
-
+        print("Seeded study definition without synthetic respondents or responses.")

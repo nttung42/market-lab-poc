@@ -1,6 +1,8 @@
 import type { Project, Persona, Respondent, Study, Question, StudyResults } from '../types';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || (typeof window !== 'undefined'
+  ? `${window.location.protocol}//${window.location.hostname}:8000/api`
+  : 'http://localhost:8000/api');
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
