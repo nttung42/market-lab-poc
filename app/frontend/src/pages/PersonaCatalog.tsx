@@ -47,73 +47,116 @@ const personaTabs: { id: PersonaTab; label: string; note?: string }[] = [
 ];
 
 const personaCreationOptions: {
-  id: PersonaTab;
+  id: Exclude<PersonaTab, 'overview'>;
   eyebrow: string;
-  tone: 'blue' | 'red' | 'ink';
   title: string;
+  subtitle: string;
   description: string;
-  action: string;
+  badgeClass: string;
+  iconClass: string;
   icon: React.ReactNode;
+  learnMore: {
+    sourceLabel: string;
+    sourceItems: string[];
+    purpose: string;
+    exampleOutput: string;
+    features?: string[];
+    note?: string;
+  };
 }[] = [
   {
     id: 'research',
-    eyebrow: 'User Personas',
-    tone: 'blue',
-    title: 'Audience Persona',
+    eyebrow: '1. Research Persona',
+    title: 'Persona from External & Market Data',
+    subtitle: 'Research from surveys, interviews, reports, social listening, and public signals.',
     description:
-      'Start from a target audience, segment, or use case and turn it into a structured synthetic persona for message testing.',
-    action: 'Try for free',
-    icon: <User size={26} />,
-  },
-  {
-    id: 'research',
-    eyebrow: 'User Personas',
-    tone: 'blue',
-    title: 'Research Persona',
-    description:
-      'Describe your user segments, paste research notes, and create a read-only synthetic research profile.',
-    action: 'Learn more',
-    icon: <Sparkles size={26} />,
-  },
-  {
-    id: 'buyer',
-    eyebrow: 'Buyer Personas',
-    tone: 'red',
-    title: 'Customer Persona',
-    description:
-      'Mock a customer profile from CRM-style signals, order behavior, decision rules, and purchase objections.',
-    action: 'Learn more',
-    icon: <ShoppingBag size={26} />,
+      'Use when internal data is limited and you need to understand potential audiences, pain points, trends, motivations, and messaging hooks.',
+    badgeClass: 'bg-ml-blue text-white',
+    iconClass: 'bg-ml-blue-soft text-ml-blue',
+    icon: <Search size={26} />,
+    learnMore: {
+      sourceLabel: 'Data Sources',
+      sourceItems: [
+        'Surveys, interviews, market reports, and social media data',
+        'Hashtags, trends, online reviews, and public data',
+        'Target audience descriptions and research notes',
+      ],
+      purpose:
+        'Helps the team understand potential customers, pain points, behavioral trends, and initial messaging angles to test.',
+      exampleOutput:
+        "Example: 'Gen Z Urban Food Explorer' with core pain points, motivations, channels, and buying cues.",
+    },
   },
   {
     id: 'buyer',
-    eyebrow: 'Buyer Personas',
-    tone: 'red',
-    title: 'Social Persona',
+    eyebrow: '2. Buyer Persona',
+    title: 'Persona from Real Business Data',
+    subtitle: 'Buyer view from CRM, sales, analytics, feedback, and purchase behavior.',
     description:
-      'Map social audience behavior, channels, content interests, and community signals for positioning work.',
-    action: 'Learn more',
-    icon: <MessageCircle size={26} />,
+      'Use when first-party data is available to understand revenue-generating customers, high-value cohorts, or highly convertible segments.',
+    badgeClass: 'bg-ml-success text-white',
+    iconClass: 'bg-emerald-50 text-ml-success',
+    icon: <BriefcaseBusiness size={26} />,
+    learnMore: {
+      sourceLabel: 'Data Sources',
+      sourceItems: [
+        'CRM, CSV, sales data, and purchase history',
+        'Google Analytics, website behavior, and campaign data',
+        'Customer feedback, retention signals, and conversion notes',
+      ],
+      purpose:
+        'Helps the team understand existing customers, high-value cohorts, repurchase behavior, and real-world conversion barriers.',
+      exampleOutput:
+        "Example: 'Repeat Office Buyer' with purchase habits, trust drivers, loyalty opportunities, and core objections.",
+    },
   },
   {
     id: 'hybrid',
-    eyebrow: 'Hybrid Personas',
-    tone: 'blue',
-    title: 'Website Persona',
+    eyebrow: '3. Hybrid Persona',
+    title: 'Combine & Reconcile Research and Buyer',
+    subtitle: 'Combine market signals and business signals for more reliable personas.',
     description:
-      'Combine website intent, search behavior, and product-fit assumptions into a practical persona draft.',
-    action: 'Try for free',
-    icon: <Globe2 size={26} />,
+      'Use to cross-reference market insights with internal data to build more practical personas for synthetic research.',
+    badgeClass: 'bg-violet-500 text-white',
+    iconClass: 'bg-violet-50 text-violet-600',
+    icon: <Zap size={26} />,
+    learnMore: {
+      sourceLabel: 'Data Sources',
+      sourceItems: [
+        'Combine all sources from Research and Buyer Personas',
+        'Compare market assumptions with business evidence',
+        'Reconcile potential segments with current customer signals',
+      ],
+      purpose:
+        'Creates more reliable, less subjective personas suitable for comparing insights before building digital twins or running message tests.',
+      exampleOutput:
+        "Example: Compare 'Gen Z potential segment' with 'Office women current sales evidence' to identify overlaps and gaps.",
+      features: ['Insight check', 'Comparison table', 'Confidence score', 'Validate options'],
+    },
   },
   {
     id: 'competitor',
-    eyebrow: 'Coming Soon',
-    tone: 'ink',
-    title: 'Competitor Persona',
+    eyebrow: '4. Competitor Persona',
+    title: 'Competitor Analysis',
+    subtitle: 'Optional layer to understand who competitors are targeting and what they are saying.',
     description:
-      'Prepare a competitor-domain workflow for target persona, keyword, and marketing strategy discovery.',
-    action: 'Preview',
+      'Use to analyze competitors via domains, SEO, content, and pricing signals to discover market gaps and positioning opportunities.',
+    badgeClass: 'bg-zinc-500 text-white',
+    iconClass: 'bg-zinc-100 text-zinc-600',
     icon: <Compass size={26} />,
+    learnMore: {
+      sourceLabel: 'Data Sources',
+      sourceItems: [
+        'Competitor domains, social presence, and SEO keywords',
+        'Landing pages, content structure, and pricing pages',
+        'Messaging angles, offer patterns, and audience cues',
+      ],
+      purpose:
+        'Helps the team identify who competitors are targeting, which insights they emphasize, and which market gaps remain unclaimed.',
+      exampleOutput:
+        'Output is a competitor-facing persona hypothesis for strategic reference, not intended as the core feature of the workflow.',
+      note: 'Optional: suitable as an extra reference layer, not the central module of the persona workflow.',
+    },
   },
 ];
 
@@ -308,58 +351,173 @@ const PersonaSubNav: React.FC<{
   </div>
 );
 
-const PersonaOverview: React.FC<{ onSelect: (tab: PersonaTab) => void }> = ({ onSelect }) => (
-  <div className="space-y-8">
-    <div className="pt-3">
-      <div className="text-xs font-black uppercase tracking-[0.18em] text-ml-blue">
-        Personas & Segments
-      </div>
-      <h1 className="mt-4 text-[28px] md:text-[40px] font-black tracking-normal leading-tight text-ml-ink">
-        Create or upload personas
-      </h1>
-      <p className="mt-4 text-base font-semibold text-ml-ink-muted">
-        Generate user, buyer, competitor, and hybrid personas as synthetic assumptions for human validation.
-      </p>
-    </div>
+interface PersonaOverviewProps {
+  onSelect: (tab: PersonaTab) => void;
+}
 
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-      {personaCreationOptions.map((option) => {
-        const toneClass =
-          option.tone === 'red'
-            ? 'bg-ml-danger/10 text-ml-danger'
-            : option.tone === 'ink'
-              ? 'bg-ml-surface text-ml-ink-muted'
-              : 'bg-ml-blue-soft text-ml-blue-strong';
-        return (
-          <article
-            key={`${option.title}-${option.id}`}
-            className="bg-white border border-ml-border rounded-lg p-6 min-h-[300px] flex flex-col"
-          >
-            <span className={`self-start rounded-full px-4 py-2 text-xs font-black uppercase tracking-wide ${toneClass}`}>
-              {option.eyebrow}
-            </span>
-            <div className="mt-6 flex items-center gap-4">
-              <div className="h-11 w-11 rounded-md bg-ml-blue-soft text-ml-blue flex items-center justify-center shrink-0">
-                {option.icon}
+const PersonaOverview: React.FC<PersonaOverviewProps> = ({ onSelect }) => {
+  const [selectedCard, setSelectedCard] = useState<Exclude<PersonaTab, 'overview'>>('research');
+
+  const selectedOption = personaCreationOptions.find((option) => option.id === selectedCard) || personaCreationOptions[0];
+
+  return (
+    <div className="space-y-8">
+      <div className="pt-3">
+        <div className="text-xs font-black uppercase tracking-[0.18em] text-ml-blue">
+          Persona Framework
+        </div>
+        <h1 className="mt-4 text-[28px] md:text-[40px] font-black tracking-normal leading-tight text-ml-ink">
+          4 persona types for synthetic research
+        </h1>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+        {personaCreationOptions.map((option) => {
+          const isSelected = selectedCard === option.id;
+          return (
+            <article
+              key={`${option.title}-${option.id}`}
+              role="button"
+              tabIndex={0}
+              onClick={() => setSelectedCard(option.id)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setSelectedCard(option.id);
+                }
+              }}
+              className={`bg-white border rounded-lg p-5 min-h-[300px] flex flex-col cursor-pointer select-none transition-all duration-200 outline-none hover:-translate-y-1 hover:shadow-md ${
+                isSelected
+                  ? 'border-ml-blue shadow-md bg-ml-blue-soft/10 ring-2 ring-ml-blue/10'
+                  : 'border-ml-border hover:border-ml-blue/40'
+              }`}
+            >
+              <span className={`self-start rounded-md px-3 py-2 text-xs font-black uppercase tracking-wide ${option.badgeClass}`}>
+                {option.eyebrow}
+              </span>
+              <div className="mt-5 flex items-start gap-4">
+                <div className={`h-11 w-11 rounded-md flex items-center justify-center shrink-0 ${option.iconClass}`}>
+                  {option.icon}
+                </div>
+                <div>
+                  <h2 className="text-lg font-black text-ml-ink leading-tight">{option.title}</h2>
+                  <p className="mt-2 text-xs font-bold uppercase tracking-wide text-ml-ink-muted">
+                    {option.subtitle}
+                  </p>
+                </div>
               </div>
-              <h2 className="text-xl font-black text-ml-ink leading-tight">{option.title}</h2>
+              <p className="mt-4 text-sm leading-relaxed font-medium text-ml-ink">
+                {option.description}
+              </p>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedCard(option.id);
+                }}
+                className={`mt-auto h-11 w-full rounded-md border text-sm font-black transition-colors ${
+                  isSelected
+                    ? 'border-ml-blue bg-ml-blue text-white'
+                    : 'border-ml-border bg-white text-ml-blue hover:border-ml-blue/30 hover:bg-ml-blue-soft/30'
+                }`}
+              >
+                Learn more
+              </button>
+            </article>
+          );
+        })}
+      </div>
+
+      <section className="rounded-lg border border-ml-border bg-white p-6 md:p-7">
+        <div className="flex flex-col gap-4 border-b border-ml-border pb-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-start gap-4">
+            <div className={`h-12 w-12 rounded-md flex items-center justify-center shrink-0 ${selectedOption.iconClass}`}>
+              {selectedOption.icon}
             </div>
-            <p className="mt-5 text-sm leading-relaxed font-medium text-ml-ink">
-              {option.description}
-            </p>
+            <div>
+              <div className={`inline-flex rounded-md px-3 py-1.5 text-[10px] font-black uppercase tracking-wide ${selectedOption.badgeClass}`}>
+                {selectedOption.eyebrow}
+              </div>
+              <h2 className="mt-3 text-2xl font-black text-ml-ink">{selectedOption.title}</h2>
+              <p className="mt-2 max-w-3xl text-sm font-medium leading-6 text-ml-ink-muted">
+                {selectedOption.subtitle}
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+            <div className="rounded-lg border border-ml-blue/20 bg-ml-blue-soft/50 px-4 py-3 text-xs font-bold leading-5 text-ml-blue max-w-xs">
+              Use the tabs above to enter the detailed workspace for each persona type.
+            </div>
             <button
               type="button"
-              onClick={() => onSelect(option.id)}
-              className="mt-auto h-11 w-full rounded-md bg-ml-blue hover:bg-ml-blue-strong text-white text-sm font-black transition-colors"
+              onClick={() => onSelect(selectedCard)}
+              className="h-11 px-5 rounded-md bg-ml-blue hover:bg-ml-blue-strong text-white text-xs font-black uppercase tracking-wide transition-colors flex items-center justify-center gap-2"
             >
-              {option.action}
+              <span>Open Workspace</span>
+              <ExternalLink size={14} />
             </button>
-          </article>
-        );
-      })}
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-5 lg:grid-cols-[1.1fr_1fr]">
+          <div className="space-y-5">
+            <div className="rounded-lg border border-ml-border bg-ml-surface/40 p-4">
+              <div className="text-[10px] font-black uppercase tracking-wide text-ml-ink-muted">
+                {selectedOption.learnMore.sourceLabel}
+              </div>
+              <ul className="mt-3 space-y-2">
+                {selectedOption.learnMore.sourceItems.map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm font-medium leading-6 text-ml-ink">
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ml-blue" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {selectedOption.learnMore.features && (
+              <div className="rounded-lg border border-ml-border bg-white p-4">
+                <div className="text-[10px] font-black uppercase tracking-wide text-ml-ink-muted">Features</div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {selectedOption.learnMore.features.map((feature) => (
+                    <span
+                      key={feature}
+                      className="rounded-md border border-ml-border bg-ml-surface px-2.5 py-1 text-[11px] font-bold text-ml-ink"
+                    >
+                      {feature}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-4">
+            <div className="rounded-lg border border-ml-border bg-white p-4">
+              <div className="text-[10px] font-black uppercase tracking-wide text-ml-ink-muted">Purpose</div>
+              <p className="mt-3 text-sm font-medium leading-6 text-ml-ink">
+                {selectedOption.learnMore.purpose}
+              </p>
+            </div>
+
+            <div className="rounded-lg border border-ml-border bg-white p-4">
+              <div className="text-[10px] font-black uppercase tracking-wide text-ml-ink-muted">Example Output</div>
+              <p className="mt-3 text-sm font-medium leading-6 text-ml-ink">
+                {selectedOption.learnMore.exampleOutput}
+              </p>
+            </div>
+
+            {selectedOption.learnMore.note && (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm font-medium leading-6 text-ml-warning">
+                {selectedOption.learnMore.note}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
     </div>
-  </div>
-);
+  );
+};
 
 const PersonaMockPanel: React.FC<{
   title: string;

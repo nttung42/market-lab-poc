@@ -16,7 +16,9 @@ import {
   Smile,
   Target,
   UsersRound,
+  X,
 } from 'lucide-react';
+import { useState } from 'react';
 
 interface LandingPageProps {
   onStart: () => void;
@@ -31,7 +33,6 @@ interface IconCard {
 const navItems = [
   { label: 'Tính năng', href: '#tinhnang' },
   { label: 'Quy trình', href: '#quytrinh' },
-  { label: 'Khoa học', href: '#khoahoc' },
   { label: 'Đánh giá', href: '#danhgia' },
   { label: 'FAQ', href: '#faq' },
 ];
@@ -157,29 +158,6 @@ const testimonials = [
   },
 ];
 
-const scienceCards = [
-  {
-    value: '94%',
-    title: 'Độ tương quan',
-    body: 'So sánh với nghiên cứu thực tế cho thấy AI Persona phản hồi gần 94% tương đồng với người thật trong cùng phân khúc.',
-  },
-  {
-    value: '1.000+',
-    title: 'Mô phỏng/ngày',
-    body: 'Kiến trúc agent phân tán cho phép chạy hàng nghìn simulation song song mà không mất độ chính xác hay hiệu suất.',
-  },
-  {
-    value: 'Peer-reviewed',
-    title: 'Research',
-    body: 'Phương pháp được kiểm chứng qua các công bố khoa học về Generative Agent Simulation và Synthetic User behavior.',
-  },
-  {
-    value: 'Liên tục',
-    title: 'Học hỏi & Cải tiến',
-    body: 'Mô hình được cập nhật định kỳ từ dữ liệu thực tế mới, đảm bảo persona luôn phản ánh hành vi người tiêu dùng hiện tại.',
-  },
-];
-
 const faqs = [
   {
     question: 'Market Lab có khác gì so với khảo sát truyền thống?',
@@ -228,15 +206,22 @@ const footerGroups = [
   { title: 'Công ty', links: ['Về chúng tôi', 'FAQ', 'Liên hệ', 'Tuyển dụng'] },
 ];
 
+const BrandMark = ({ inverted = false }: { inverted?: boolean }) => (
+  <span className="font-black text-xl leading-none tracking-tight">
+    <span className="text-ml-blue">MARKET</span>
+    <span className={inverted ? 'text-white' : 'text-ml-ink'}>LAB</span>
+  </span>
+);
+
 const SectionHeader = ({ eyebrow, title, body }: { eyebrow?: string; title: string; body?: string }) => (
   <div className="mx-auto mb-12 max-w-3xl text-center">
     {eyebrow && (
-      <span className="mb-4 inline-flex rounded-full bg-ml-blue-soft px-4 py-1.5 text-xs font-black uppercase text-ml-blue-strong">
+      <span className="mb-4 inline-flex rounded-full bg-ml-blue-soft px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-ml-blue-strong">
         {eyebrow}
       </span>
     )}
-    <h2 className="text-3xl font-black leading-tight text-ml-ink md:text-[38px]">{title}</h2>
-    {body && <p className="mt-4 text-base font-semibold leading-7 text-ml-ink-muted">{body}</p>}
+    <h2 className="text-2xl font-black leading-tight tracking-normal text-ml-ink md:text-[32px]">{title}</h2>
+    {body && <p className="mt-4 text-base font-medium leading-7 text-ml-ink-muted">{body}</p>}
   </div>
 );
 
@@ -250,19 +235,42 @@ const IconCardView = ({ title, body, icon: Icon }: IconCard) => (
   </article>
 );
 
+const GoogleLogo = () => (
+  <svg aria-hidden="true" className="h-5 w-5 shrink-0" viewBox="0 0 24 24">
+    <path
+      d="M21.805 12.227c0-.764-.068-1.497-.195-2.197H12v4.158h5.49a4.697 4.697 0 0 1-2.037 3.084v2.561h3.3c1.931-1.779 3.052-4.402 3.052-7.606Z"
+      fill="#4285F4"
+    />
+    <path
+      d="M12 22c2.754 0 5.062-.912 6.75-2.467l-3.3-2.561c-.913.612-2.08.975-3.45.975-2.649 0-4.893-1.789-5.694-4.192H2.894v2.642A9.999 9.999 0 0 0 12 22Z"
+      fill="#34A853"
+    />
+    <path
+      d="M6.306 13.755A5.996 5.996 0 0 1 5.988 12c0-.609.105-1.201.318-1.755V7.603H2.894A9.999 9.999 0 0 0 2 12c0 1.61.385 3.135 1.066 4.397l3.24-2.642Z"
+      fill="#FBBC05"
+    />
+    <path
+      d="M12 6.053c1.498 0 2.844.515 3.904 1.526l2.928-2.928C17.058 2.999 14.75 2 12 2a9.999 9.999 0 0 0-9.106 5.603l3.412 2.642C7.107 7.842 9.351 6.053 12 6.053Z"
+      fill="#EA4335"
+    />
+  </svg>
+);
+
 export const LandingPage = ({ onStart }: LandingPageProps) => {
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-white text-ml-ink selection:bg-ml-blue-soft selection:text-ml-blue-strong">
+    <div className="min-h-screen bg-white font-sans text-ml-ink selection:bg-ml-blue-soft selection:text-ml-blue-strong">
       <header className="sticky top-0 z-40 border-b border-ml-border bg-white/95 backdrop-blur">
         <div className="mx-auto flex h-[70px] max-w-7xl items-center justify-between px-5 md:px-8">
-          <a href="#/landing" className="flex items-center gap-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-ml-blue focus:ring-offset-2">
+          <a href="/landing" className="flex items-center gap-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-ml-blue focus:ring-offset-2">
             <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-ml-blue text-white">
               <FlaskConical size={22} strokeWidth={2.4} />
             </span>
-            <span className="text-xl font-black leading-none">Market Lab</span>
+            <BrandMark />
           </a>
 
-          <nav className="hidden items-center gap-8 text-sm font-black text-ml-ink-muted md:flex">
+          <nav className="hidden items-center gap-8 text-sm font-bold text-ml-ink-muted md:flex">
             {navItems.map((item) => (
               <a key={item.href} href={item.href} className="transition-colors hover:text-ml-blue">
                 {item.label}
@@ -273,15 +281,15 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={onStart}
-              className="hidden rounded-lg px-3 py-2 text-sm font-black text-ml-ink transition-colors hover:bg-ml-surface sm:inline-flex"
+              onClick={() => setIsLoginOpen(true)}
+              className="hidden rounded-lg px-3 py-2 text-sm font-bold text-ml-ink transition-colors hover:bg-ml-surface sm:inline-flex"
             >
               Đăng nhập
             </button>
             <button
               type="button"
               onClick={onStart}
-              className="rounded-lg bg-ml-blue px-4 py-3 text-sm font-black text-white shadow-sm transition-colors hover:bg-ml-blue-strong sm:px-5"
+              className="rounded-lg bg-ml-blue px-4 py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-ml-blue-strong sm:px-5"
             >
               Dùng thử miễn phí
             </button>
@@ -291,20 +299,20 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
 
       <main>
         <section className="mx-auto max-w-7xl px-5 pb-16 pt-20 text-center md:px-8 md:pt-24">
-          <div className="inline-flex items-center gap-2 rounded-full bg-ml-blue-soft px-5 py-2 text-sm font-black text-ml-blue-strong">
+          <div className="inline-flex items-center gap-2 rounded-full bg-ml-blue-soft px-5 py-2 text-sm font-bold text-ml-blue-strong">
             <span className="h-2 w-2 rounded-full bg-ml-blue" aria-hidden="true" />
             Được tinh chỉnh tối ưu cho Văn hóa &amp; Hành vi người Việt
           </div>
 
-          <h1 className="mx-auto mt-7 max-w-5xl text-[42px] font-black leading-[1.04] tracking-normal text-ml-ink md:text-[64px]">
+          <h1 className="mx-auto mt-7 max-w-4xl text-[30px] font-black leading-tight tracking-normal text-ml-ink md:text-[40px]">
             Mô phỏng khách hàng Việt.
             <br />
             <span className="italic text-ml-blue">Thử nghiệm quyết định</span> trước khi tung sản phẩm.
           </h1>
 
-          <p className="mx-auto mt-7 max-w-[720px] text-lg font-semibold leading-8 text-ml-ink-muted">
+          <p className="mx-auto mt-7 max-w-[720px] text-base font-medium leading-7 text-ml-ink-muted">
             Đừng phỏng đoán phản ứng của thị trường. Hãy hỏi các{' '}
-            <strong className="font-black text-ml-ink">AI Persona siêu thực</strong> được huấn luyện dựa trên dữ liệu văn hóa, thu nhập,
+            <strong className="font-bold text-ml-ink">AI Persona siêu thực</strong> được huấn luyện dựa trên dữ liệu văn hóa, thu nhập,
             thói quen tiêu dùng của người Việt từ cả 3 miền Bắc - Trung - Nam.
           </p>
 
@@ -312,25 +320,22 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
             <button
               type="button"
               onClick={onStart}
-              className="inline-flex min-h-14 items-center justify-center rounded-lg bg-ml-blue px-8 text-base font-black text-white shadow-sm transition-colors hover:bg-ml-blue-strong"
+              className="inline-flex min-h-14 items-center justify-center rounded-lg bg-ml-blue px-8 text-base font-bold text-white shadow-sm transition-colors hover:bg-ml-blue-strong"
             >
               Bắt đầu chạy thử nghiệm ngay
             </button>
             <a
               href="#quytrinh"
-              className="inline-flex min-h-14 items-center justify-center rounded-lg border border-ml-border bg-white px-8 text-base font-black text-ml-ink shadow-sm transition-colors hover:border-ml-blue/30 hover:bg-ml-blue-soft/30"
+              className="inline-flex min-h-14 items-center justify-center rounded-lg border border-ml-border bg-white px-8 text-base font-bold text-ml-ink shadow-sm transition-colors hover:border-ml-blue/30 hover:bg-ml-blue-soft/30"
             >
               Xem cách hoạt động
             </a>
           </div>
 
           <div className="mt-16 border-t border-ml-border pt-8">
-            <p className="text-xs font-black uppercase text-ml-ink-muted">
-              Mô phỏng dựa trên dữ liệu học thuật &amp; kiểm định thực tế cùng các chuyên gia từ
-            </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
               {universities.map((name) => (
-                <span key={name} className="inline-flex items-center gap-2 text-base font-black text-ml-ink-muted">
+                <span key={name} className="inline-flex items-center gap-2 text-base font-bold text-ml-ink-muted">
                   <GraduationCap size={20} />
                   {name}
                 </span>
@@ -388,15 +393,15 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
 
         <section className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-5 py-20 md:grid-cols-[0.9fr_1.1fr] md:px-8">
           <div>
-            <span className="inline-flex rounded-full bg-ml-blue-soft px-4 py-1.5 text-xs font-black uppercase text-ml-blue-strong">
+            <span className="inline-flex rounded-full bg-ml-blue-soft px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-ml-blue-strong">
               Xem thực tế
             </span>
-            <h2 className="mt-5 text-3xl font-black leading-tight text-ml-ink md:text-[38px]">Dashboard nghiên cứu thông minh</h2>
-            <p className="mt-5 text-base font-semibold leading-7 text-ml-ink-muted">
+            <h2 className="mt-5 text-2xl font-black leading-tight tracking-normal text-ml-ink md:text-[32px]">Dashboard nghiên cứu thông minh</h2>
+            <p className="mt-5 text-base font-medium leading-7 text-ml-ink-muted">
               Toàn bộ quy trình nghiên cứu - từ tạo persona, chạy focus group đến xem kết quả phân tích - được thiết kế để bất kỳ ai cũng
               có thể dùng được, không cần kỹ năng kỹ thuật.
             </p>
-            <ul className="mt-7 space-y-4 text-sm font-black text-ml-ink">
+            <ul className="mt-7 space-y-4 text-sm font-bold text-ml-ink">
               {['Giao diện kéo-thả trực quan', 'Kết quả tổng hợp tự động', 'Báo cáo sẵn sàng để trình bày'].map((item) => (
                 <li key={item} className="flex items-center gap-3">
                   <CheckCircle2 className="text-ml-blue" size={20} />
@@ -407,7 +412,7 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
             <button
               type="button"
               onClick={onStart}
-              className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-lg bg-ml-blue px-6 text-sm font-black text-white transition-colors hover:bg-ml-blue-strong"
+              className="mt-8 inline-flex min-h-12 items-center gap-2 rounded-lg bg-ml-blue px-6 text-sm font-bold text-white transition-colors hover:bg-ml-blue-strong"
             >
               Xem demo trực tiếp
               <ArrowRight size={18} />
@@ -513,34 +518,10 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
           </div>
         </section>
 
-        <section className="bg-ml-ink px-5 py-20 md:px-8" id="khoahoc">
-          <div className="mx-auto max-w-7xl">
-            <div className="mx-auto mb-12 max-w-3xl text-center">
-              <span className="mb-4 inline-flex rounded-full bg-white/10 px-4 py-1.5 text-xs font-black uppercase text-ml-blue-soft">
-                Khoa học
-              </span>
-              <h2 className="text-3xl font-black leading-tight text-white md:text-[38px]">Được xây dựng trên nền tảng khoa học</h2>
-              <p className="mt-4 text-base font-semibold leading-7 text-white/60">
-                Chúng tôi ám ảnh về sự tương đồng giữa dữ liệu tổng hợp và thực tế. Đây là cách chúng tôi đo lường độ chính xác và liên tục
-                cải tiến mô hình.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {scienceCards.map((card) => (
-                <article key={card.title} className="rounded-lg border border-white/10 bg-white/5 p-6">
-                  <div className="text-3xl font-black leading-tight text-ml-blue-soft">{card.value}</div>
-                  <h3 className="mt-3 text-base font-black text-white">{card.title}</h3>
-                  <p className="mt-4 text-sm font-medium leading-7 text-white/60">{card.body}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
         <section className="mx-auto max-w-7xl px-5 py-20 md:px-8" id="faq">
           <div className="grid grid-cols-1 gap-10 md:grid-cols-[240px_1fr]">
             <aside className="md:sticky md:top-24 md:self-start">
-              <h2 className="text-3xl font-black text-ml-ink">Câu hỏi thường gặp</h2>
+              <h2 className="text-2xl font-black text-ml-ink md:text-[32px]">Câu hỏi thường gặp</h2>
               <div className="mt-6 flex flex-wrap gap-2 md:flex-col">
                 {['Bắt đầu', 'Điểm khác biệt', 'AI Persona & Mô phỏng', 'Khảo sát người thật', 'Không cần code', 'Giá & Gói cước'].map(
                   (item, index) => (
@@ -573,8 +554,8 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
 
         <section className="bg-ml-ink px-5 py-20 text-center md:px-8">
           <div className="mx-auto max-w-2xl">
-            <h2 className="text-3xl font-black text-white">Nhận cập nhật mới nhất từ Market Lab</h2>
-            <p className="mx-auto mt-4 max-w-xl text-base font-semibold leading-7 text-white/60">
+            <h2 className="text-2xl font-black text-white md:text-[32px]">Nhận cập nhật mới nhất từ Market Lab</h2>
+            <p className="mx-auto mt-4 max-w-xl text-base font-medium leading-7 text-white/60">
               Công cụ mới, nghiên cứu khoa học và case study thực tế từ cộng đồng người dùng Market Lab.
             </p>
             <form className="mt-7 flex flex-col justify-center gap-3 sm:flex-row" onSubmit={(event) => event.preventDefault()}>
@@ -590,7 +571,7 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
                   className="h-12 w-full rounded-lg border border-white/10 bg-white/5 pl-11 pr-4 text-sm font-semibold text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-ml-blue sm:w-80"
                 />
               </div>
-              <button type="submit" className="h-12 rounded-lg bg-ml-blue px-6 text-sm font-black text-white hover:bg-ml-blue-strong">
+              <button type="submit" className="h-12 rounded-lg bg-ml-blue px-6 text-sm font-bold text-white hover:bg-ml-blue-strong">
                 Đăng ký ngay
               </button>
             </form>
@@ -603,11 +584,11 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
         <div className="mx-auto max-w-7xl">
           <div className="grid grid-cols-1 gap-10 md:grid-cols-[1.3fr_1fr_1fr_1fr]">
             <div>
-              <a href="#/landing" className="inline-flex items-center gap-3 text-white">
+              <a href="/landing" className="inline-flex items-center gap-3 text-white">
                 <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-ml-blue text-white">
                   <FlaskConical size={22} />
                 </span>
-                <span className="text-xl font-black">Market Lab</span>
+                <BrandMark inverted />
               </a>
               <p className="mt-4 max-w-xs text-sm font-semibold leading-7 text-white/50">
                 Nghiên cứu thị trường thế hệ AI. Nhanh hơn, thông minh hơn, tiết kiệm hơn.
@@ -619,7 +600,7 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
                 <ul className="mt-5 space-y-3">
                   {group.links.map((link) => (
                     <li key={link}>
-                      <a href="#/landing" className="text-sm font-semibold text-white/55 hover:text-ml-blue-soft">
+                      <a href="/landing" className="text-sm font-semibold text-white/55 hover:text-ml-blue-soft">
                         {link}
                       </a>
                     </li>
@@ -631,16 +612,119 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
           <div className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs font-semibold text-white/40 md:flex-row md:items-center md:justify-between">
             <span>© 2026 Market Lab. Bảo lưu mọi quyền.</span>
             <span className="flex gap-5">
-              <a href="#/landing" className="hover:text-white/70">
+              <a href="/landing" className="hover:text-white/70">
                 Chính sách bảo mật
               </a>
-              <a href="#/landing" className="hover:text-white/70">
+              <a href="/landing" className="hover:text-white/70">
                 Điều khoản sử dụng
               </a>
             </span>
           </div>
         </div>
       </footer>
+
+      {isLoginOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ml-ink/45 p-5 backdrop-blur-sm">
+          <div className="relative w-full max-w-[620px] overflow-hidden rounded-3xl border border-ml-border bg-white shadow-2xl">
+            <div className="absolute inset-0 bg-[radial-gradient(#d8dde3_1px,transparent_1px)] [background-size:22px_22px] opacity-45" />
+            <div className="relative px-6 py-8 sm:px-12 sm:py-11">
+              <button
+                type="button"
+                onClick={() => setIsLoginOpen(false)}
+                className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full border border-ml-border bg-white text-ml-ink-muted transition-colors hover:bg-ml-surface hover:text-ml-ink"
+                aria-label="Đóng đăng nhập"
+              >
+                <X size={18} />
+              </button>
+
+              <div className="pr-10">
+                <h2 className="text-[30px] font-black leading-tight tracking-normal text-ml-ink md:text-[38px]">
+                  Chào mừng trở lại
+                </h2>
+                <p className="mt-3 text-lg font-medium text-ml-ink-muted">
+                  Đăng nhập để tiếp tục nghiên cứu.
+                </p>
+              </div>
+
+              <div className="mt-8">
+                <button
+                  type="button"
+                  className="flex h-14 w-full items-center justify-center gap-3 rounded-xl border border-ml-border bg-white text-base font-bold text-ml-ink shadow-sm transition-colors hover:border-ml-blue/40 hover:bg-ml-blue-soft/25"
+                >
+                  <GoogleLogo />
+                  Tiếp tục với Google
+                </button>
+
+                <div className="my-8 flex items-center gap-4">
+                  <span className="h-px flex-1 bg-ml-border" />
+                  <span className="text-xs font-black uppercase tracking-[0.22em] text-ml-ink-muted">Hoặc</span>
+                  <span className="h-px flex-1 bg-ml-border" />
+                </div>
+
+                <form
+                  className="space-y-5"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    onStart();
+                  }}
+                >
+                  <div>
+                    <label htmlFor="login-email" className="block text-sm font-bold text-ml-ink">
+                      Email công việc
+                    </label>
+                    <input
+                      id="login-email"
+                      type="email"
+                      placeholder="you@company.com"
+                      className="mt-2 h-14 w-full rounded-xl border border-ml-border bg-white px-5 text-base font-medium text-ml-ink outline-none transition focus:border-ml-blue focus:ring-2 focus:ring-ml-blue/20"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between gap-4">
+                      <label htmlFor="login-password" className="block text-sm font-bold text-ml-ink">
+                        Mật khẩu
+                      </label>
+                      <button type="button" className="text-sm font-bold text-ml-blue hover:text-ml-blue-strong">
+                        Quên?
+                      </button>
+                    </div>
+                    <input
+                      id="login-password"
+                      type="password"
+                      placeholder="••••••••"
+                      className="mt-2 h-14 w-full rounded-xl border border-ml-border bg-white px-5 text-base font-medium text-ml-ink outline-none transition focus:border-ml-blue focus:ring-2 focus:ring-ml-blue/20"
+                    />
+                  </div>
+
+                  <label className="flex items-center gap-3 text-base font-medium text-ml-ink">
+                    <input
+                      type="checkbox"
+                      defaultChecked
+                      className="h-5 w-5 rounded border-ml-border accent-ml-blue"
+                    />
+                    Ghi nhớ đăng nhập
+                  </label>
+
+                  <button
+                    type="submit"
+                    className="h-14 w-full rounded-xl bg-ml-blue text-lg font-black text-white shadow-sm transition-colors hover:bg-ml-blue-strong"
+                  >
+                    Đăng nhập
+                  </button>
+                </form>
+
+                <p className="mt-7 text-center text-base font-medium text-ml-ink-muted">
+                  Mới biết Market Lab?{' '}
+                  <button type="button" className="font-bold text-ml-blue hover:text-ml-blue-strong">
+                    Tạo tài khoản
+                  </button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

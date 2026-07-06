@@ -68,9 +68,7 @@ Rules:
 Use a modern sans-serif stack:
 
 ```css
-font-family:
-  Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-  "Segoe UI", sans-serif;
+font-family: "Be Vietnam Pro", system-ui, sans-serif;
 ```
 
 Type rules:

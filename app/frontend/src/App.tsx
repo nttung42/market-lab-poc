@@ -13,8 +13,13 @@ import { Layout, Users, ExternalLink, Sparkles, ClipboardList, BarChart3, FileTe
 type View = 'landing' | 'project-overview' | 'create-project' | 'edit-project' | 'persona-catalog' | 'synthetic-respondents' | 'study-builder' | 'results-dashboard' | 'report-export';
 
 
-const parseHash = (hash: string) => {
-  const path = hash.replace(/^#/, ''); // Remove leading "#"
+const normalizePath = (path: string) => {
+  const normalized = path.startsWith('/') ? path : `/${path}`;
+  return normalized.length > 1 ? normalized.replace(/\/+$/, '') : normalized;
+};
+
+const parsePath = (pathValue: string) => {
+  const path = normalizePath(pathValue);
   
   if (!path || path === '/' || path === '/projects') {
     return { view: 'project-overview' as View, projectId: null };
@@ -74,7 +79,11 @@ const parseHash = (hash: string) => {
 };
 
 const navigate = (path: string) => {
-  window.location.hash = path;
+  const normalizedPath = normalizePath(path);
+  if (window.location.pathname !== normalizedPath || window.location.hash) {
+    window.history.pushState(null, '', normalizedPath);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  }
 };
 
 const currentUserName = 'Alex';
@@ -118,8 +127,13 @@ function App() {
   }, [activeProjectId, projects]);
 
   useEffect(() => {
-    const handleHashChange = () => {
-      const parsed = parseHash(window.location.hash);
+    const handleLocationChange = () => {
+      const legacyHashPath = window.location.hash.match(/^#(\/.*)$/)?.[1];
+      if (legacyHashPath) {
+        window.history.replaceState(null, '', normalizePath(legacyHashPath));
+      }
+
+      const parsed = parsePath(window.location.pathname);
       setCurrentView(parsed.view);
       setActiveProjectId(parsed.projectId);
       if (parsed.studyId) {
@@ -127,11 +141,10 @@ function App() {
       }
     };
 
-    window.addEventListener('hashchange', handleHashChange);
-    // Initialize on first render
-    handleHashChange();
+    window.addEventListener('popstate', handleLocationChange);
+    handleLocationChange();
 
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('popstate', handleLocationChange);
   }, []);
 
   const handleSelectProject = (projectId: string | null) => {
@@ -354,13 +367,15 @@ function App() {
             onSelectProject={handleSelectProject}
             onProjectsChanged={refreshProjects}
             onNavigateToPersonas={() => navigate(`/projects/${activeProjectId}/personas`)}
+            onCreateProject={() => navigate('/create-project')}
+            onEditProject={(projectId) => navigate(`/projects/${projectId}/edit`)}
           />
         )}
 
         {/* Create Project Modal Overlay */}
         {(currentView === 'create-project' || showCreateModal) && (
-          <div className="fixed inset-0 bg-ml-ink/40 backdrop-blur-md flex items-center justify-center z-50 p-6 overflow-y-auto">
-            <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-ml-border/60 overflow-hidden relative animate-in fade-in zoom-in duration-200">
+          <div className="fixed inset-0 bg-ml-ink/40 backdrop-blur-md flex items-center justify-center z-50 p-4 md:p-6 overflow-y-auto">
+            <div className="relative w-full max-w-4xl max-h-[calc(100vh-2rem)] md:max-h-[calc(100vh-3rem)] overflow-hidden rounded-2xl border border-ml-border/60 bg-white shadow-xl animate-in fade-in zoom-in duration-200">
               <ProjectOverview
                 activeProjectId={null}
                 mode="create"
@@ -370,6 +385,8 @@ function App() {
                 }}
                 onProjectsChanged={refreshProjects}
                 onNavigateToPersonas={() => {}}
+                onCreateProject={() => navigate('/create-project')}
+                onEditProject={(projectId) => navigate(`/projects/${projectId}/edit`)}
                 onClose={() => {
                   setShowCreateModal(false);
                   if (currentView === 'create-project') {
@@ -383,8 +400,8 @@ function App() {
 
         {/* Edit Project Modal Overlay */}
         {(currentView === 'edit-project' || showEditModal) && (
-          <div className="fixed inset-0 bg-ml-ink/40 backdrop-blur-md flex items-center justify-center z-50 p-6 overflow-y-auto">
-            <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-ml-border/60 overflow-hidden relative animate-in fade-in zoom-in duration-200">
+          <div className="fixed inset-0 bg-ml-ink/40 backdrop-blur-md flex items-center justify-center z-50 p-4 md:p-6 overflow-y-auto">
+            <div className="relative w-full max-w-4xl max-h-[calc(100vh-2rem)] md:max-h-[calc(100vh-3rem)] overflow-hidden rounded-2xl border border-ml-border/60 bg-white shadow-xl animate-in fade-in zoom-in duration-200">
               <ProjectOverview
                 activeProjectId={activeProjectId}
                 mode="edit"
@@ -394,6 +411,8 @@ function App() {
                 }}
                 onProjectsChanged={refreshProjects}
                 onNavigateToPersonas={() => {}}
+                onCreateProject={() => navigate('/create-project')}
+                onEditProject={(projectId) => navigate(`/projects/${projectId}/edit`)}
                 onClose={() => {
                   setShowEditModal(false);
                   if (currentView === 'edit-project') {
@@ -414,7 +433,7 @@ function App() {
               Please select or create a project on the overview dashboard first before using other workspace modules.
             </p>
             <button
-              onClick={() => setCurrentView('project-overview')}
+              onClick={() => navigate('/projects')}
               className="px-4 py-2 bg-ml-blue hover:bg-ml-blue-strong text-white text-xs font-bold rounded-lg cursor-pointer"
             >
               Go to Overview
@@ -432,14 +451,14 @@ function App() {
             projectId={activeProjectId!}
             onNavigateToResults={(studyId) => {
               setSelectedStudyId(studyId);
-              setCurrentView('results-dashboard');
+              navigate(`/projects/${activeProjectId}/results/${studyId}`);
             }}
           />
         )}
         {!isNavDisabled && currentView === 'results-dashboard' && (
           <ResultsDashboard
             studyId={selectedStudyId}
-            onNavigateToReports={() => setCurrentView('report-export')}
+            onNavigateToReports={() => navigate(`/projects/${activeProjectId}/reports/${selectedStudyId}`)}
           />
         )}
         {!isNavDisabled && currentView === 'report-export' && (
