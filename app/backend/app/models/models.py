@@ -49,6 +49,7 @@ class Persona(Base):
     product_fit = Column(JSON, nullable=True)
     journey_map = Column(JSON, nullable=True)
     validation = Column(JSON, nullable=True)
+    insight_profile = Column(JSON, nullable=True)
 
     project = relationship("Project", back_populates="personas")
     respondents = relationship("Respondent", back_populates="persona", cascade="all, delete-orphan")

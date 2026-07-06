@@ -117,27 +117,45 @@ Use feature-oriented backend modules for non-trivial flows:
 
 Feature services must call the backend AI gateway using stable internal aliases such as:
 
+- `persona-drafter`
 - `respondent-generator`
 - `study-simulator`
 
-Provider model names belong in backend config, not in feature logic. The current backend standard uses Groq with env vars shaped like:
+Provider model names belong in backend config, not in feature logic. The current backend standard uses alias-based LiteLLM config with provider keys such as:
 
 ```text
+OPENROUTER_API_KEY
 GROQ_API_KEY
+LLM_ALIAS_PERSONA_DRAFTER_PROVIDER
+LLM_ALIAS_PERSONA_DRAFTER_MODEL
 LLM_ALIAS_RESPONDENT_GENERATOR_PROVIDER
 LLM_ALIAS_RESPONDENT_GENERATOR_MODEL
 LLM_ALIAS_STUDY_SIMULATOR_PROVIDER
 LLM_ALIAS_STUDY_SIMULATOR_MODEL
 ```
 
-Example:
+Groq example:
 
 ```text
 GROQ_API_KEY
+LLM_ALIAS_PERSONA_DRAFTER_PROVIDER=groq
+LLM_ALIAS_PERSONA_DRAFTER_MODEL=openai/gpt-oss-120b
 LLM_ALIAS_RESPONDENT_GENERATOR_PROVIDER=groq
 LLM_ALIAS_RESPONDENT_GENERATOR_MODEL=openai/gpt-oss-120b
 LLM_ALIAS_STUDY_SIMULATOR_PROVIDER=groq
 LLM_ALIAS_STUDY_SIMULATOR_MODEL=openai/gpt-oss-120b
+```
+
+OpenRouter example:
+
+```text
+OPENROUTER_API_KEY
+LLM_ALIAS_PERSONA_DRAFTER_PROVIDER=openrouter
+LLM_ALIAS_PERSONA_DRAFTER_MODEL=openai/gpt-4o-mini
+LLM_ALIAS_RESPONDENT_GENERATOR_PROVIDER=openrouter
+LLM_ALIAS_RESPONDENT_GENERATOR_MODEL=anthropic/claude-3.5-sonnet
+LLM_ALIAS_STUDY_SIMULATOR_PROVIDER=openrouter
+LLM_ALIAS_STUDY_SIMULATOR_MODEL=google/gemini-2.5-flash
 ```
 
 This keeps provider swaps scoped to infrastructure/config changes instead of feature rewrites.

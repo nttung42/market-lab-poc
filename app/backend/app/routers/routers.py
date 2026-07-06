@@ -172,6 +172,34 @@ def create_project_persona(
         raise _map_service_exception(exc) from exc
 
 
+@router.post("/projects/{project_id}/personas/draft", response_model=schemas.PersonaDraft)
+async def generate_project_persona_draft(
+    project_id: str,
+    draft_request: schemas.PersonaDraftRequest,
+    db: Session = Depends(get_db),
+):
+    try:
+        return await persona_service.generate_project_persona_draft(
+            db, project_id, draft_request
+        )
+    except Exception as exc:
+        raise _map_service_exception(exc) from exc
+
+
+@router.post("/projects/{project_id}/personas/generate", response_model=schemas.Persona)
+async def generate_project_persona(
+    project_id: str,
+    generate_request: schemas.PersonaDraftRequest,
+    db: Session = Depends(get_db),
+):
+    try:
+        return await persona_service.generate_project_persona(
+            db, project_id, generate_request
+        )
+    except Exception as exc:
+        raise _map_service_exception(exc) from exc
+
+
 @router.put("/personas/{persona_id}", response_model=schemas.Persona)
 def update_persona(
     persona_id: str, persona_data: schemas.PersonaBase, db: Session = Depends(get_db)

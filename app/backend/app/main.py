@@ -3,7 +3,13 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import load_backend_env
-from app.db.database import engine, SessionLocal, Base, ensure_llm_call_log_schema
+from app.db.database import (
+    engine,
+    SessionLocal,
+    Base,
+    ensure_llm_call_log_schema,
+    ensure_persona_schema,
+)
 from app.seeds.seed import seed_db
 from app.routers.routers import router
 
@@ -17,6 +23,7 @@ load_backend_env()
 # Create database tables
 Base.metadata.create_all(bind=engine)
 ensure_llm_call_log_schema()
+ensure_persona_schema()
 
 # Seed database on startup
 db = SessionLocal()

@@ -131,6 +131,7 @@ async def run_study_simulation(
         },
     )
     ai_run_repository.mark_ai_run_running(db, ai_run)
+    db.commit()
 
     response_payloads: list[dict] = []
     raw_results = []

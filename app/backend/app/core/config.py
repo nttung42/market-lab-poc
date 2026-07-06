@@ -9,6 +9,7 @@ _ENV_PATH = Path(__file__).resolve().parents[2] / ".env"
 _ENV_LOADED = False
 _PROVIDER_API_KEY_ENV = {
     "groq": "GROQ_API_KEY",
+    "openrouter": "OPENROUTER_API_KEY",
 }
 
 

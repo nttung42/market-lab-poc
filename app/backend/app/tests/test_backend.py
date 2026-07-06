@@ -7,7 +7,17 @@ from app.config import LLMConfigurationError
 from app.db.database import Base, get_db
 from app.models import models
 from app.infra.ai.gateway import LLMExecutionResult
-from app.infra.ai.schemas import RespondentGenerationOutput, RespondentOutput, StudyAnswerOutput
+from app.infra.ai.schemas import (
+    PersonaDraftOutput,
+    PersonaJTBDOutput,
+    PersonaJourneyStageOutput,
+    PersonaProductFitOutput,
+    PersonaPsychographicsOutput,
+    PersonaValidationOutput,
+    RespondentGenerationOutput,
+    RespondentOutput,
+    StudyAnswerOutput,
+)
 from app.main import app
 from app.seeds.seed import seed_db
 from app.schemas.schemas import ProjectCreate, PersonaCreate
@@ -243,6 +253,302 @@ def test_generate_respondents_requires_llm_config():
         )
     assert response.status_code == 503
     assert "respondent-generator" in response.json()["detail"]
+
+
+def test_generate_persona_draft_success():
+    db = TestingSessionLocal()
+    persona_count_before = db.query(models.Persona).count()
+    db.close()
+
+    async def fake_persona_draft(project, custom_prompt):
+        draft = PersonaDraftOutput(
+            name="Thao Nguyen",
+            segment="IELTS Speaking Candidate",
+            quote="I need speaking practice that feels realistic, not robotic.",
+            demographics=[
+                "Age: 22",
+                "Location: HCMC, Vietnam",
+                "Gender: Female",
+                "Occupation: Final-year Student",
+                "Income: Medium",
+            ],
+            goals=["Reach IELTS band 7.0", "Practice daily topics"],
+            pain_points=["Center mock tests are expensive", "Self-study lacks direct feedback"],
+            motivations=["Graduate on time", "Apply for scholarships"],
+            buying_behavior=["Compares review videos", "Checks pricing carefully"],
+            decision_rules=["Must feel IELTS-specific", "Needs clear score explanation"],
+            objections=["AI scoring credibility", "Premium pricing risk"],
+            channels=["TikTok", "Facebook groups"],
+            assumptions=["Assumes mobile-first practice habits"],
+            confidence_score=90.0,
+            jtbd=PersonaJTBDOutput(
+                functional_job="Practice IELTS parts 1-3 under time limits",
+                emotional_job="Feel calmer before the exam",
+                social_job="Earn respect through a strong score",
+                success_criteria=["Band 7.0", "Feedback on grammar mistakes"],
+            ),
+            psychographics=PersonaPsychographicsOutput(
+                personality_traits=["Ambitious", "Structured"],
+                core_values=["Achievement", "Efficiency"],
+                risk_tolerance="Neutral",
+                tech_savviness="High",
+            ),
+            product_fit=PersonaProductFitOutput(
+                must_haves=["IELTS-specific grading", "Instant corrections"],
+                nice_to_haves=["Progress tracker"],
+                deal_breakers=["Generic speaking topics"],
+                alternatives=["IELTS center mocks", "Private tutors"],
+            ),
+            journey_map=[
+                PersonaJourneyStageOutput(
+                    stage="Awareness",
+                    goals=["Find IELTS speaking practice apps"],
+                    pain_points=["Tutors cost too much"],
+                    touchpoints=["TikTok IELTS channel"],
+                )
+            ],
+            validation=PersonaValidationOutput(
+                is_human_validated=False,
+                evidence_sources=["Synthetic prompt-based draft"],
+                last_validated_at=None,
+            ),
+        )
+        return LLMExecutionResult(
+            parsed=draft,
+            request_payload={"task_name": "persona_draft_generation"},
+            raw_response={"choices": []},
+            parsed_output=draft.model_dump(),
+            provider="openai",
+            model_alias="persona-drafter",
+            resolved_model="openai/gpt-4o-mini",
+            usage={"total_tokens": 12},
+        )
+
+    with patch(
+        "app.features.personas.service.generate_persona_draft_execution",
+        new=AsyncMock(side_effect=fake_persona_draft),
+    ):
+        response = client.post(
+            "/api/projects/english-learning-app-poc/personas/draft",
+            json={
+                "custom_prompt": "Create a structured persona for an IELTS speaking learner who is budget-conscious and wants realistic feedback."
+            },
+        )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["name"] == "Thao Nguyen"
+    assert payload["segment"] == "IELTS Speaking Candidate"
+    assert payload["validation"]["is_human_validated"] is False
+
+    db = TestingSessionLocal()
+    try:
+        persona_count_after = db.query(models.Persona).count()
+        assert persona_count_after == persona_count_before
+
+        ai_run = (
+            db.query(models.AIRun)
+            .filter(models.AIRun.task_type == "persona_draft_generation")
+            .order_by(models.AIRun.created_at.desc())
+            .first()
+        )
+        assert ai_run is not None
+        assert ai_run.status == "completed"
+    finally:
+        db.close()
+
+
+def test_generate_persona_draft_requires_llm_config():
+    with patch(
+        "app.features.personas.service.generate_persona_draft_execution",
+        new=AsyncMock(
+            side_effect=LLMConfigurationError(
+                "No API key configured for alias 'persona-drafter'. Set one of: "
+                "LLM_ALIAS_PERSONA_DRAFTER_API_KEY, GROQ_API_KEY."
+            )
+        ),
+    ):
+        response = client.post(
+            "/api/projects/english-learning-app-poc/personas/draft",
+            json={"custom_prompt": "Create a persona for a serious IELTS learner."},
+        )
+
+    assert response.status_code == 503
+    assert "persona-drafter" in response.json()["detail"]
+
+
+def test_generate_persona_persists_read_only_profile():
+    db = TestingSessionLocal()
+    persona_count_before = db.query(models.Persona).count()
+    db.close()
+
+    async def fake_persona_generation(project, custom_prompt):
+        persona = PersonaDraftOutput(
+            name="Steven Matthews",
+            segment="Metro Gen Z Sneakerhead",
+            quote="I plan around drops, resale moves, and legit checks.",
+            demographics=[
+                "Age: 22",
+                "Location: New York, United States",
+                "Gender: Male",
+                "Occupation: Runner and sneaker collector",
+                "Income: Medium",
+            ],
+            goals=["Secure key SNKRS drops", "Build a curated sneaker rotation"],
+            pain_points=["Low SNKRS win rates", "Fake pairs on resale platforms"],
+            motivations=["Streetwear status", "Performance confidence"],
+            buying_behavior=["Tracks resale prices", "Watches reviewer videos"],
+            decision_rules=["Must be authentic", "Must fit sport and nightlife"],
+            objections=["Bots dominate limited drops", "Resale pricing feels risky"],
+            channels=["Social", "Messaging", "YouTube"],
+            assumptions=["Prompt-based synthetic audience profile"],
+            confidence_score=86.0,
+            jtbd=PersonaJTBDOutput(
+                functional_job="Find authentic shoes for running, basketball, and outfits",
+                emotional_job="Feel ahead of culture without overspending",
+                social_job="Signal taste within sneaker and sports circles",
+                success_criteria=["Authentic pair", "Fair price", "Strong fit"],
+            ),
+            psychographics=PersonaPsychographicsOutput(
+                personality_traits=["Trend-aware", "Analytical"],
+                core_values=["Fitness", "Authenticity"],
+                risk_tolerance="Medium",
+                tech_savviness="High",
+            ),
+            product_fit=PersonaProductFitOutput(
+                must_haves=["Drop calendar", "Authenticity signals"],
+                nice_to_haves=["Resale trend alerts"],
+                deal_breakers=["Fake inventory"],
+                alternatives=["GOAT", "StockX"],
+            ),
+            journey_map=[
+                PersonaJourneyStageOutput(
+                    stage="Consideration",
+                    goals=["Compare release value"],
+                    pain_points=["Signals are scattered"],
+                    touchpoints=["SNKRS", "YouTube"],
+                )
+            ],
+            validation=PersonaValidationOutput(
+                is_human_validated=False,
+                evidence_sources=["Synthetic prompt-based generation"],
+                last_validated_at=None,
+            ),
+            insight_profile={
+                "profile_information": {
+                    "summary": "A New York sneakerhead balancing performance, style, and resale value.",
+                    "personal_aspirations": "Stay fit, build taste, and avoid bad purchases.",
+                },
+                "buying_behavior": {
+                    "purchase_decision_factors": ["Authenticity", "Resale movement"],
+                    "triggers": ["SNKRS notifications", "Shock drop rumors"],
+                },
+                "psychological_drivers": {
+                    "goals": ["Win priority drops"],
+                    "motivations": ["Social status"],
+                    "key_needs": ["Transparent release info"],
+                },
+                "key_obstacles": {
+                    "core_challenges": ["Bots"],
+                    "day_to_day_pain_points": ["Missed drops"],
+                    "perceived_barriers": ["Insider access"],
+                },
+                "work_lifestyle": {
+                    "occupation": "Sneaker collector",
+                    "industry": "Sports",
+                    "income": "Medium",
+                    "marital_status": "Married",
+                    "housing_status": "Rents house",
+                },
+                "communication": [{"label": "Social", "weight": 92}],
+                "media_digital": {
+                    "media_news_sources": [{"label": "Complex", "weight": 80}],
+                    "social_networks": [{"label": "YouTube", "weight": 90}],
+                    "websites_visited": [{"label": "snkrs.com", "weight": 95}],
+                    "subreddits": ["/r/Sneakers"],
+                    "hashtags": ["#SNKRS"],
+                    "content_types": [{"label": "Community sharing", "weight": 88}],
+                },
+                "brand_commerce": {
+                    "brands": [{"label": "Nike", "weight": 98}],
+                    "shopping_websites": [{"label": "GOAT", "weight": 86}],
+                    "products": [{"label": "Footwear", "weight": 96}],
+                    "services": [{"label": "Authentication", "weight": 82}],
+                },
+                "preferences": {
+                    "sports": [{"label": "Running", "weight": 85}],
+                    "entertainment": [{"label": "Nightlife", "weight": 70}],
+                    "news": [{"label": "Sneaker news", "weight": 80}],
+                    "places_likely_to_visit": [{"label": "Gyms", "weight": 72}],
+                    "events_conferences": [{"label": "Nike community run", "weight": 88}],
+                    "values": [{"label": "Healthy living", "weight": 84}],
+                    "hobbies": [{"label": "Sports", "weight": 82}],
+                    "interests": [{"label": "Technology", "weight": 55}],
+                    "tools": [{"label": "Calendars", "weight": 76}],
+                },
+                "website_interaction": {
+                    "first_interaction_day": "Weekday",
+                    "first_interaction_time": "Mid day",
+                    "influential_resources": [{"label": "Events", "weight": 90}],
+                    "resonating_topics": [{"label": "snkrs_drop_strategy", "weight": 94}],
+                },
+                "industry_specific_insights": {
+                    "apparel_fashion": {
+                        "footwear_type": [{"label": "sneaker", "weight": 95}]
+                    },
+                    "sporting_goods": {
+                        "activity_type": [{"label": "running", "weight": 85}]
+                    },
+                    "consumer_goods": {
+                        "supply_stationery": [{"label": "calendar", "weight": 45}]
+                    },
+                },
+            },
+        )
+        return LLMExecutionResult(
+            parsed=persona,
+            request_payload={"task_name": "persona_draft_generation"},
+            raw_response={"choices": []},
+            parsed_output=persona.model_dump(),
+            provider="openai",
+            model_alias="persona-drafter",
+            resolved_model="openai/gpt-4o-mini",
+            usage={"total_tokens": 20},
+        )
+
+    with patch(
+        "app.features.personas.service.generate_persona_draft_execution",
+        new=AsyncMock(side_effect=fake_persona_generation),
+    ):
+        response = client.post(
+            "/api/projects/english-learning-app-poc/personas/generate",
+            json={"custom_prompt": "Create a Nike SNKRS sneakerhead persona."},
+        )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["id"].startswith("persona-")
+    assert payload["project_id"] == "english-learning-app-poc"
+    assert payload["validation"]["is_human_validated"] is False
+    assert payload["insight_profile"]["brand_commerce"]["brands"][0]["label"] == "Nike"
+
+    db = TestingSessionLocal()
+    try:
+        persona_count_after = db.query(models.Persona).count()
+        assert persona_count_after == persona_count_before + 1
+        persisted = db.query(models.Persona).filter(models.Persona.id == payload["id"]).first()
+        assert persisted is not None
+        assert persisted.insight_profile["website_interaction"]["first_interaction_day"] == "Weekday"
+
+        ai_run = (
+            db.query(models.AIRun)
+            .filter(models.AIRun.persona_id == payload["id"])
+            .first()
+        )
+        assert ai_run is not None
+        assert ai_run.status == "completed"
+    finally:
+        db.close()
 
 
 def test_get_respondents_success():

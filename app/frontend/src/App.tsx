@@ -5,19 +5,23 @@ import { RespondentsDashboard } from './pages/RespondentsDashboard';
 import { StudyBuilder } from './pages/StudyBuilder';
 import { ResultsDashboard } from './pages/ResultsDashboard';
 import { ReportExport } from './pages/ReportExport';
+import { LandingPage } from './pages/LandingPage';
 import { getProjects } from './api/client';
 import type { Project } from './types';
-import { Layout, Users, ExternalLink, Sparkles, ClipboardList, BarChart3, FileText } from 'lucide-react';
+import { Layout, Users, ExternalLink, Sparkles, ClipboardList, BarChart3, FileText, UserCircle, Settings, LogOut } from 'lucide-react';
 
-type View = 'project-overview' | 'create-project' | 'edit-project' | 'persona-catalog' | 'synthetic-respondents' | 'study-builder' | 'results-dashboard' | 'report-export';
+type View = 'landing' | 'project-overview' | 'create-project' | 'edit-project' | 'persona-catalog' | 'synthetic-respondents' | 'study-builder' | 'results-dashboard' | 'report-export';
 
 
 const parseHash = (hash: string) => {
   const path = hash.replace(/^#/, ''); // Remove leading "#"
-  let match: RegExpMatchArray | null = null;
   
   if (!path || path === '/' || path === '/projects') {
     return { view: 'project-overview' as View, projectId: null };
+  }
+
+  if (path === '/landing') {
+    return { view: 'landing' as View, projectId: null };
   }
   
   if (path === '/create-project') {
@@ -25,45 +29,45 @@ const parseHash = (hash: string) => {
   }
   
   // Pattern: /projects/:projectId/edit
-  match = path.match(/^\/projects\/([^\/]+)\/edit$/);
-  if (match) {
-    return { view: 'edit-project' as View, projectId: match[1] };
+  const editProjectMatch = path.match(/^\/projects\/([^/]+)\/edit$/);
+  if (editProjectMatch) {
+    return { view: 'edit-project' as View, projectId: editProjectMatch[1] };
   }
   
   // Pattern: /projects/:projectId/personas
-  match = path.match(/^\/projects\/([^\/]+)\/personas$/);
-  if (match) {
-    return { view: 'persona-catalog' as View, projectId: match[1] };
+  const personasMatch = path.match(/^\/projects\/([^/]+)\/personas$/);
+  if (personasMatch) {
+    return { view: 'persona-catalog' as View, projectId: personasMatch[1] };
   }
   
   // Pattern: /projects/:projectId/respondents
-  match = path.match(/^\/projects\/([^\/]+)\/respondents$/);
-  if (match) {
-    return { view: 'synthetic-respondents' as View, projectId: match[1] };
+  const respondentsMatch = path.match(/^\/projects\/([^/]+)\/respondents$/);
+  if (respondentsMatch) {
+    return { view: 'synthetic-respondents' as View, projectId: respondentsMatch[1] };
   }
   
   // Pattern: /projects/:projectId/study-builder
-  match = path.match(/^\/projects\/([^\/]+)\/study-builder$/);
-  if (match) {
-    return { view: 'study-builder' as View, projectId: match[1] };
+  const studyBuilderMatch = path.match(/^\/projects\/([^/]+)\/study-builder$/);
+  if (studyBuilderMatch) {
+    return { view: 'study-builder' as View, projectId: studyBuilderMatch[1] };
   }
   
   // Pattern: /projects/:projectId/results/:studyId
-  match = path.match(/^\/projects\/([^\/]+)\/results\/([^\/]+)$/);
-  if (match) {
-    return { view: 'results-dashboard' as View, projectId: match[1], studyId: match[2] };
+  const resultsMatch = path.match(/^\/projects\/([^/]+)\/results\/([^/]+)$/);
+  if (resultsMatch) {
+    return { view: 'results-dashboard' as View, projectId: resultsMatch[1], studyId: resultsMatch[2] };
   }
   
   // Pattern: /projects/:projectId/reports/:studyId
-  match = path.match(/^\/projects\/([^\/]+)\/reports\/([^\/]+)$/);
-  if (match) {
-    return { view: 'report-export' as View, projectId: match[1], studyId: match[2] };
+  const reportsMatch = path.match(/^\/projects\/([^/]+)\/reports\/([^/]+)$/);
+  if (reportsMatch) {
+    return { view: 'report-export' as View, projectId: reportsMatch[1], studyId: reportsMatch[2] };
   }
   
   // Pattern: /projects/:projectId
-  match = path.match(/^\/projects\/([^\/]+)$/);
-  if (match) {
-    return { view: 'project-overview' as View, projectId: match[1] };
+  const projectMatch = path.match(/^\/projects\/([^/]+)$/);
+  if (projectMatch) {
+    return { view: 'project-overview' as View, projectId: projectMatch[1] };
   }
   
   return { view: 'project-overview' as View, projectId: null };
@@ -73,6 +77,10 @@ const navigate = (path: string) => {
   window.location.hash = path;
 };
 
+const currentUserName = 'Alex';
+const currentUserInitial = currentUserName.trim().charAt(0).toUpperCase();
+const currentUserAvatarUrl = 'https://i.pravatar.cc/96?img=12';
+
 function App() {
   const [currentView, setCurrentView] = useState<View>('project-overview');
   const [selectedStudyId, setSelectedStudyId] = useState<string>('study-concept-test');
@@ -80,6 +88,7 @@ function App() {
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
   const [activeProjectName, setActiveProjectName] = useState<string>('No Active Project');
   const [showWorkspaceDropdown, setShowWorkspaceDropdown] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
@@ -135,6 +144,10 @@ function App() {
 
   const isNavDisabled = !activeProjectId;
 
+  if (currentView === 'landing') {
+    return <LandingPage onStart={() => navigate('/projects')} />;
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-ml-surface text-ml-ink selection:bg-ml-blue-soft selection:text-ml-blue-strong">
       {/* Header */}
@@ -143,8 +156,9 @@ function App() {
           {/* Logo / Brand */}
           <div 
             onClick={() => {
-              handleSelectProject(null);
+              navigate('/landing');
               setShowWorkspaceDropdown(false);
+              setShowUserMenu(false);
             }}
             className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
           >
@@ -152,15 +166,15 @@ function App() {
               <span className="text-ml-blue">MARKET</span>
               <span className="text-ml-ink">LAB</span>
             </span>
-            <span className="text-[10px] font-bold text-ml-ink bg-ml-surface px-2 py-0.5 rounded tracking-wider uppercase border border-ml-border/50">
-              PoC Sandbox
-            </span>
           </div>
 
           {/* Center: Dropdown Workspace Selector */}
           <div className="relative z-50">
             <button
-              onClick={() => setShowWorkspaceDropdown(!showWorkspaceDropdown)}
+              onClick={() => {
+                setShowWorkspaceDropdown(!showWorkspaceDropdown);
+                setShowUserMenu(false);
+              }}
               className="flex items-center gap-2 px-4 py-1.5 bg-ml-surface hover:bg-ml-border/50 border border-ml-border/60 rounded-full text-xs font-bold transition-all cursor-pointer uppercase tracking-wider"
             >
               <span>{activeProjectId ? activeProjectName : 'Select Workspace'}</span>
@@ -208,24 +222,56 @@ function App() {
             )}
           </div>
 
-          {/* Right area: Actions */}
-          <div className="flex items-center gap-2">
+          {/* Right area: User profile */}
+          <div className="relative z-50">
             <button
               onClick={() => {
-                handleSelectProject(null);
+                setShowUserMenu(!showUserMenu);
+                setShowWorkspaceDropdown(false);
               }}
-              className={`px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-colors cursor-pointer uppercase ${
-                !activeProjectId ? 'bg-ml-blue border-ml-blue text-white shadow-sm' : 'border-ml-border hover:bg-ml-surface text-ml-ink-muted'
-              }`}
+              className="flex items-center gap-3 rounded-full border border-transparent px-1.5 py-1 transition-colors hover:border-ml-border hover:bg-ml-surface"
+              aria-expanded={showUserMenu}
+              aria-haspopup="menu"
             >
-              Directory
+              <span className="hidden text-sm font-bold text-ml-ink sm:inline">
+                Hello {currentUserName}
+              </span>
+              <img
+                src={currentUserAvatarUrl}
+                alt={`Avatar của ${currentUserName}`}
+                className="h-9 w-9 rounded-full border border-ml-blue/20 object-cover shadow-sm"
+              />
+              <span className="sr-only">{currentUserInitial}</span>
             </button>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="px-3.5 py-1.5 text-xs font-bold text-white bg-ml-blue hover:bg-ml-blue-strong rounded-lg shadow-sm transition-colors cursor-pointer uppercase"
-            >
-              + New Project
-            </button>
+
+            {showUserMenu && (
+              <div className="absolute right-0 top-full mt-2 w-44 rounded-lg border border-ml-border/60 bg-white p-1.5 shadow-lg" role="menu">
+                <button
+                  onClick={() => setShowUserMenu(false)}
+                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-bold text-ml-ink transition-colors hover:bg-ml-surface"
+                  role="menuitem"
+                >
+                  <UserCircle size={15} />
+                  Account
+                </button>
+                <button
+                  onClick={() => setShowUserMenu(false)}
+                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-bold text-ml-ink transition-colors hover:bg-ml-surface"
+                  role="menuitem"
+                >
+                  <Settings size={15} />
+                  Setting
+                </button>
+                <button
+                  onClick={() => setShowUserMenu(false)}
+                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-xs font-bold text-ml-danger transition-colors hover:bg-red-50"
+                  role="menuitem"
+                >
+                  <LogOut size={15} />
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -406,11 +452,11 @@ function App() {
 
       {/* Footer */}
       <footer className="w-full border-t border-ml-border py-6 bg-white text-center text-[11px] text-ml-ink-muted relative z-10 print:hidden">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="font-medium">
-            © {new Date().getFullYear()} <span className="font-extrabold"><span className="text-ml-blue">MARKET</span><span className="text-ml-ink">LAB</span></span>. Developed as part of Synthetic Message Testing PoC.
+        <div className="relative max-w-7xl mx-auto px-6 flex flex-col items-center justify-center gap-3 md:min-h-6">
+          <div className="font-medium text-center">
+            © {new Date().getFullYear()} <span className="font-extrabold"><span className="text-ml-blue">MARKET</span><span className="text-ml-ink">LAB</span></span>. Developed by MarketUni Team.
           </div>
-          <div className="flex items-center gap-3 font-semibold">
+          <div className="flex items-center gap-3 font-semibold md:absolute md:right-6 md:top-1/2 md:-translate-y-1/2">
             <a
               href="https://github.com"
               target="_blank"
@@ -420,8 +466,6 @@ function App() {
               Docs
               <ExternalLink size={12} />
             </a>
-            <span className="text-ml-border">|</span>
-            <span className="text-ml-warning bg-amber-50 px-2 py-0.5 rounded border border-ml-warning/20">Simulated Research - Human Validation Required</span>
           </div>
         </div>
       </footer>

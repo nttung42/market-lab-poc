@@ -22,6 +22,16 @@ class PersonaBase(BaseModel):
     product_fit: Optional[Dict[str, Any]] = None
     journey_map: Optional[List[Dict[str, Any]]] = None
     validation: Optional[Dict[str, Any]] = None
+    insight_profile: Optional[Dict[str, Any]] = None
+
+
+class PersonaDraftRequest(BaseModel):
+    custom_prompt: str = Field(..., min_length=5)
+
+
+class PersonaDraft(PersonaBase):
+    pass
+
 
 class PersonaCreate(PersonaBase):
     id: str
@@ -216,4 +226,3 @@ class AIRun(AIRunBase):
 
     class Config:
         from_attributes = True
-

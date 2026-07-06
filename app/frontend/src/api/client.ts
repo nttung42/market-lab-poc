@@ -1,4 +1,4 @@
-import type { Project, Persona, Respondent, Study, Question, StudyResults } from '../types';
+import type { Project, Persona, PersonaDraft, Respondent, Study, Question, StudyResults } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || (typeof window !== 'undefined'
   ? `${window.location.protocol}//${window.location.hostname}:8000/api`
@@ -139,6 +139,28 @@ export async function createPersona(projectId: string, persona: Omit<Persona, 'i
   return handleResponse<Persona>(res);
 }
 
+export async function generatePersonaDraft(projectId: string, customPrompt: string): Promise<PersonaDraft> {
+  const res = await fetch(`${API_BASE_URL}/projects/${projectId}/personas/draft`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ custom_prompt: customPrompt }),
+  });
+  return handleResponse<PersonaDraft>(res);
+}
+
+export async function generatePersona(projectId: string, customPrompt: string): Promise<Persona> {
+  const res = await fetch(`${API_BASE_URL}/projects/${projectId}/personas/generate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ custom_prompt: customPrompt }),
+  });
+  return handleResponse<Persona>(res);
+}
+
 export async function updatePersona(personaId: string, persona: Omit<Persona, 'id' | 'project_id'>): Promise<Persona> {
   const res = await fetch(`${API_BASE_URL}/personas/${personaId}`, {
     method: 'PUT',
@@ -174,5 +196,3 @@ export async function deleteStudy(studyId: string): Promise<void> {
   });
   await handleResponse<{ success: boolean; message: string }>(res);
 }
-
-

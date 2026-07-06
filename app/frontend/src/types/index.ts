@@ -43,6 +43,79 @@ export interface Persona {
     evidence_sources: string[];
     last_validated_at?: string;
   };
+  insight_profile?: PersonaInsightProfile;
+}
+
+export type PersonaDraft = Omit<Persona, 'id' | 'project_id'>;
+
+export interface WeightedSignal {
+  label: string;
+  weight: number;
+}
+
+export interface PersonaInsightProfile {
+  profile_information?: {
+    summary: string;
+    personal_aspirations: string;
+  };
+  buying_behavior?: {
+    purchase_decision_factors: string[];
+    triggers: string[];
+  };
+  psychological_drivers?: {
+    goals: string[];
+    motivations: string[];
+    key_needs: string[];
+  };
+  key_obstacles?: {
+    core_challenges: string[];
+    day_to_day_pain_points: string[];
+    perceived_barriers: string[];
+  };
+  work_lifestyle?: {
+    occupation: string;
+    industry: string;
+    income: string;
+    marital_status: string;
+    housing_status: string;
+  };
+  communication?: WeightedSignal[];
+  media_digital?: {
+    media_news_sources: WeightedSignal[];
+    social_networks: WeightedSignal[];
+    websites_visited: WeightedSignal[];
+    subreddits: string[];
+    hashtags: string[];
+    content_types: WeightedSignal[];
+  };
+  brand_commerce?: {
+    brands: WeightedSignal[];
+    shopping_websites: WeightedSignal[];
+    products: WeightedSignal[];
+    services: WeightedSignal[];
+  };
+  preferences?: {
+    sports: WeightedSignal[];
+    entertainment: WeightedSignal[];
+    news: WeightedSignal[];
+    places_likely_to_visit: WeightedSignal[];
+    events_conferences: WeightedSignal[];
+    values: WeightedSignal[];
+    hobbies: WeightedSignal[];
+    interests: WeightedSignal[];
+    tools: WeightedSignal[];
+  };
+  website_interaction?: {
+    first_interaction_day: string;
+    first_interaction_time: string;
+    influential_resources: WeightedSignal[];
+    resonating_topics: WeightedSignal[];
+  };
+  industry_specific_insights?: {
+    apparel_fashion: Record<string, WeightedSignal[]>;
+    sporting_goods: Record<string, WeightedSignal[]>;
+    consumer_goods: Record<string, WeightedSignal[]>;
+  };
 }
 
 export interface Project {
@@ -135,5 +208,3 @@ export interface StudyResults {
   qualitative_themes: QualitativeTheme[];
   recommendations: RecommendationItem[];
 }
-
-

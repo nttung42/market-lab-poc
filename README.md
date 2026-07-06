@@ -65,6 +65,14 @@ npm install
 uvicorn app.main:app --app-dir app/backend --reload --port 8000 --host 127.0.0.1
 ```
 
+Backend AI config lives in `app/backend/.env`. LiteLLM aliases can use either `GROQ_API_KEY` or `OPENROUTER_API_KEY`, for example:
+
+```text
+OPENROUTER_API_KEY=...
+LLM_ALIAS_PERSONA_DRAFTER_PROVIDER=openrouter
+LLM_ALIAS_PERSONA_DRAFTER_MODEL=openai/gpt-4o-mini
+```
+
 ### 4. Run Frontend Server
 ```bash
 cd app/frontend

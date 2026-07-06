@@ -49,6 +49,7 @@ async def generate_project_respondents(
                 },
             )
             ai_run_repository.mark_ai_run_running(db, run)
+            db.commit()
             ai_runs.append(run)
 
             execution = await generate_respondents_execution(persona, count_per_persona)
@@ -62,6 +63,7 @@ async def generate_project_respondents(
                 parsed_output=execution.parsed_output,
                 usage=execution.usage,
             )
+            db.commit()
             generated_payloads.extend(build_respondent_records(persona, execution.parsed))
     except Exception as exc:
         if ai_runs:
