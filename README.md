@@ -21,7 +21,7 @@ make start-backend
 ```
 
 ### 3. Start Frontend Dev Server
-Launch the Vite React dev server (running at `http://localhost:5173/`):
+Launch the Vite React dev server (running at `http://localhost:3000/`):
 ```bash
 make start-frontend
 ```

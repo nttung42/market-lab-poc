@@ -16,6 +16,11 @@ export const mockProjects: Project[] = [
     study_type: 'Kiểm thử concept / thông điệp mô phỏng',
     is_seeded: true,
     created_at: '2026-07-06T00:00:00.000Z',
+    avatar_text: 'EN',
+    status: 'Đang hoạt động',
+    member_count: 3,
+    updated_at: '2026-07-10T20:23:56.000Z',
+    image_url: '/mock-images/edutech.png',
   },
   {
     id: 'healthy-snack-launch',
@@ -23,12 +28,17 @@ export const mockProjects: Project[] = [
     product_description:
       'Gói snack hằng tháng được tuyển chọn cho nhân viên văn phòng bận rộn muốn thay thế đồ ăn vặt tiện lợi bằng lựa chọn lành mạnh hơn và có nguồn gốc địa phương.',
     industry: 'Hàng tiêu dùng',
-    market: 'Khối văn phòng tại Hà Nội và TP.HCM',
+    market: 'Hà Nội & TP.HCM',
     target_audience: 'Nhân viên văn phòng từ 24-35 tuổi',
     research_objective: 'Xác thực góc định vị hấp dẫn nhất cho người đăng ký lần đầu',
     study_type: 'Kiểm thử concept / thông điệp mô phỏng',
     is_seeded: false,
     created_at: '2026-07-05T00:00:00.000Z',
+    avatar_text: 'SN',
+    status: 'Đang hoạt động',
+    member_count: 5,
+    updated_at: '2026-07-09T22:23:56.000Z',
+    image_url: '/mock-images/snack.png',
   },
 ];
 

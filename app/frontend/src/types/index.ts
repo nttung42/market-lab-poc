@@ -130,6 +130,11 @@ export interface Project {
   is_seeded: boolean;
   created_at: string;
   personas?: Persona[];
+  avatar_text?: string;
+  status?: string;
+  member_count?: number;
+  updated_at?: string;
+  image_url?: string;
 }
 
 export interface Respondent {

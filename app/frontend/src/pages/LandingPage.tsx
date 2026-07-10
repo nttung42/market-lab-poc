@@ -23,7 +23,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useState } from 'react';
-import { Link, NavLink, Outlet, useNavigate } from 'react-router';
+import { Link, NavLink, Outlet } from 'react-router';
 
 interface IconCard {
   title: string;
@@ -237,34 +237,12 @@ const IconCardView = ({ title, body, icon: Icon }: IconCard) => (
   </article>
 );
 
-const GoogleLogo = () => (
-  <svg aria-hidden="true" className="h-5 w-5 shrink-0" viewBox="0 0 24 24">
-    <path
-      d="M21.805 12.227c0-.764-.068-1.497-.195-2.197H12v4.158h5.49a4.697 4.697 0 0 1-2.037 3.084v2.561h3.3c1.931-1.779 3.052-4.402 3.052-7.606Z"
-      fill="#4285F4"
-    />
-    <path
-      d="M12 22c2.754 0 5.062-.912 6.75-2.467l-3.3-2.561c-.913.612-2.08.975-3.45.975-2.649 0-4.893-1.789-5.694-4.192H2.894v2.642A9.999 9.999 0 0 0 12 22Z"
-      fill="#34A853"
-    />
-    <path
-      d="M6.306 13.755A5.996 5.996 0 0 1 5.988 12c0-.609.105-1.201.318-1.755V7.603H2.894A9.999 9.999 0 0 0 2 12c0 1.61.385 3.135 1.066 4.397l3.24-2.642Z"
-      fill="#FBBC05"
-    />
-    <path
-      d="M12 6.053c1.498 0 2.844.515 3.904 1.526l2.928-2.928C17.058 2.999 14.75 2 12 2a9.999 9.999 0 0 0-9.106 5.603l3.412 2.642C7.107 7.842 9.351 6.053 12 6.053Z"
-      fill="#EA4335"
-    />
-  </svg>
-);
-
 // LandingLayout handles the header, footer, navigation links, and login modals for all sub-pages.
 interface LandingLayoutProps {
   onStart: () => void;
 }
 
 export const LandingLayout = ({ onStart }: LandingLayoutProps) => {
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -296,13 +274,12 @@ export const LandingLayout = ({ onStart }: LandingLayoutProps) => {
           </nav>
 
           <div className="hidden items-center gap-3 md:flex">
-            <button
-              type="button"
-              onClick={() => setIsLoginOpen(true)}
+            <Link
+              to="/login"
               className="rounded-lg px-3 py-2 text-sm font-bold text-ml-ink transition-colors hover:bg-ml-surface cursor-pointer"
             >
               Đăng nhập
-            </button>
+            </Link>
             <button
               type="button"
               onClick={onStart}
@@ -340,16 +317,13 @@ export const LandingLayout = ({ onStart }: LandingLayoutProps) => {
                 </NavLink>
               ))}
               <hr className="border-ml-border/50 my-2" />
-              <button
-                type="button"
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  setIsLoginOpen(true);
-                }}
-                className="w-full text-left py-2 text-base font-bold text-ml-ink cursor-pointer"
+              <Link
+                to="/login"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block w-full text-left py-2 text-base font-bold text-ml-ink cursor-pointer"
               >
                 Đăng nhập
-              </button>
+              </Link>
               <button
                 type="button"
                 onClick={() => {
@@ -421,122 +395,7 @@ export const LandingLayout = ({ onStart }: LandingLayoutProps) => {
         </div>
       </footer>
 
-      {isLoginOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ml-ink/45 p-5 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-[620px] overflow-hidden rounded-3xl border border-ml-border bg-white shadow-2xl">
-            <div className="absolute inset-0 bg-[radial-gradient(#d8dde3_1px,transparent_1px)] [background-size:22px_22px] opacity-45" />
-            <div className="relative px-6 py-8 sm:px-12 sm:py-11">
-              <button
-                type="button"
-                onClick={() => setIsLoginOpen(false)}
-                className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full border border-ml-border bg-white text-ml-ink-muted transition-colors hover:bg-ml-surface hover:text-ml-ink cursor-pointer"
-                aria-label="Đóng đăng nhập"
-              >
-                <X size={18} />
-              </button>
 
-              <div className="pr-10">
-                <h2 className="text-[30px] font-black leading-tight tracking-normal text-ml-ink md:text-[38px]">
-                  Chào mừng trở lại
-                </h2>
-                <p className="mt-3 text-lg font-medium text-ml-ink-muted">
-                  Đăng nhập để tiếp tục nghiên cứu.
-                </p>
-              </div>
-
-              <div className="mt-8">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsLoginOpen(false);
-                    onStart();
-                  }}
-                  className="flex h-14 w-full items-center justify-center gap-3 rounded-xl border border-ml-border bg-white text-base font-bold text-ml-ink shadow-sm transition-colors hover:border-ml-blue/40 hover:bg-ml-blue-soft/25 cursor-pointer"
-                >
-                  <GoogleLogo />
-                  Tiếp tục với Google
-                </button>
-
-                <div className="my-8 flex items-center gap-4">
-                  <span className="h-px flex-1 bg-ml-border" />
-                  <span className="text-xs font-black uppercase tracking-[0.22em] text-ml-ink-muted">Hoặc</span>
-                  <span className="h-px flex-1 bg-ml-border" />
-                </div>
-
-                <form
-                  className="space-y-5"
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    setIsLoginOpen(false);
-                    onStart();
-                  }}
-                >
-                  <div>
-                    <label htmlFor="login-email" className="block text-sm font-bold text-ml-ink">
-                      Email công việc
-                    </label>
-                    <input
-                      id="login-email"
-                      type="email"
-                      required
-                      placeholder="ban@congty.com"
-                      className="mt-2 h-14 w-full rounded-xl border border-ml-border bg-white px-5 text-base font-medium text-ml-ink outline-none transition focus:border-ml-blue focus:ring-2 focus:ring-ml-blue/20"
-                    />
-                  </div>
-
-                  <div>
-                    <div className="flex items-center justify-between gap-4">
-                      <label htmlFor="login-password" className="block text-sm font-bold text-ml-ink">
-                        Mật khẩu
-                      </label>
-                      <button type="button" className="text-sm font-bold text-ml-blue hover:text-ml-blue-strong">
-                        Quên?
-                      </button>
-                    </div>
-                    <input
-                      id="login-password"
-                      type="password"
-                      required
-                      placeholder="••••••••"
-                      className="mt-2 h-14 w-full rounded-xl border border-ml-border bg-white px-5 text-base font-medium text-ml-ink outline-none transition focus:border-ml-blue focus:ring-2 focus:ring-ml-blue/20"
-                    />
-                  </div>
-
-                  <label className="flex items-center gap-3 text-base font-medium text-ml-ink cursor-pointer">
-                    <input
-                      type="checkbox"
-                      defaultChecked
-                      className="h-5 w-5 rounded border-ml-border accent-ml-blue"
-                    />
-                    Ghi nhớ đăng nhập
-                  </label>
-
-                  <button
-                    type="submit"
-                    className="h-14 w-full rounded-xl bg-ml-blue text-lg font-black text-white shadow-sm transition-colors hover:bg-ml-blue-strong cursor-pointer"
-                  >
-                    Đăng nhập
-                  </button>
-                </form>
-
-                <p className="mt-7 text-center text-base font-medium text-ml-ink-muted">
-                  Mới biết Market Lab?{' '}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsLoginOpen(false);
-                      onStart();
-                    }}
-                    className="font-bold text-ml-blue hover:text-ml-blue-strong cursor-pointer"
-                  >
-                    Tạo tài khoản
-                  </button>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

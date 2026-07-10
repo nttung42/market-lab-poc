@@ -1,96 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import { getProjectStudies, createStudy, addQuestion, runStudy, getProjectPersonas, updateStudy, deleteStudy } from '../api/client';
-import type { Study, Persona } from '../types';
-import { 
-  ClipboardList, 
-  Plus, 
-  Play, 
-  Sparkles, 
-  Trash2, 
-  Loader2, 
-  HelpCircle,
-  AlertTriangle,
-  Edit,
-  Check,
-  X
-} from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import {
+  addQuestion,
+  createStudy,
+  deleteStudy,
+  getProjectPersonas,
+  getProjectStudies,
+  runStudy,
+  updateStudy,
+} from '../api/client';
+import { StudyBuilderHeader } from '../features/study-builder/StudyBuilderHeader';
+import { StudyBuilderLoading } from '../features/study-builder/StudyBuilderLoading';
+import { StudyBuilderQuestionBuilder } from '../features/study-builder/StudyBuilderQuestionBuilder';
+import { StudyBuilderSidebar } from '../features/study-builder/StudyBuilderSidebar';
+import { StudyBuilderSimulationOverlay } from '../features/study-builder/StudyBuilderSimulationOverlay';
+import type { NewQuestionState } from '../features/study-builder/studyBuilder.types';
+import { isChoiceQuestion } from '../features/study-builder/studyBuilder.utils';
+import type { Persona, Study } from '../types';
 
 interface StudyBuilderProps {
   projectId: string;
   onNavigateToResults: (studyId: string) => void;
 }
 
-interface NewQuestionState {
-  text: string;
-  type: 'single_choice' | 'multi_choice' | 'likert' | 'open_text';
-  options: string[];
-}
-
-export const StudyBuilder: React.FC<StudyBuilderProps> = ({
+export const StudyBuilder = ({
   projectId,
   onNavigateToResults,
-}) => {
-  const studyStatusLabel = (status: Study['status']) =>
-    status === 'completed' ? 'HOÀN TẤT' : status === 'running' ? 'ĐANG CHẠY' : 'BẢN NHÁP';
+}: StudyBuilderProps) => {
   const [studies, setStudies] = useState<Study[]>([]);
   const [activeStudy, setActiveStudy] = useState<Study | null>(null);
   const [personas, setPersonas] = useState<Persona[]>([]);
   const [selectedPersonas, setSelectedPersonas] = useState<string[]>([]);
-  
-  // Form State
   const [newStudyTitle, setNewStudyTitle] = useState('');
   const [newQuestion, setNewQuestion] = useState<NewQuestionState>({
     text: '',
     type: 'single_choice',
     options: ['', ''],
   });
-
-  // Loading & Progress States
   const [loading, setLoading] = useState(true);
   const [savingStudy, setSavingStudy] = useState(false);
   const [runningSim, setRunningSim] = useState(false);
   const [simProgress, setSimProgress] = useState(0);
   const [simStatusText, setSimStatusText] = useState('');
-
-  // Study Rename & Delete State
   const [isEditingStudyTitle, setIsEditingStudyTitle] = useState(false);
   const [editedStudyTitle, setEditedStudyTitle] = useState('');
 
-  const handleDeleteActiveStudy = async () => {
-    if (!activeStudy) return;
-    if (!confirm(`Bạn có chắc muốn xóa nghiên cứu "${activeStudy.title}"? Thao tác này sẽ xóa vĩnh viễn toàn bộ phản hồi mô phỏng.`)) {
-      return;
-    }
-    
-    setLoading(true);
-    try {
-      await deleteStudy(activeStudy.id);
-      const list = studies.filter(s => s.id !== activeStudy.id);
-      setStudies(list);
-      setActiveStudy(list[0] || null);
-    } catch (err) {
-      console.error('Không thể xóa nghiên cứu', err);
-      alert('Không thể xóa nghiên cứu.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRenameActiveStudy = async () => {
-    if (!activeStudy || !editedStudyTitle.trim()) return;
-    try {
-      const updated = await updateStudy(activeStudy.id, editedStudyTitle.trim());
-      setStudies(prev => prev.map(s => s.id === activeStudy.id ? { ...s, title: updated.title } : s));
-      setActiveStudy(prev => prev ? { ...prev, title: updated.title } : null);
-      setIsEditingStudyTitle(false);
-    } catch (err) {
-      console.error('Không thể đổi tên nghiên cứu', err);
-      alert('Không thể đổi tên nghiên cứu.');
-    }
-  };
-
   useEffect(() => {
-    loadInitialData();
+    void loadInitialData();
   }, [projectId]);
 
   const loadInitialData = async () => {
@@ -98,51 +54,103 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
     try {
       const [studiesData, personasData] = await Promise.all([
         getProjectStudies(projectId),
-        getProjectPersonas(projectId)
+        getProjectPersonas(projectId),
       ]);
       setStudies(studiesData);
       setPersonas(personasData);
-      setSelectedPersonas(personasData.map(p => p.id)); // select all by default
+      setSelectedPersonas(personasData.map((persona) => persona.id));
 
-      // Default to completed seeded study if it exists, or the first draft
-      const completed = studiesData.find(s => s.status === 'completed');
-      const draft = studiesData.find(s => s.status === 'draft');
+      const completed = studiesData.find((study) => study.status === 'completed');
+      const draft = studiesData.find((study) => study.status === 'draft');
       setActiveStudy(completed || draft || studiesData[0] || null);
-    } catch (err) {
-      console.error('Không thể tải dữ liệu ban đầu', err);
+    } catch (error) {
+      console.error('Không thể tải dữ liệu ban đầu', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCreateStudy = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newStudyTitle.trim()) return;
-    
+  const handleDeleteActiveStudy = async () => {
+    if (!activeStudy) {
+      return;
+    }
+
+    if (
+      !confirm(
+        `Bạn có chắc muốn xóa nghiên cứu "${activeStudy.title}"? Thao tác này sẽ xóa vĩnh viễn toàn bộ phản hồi mô phỏng.`,
+      )
+    ) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await deleteStudy(activeStudy.id);
+      const nextStudies = studies.filter((study) => study.id !== activeStudy.id);
+      setStudies(nextStudies);
+      setActiveStudy(nextStudies[0] || null);
+    } catch (error) {
+      console.error('Không thể xóa nghiên cứu', error);
+      alert('Không thể xóa nghiên cứu.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRenameActiveStudy = async () => {
+    if (!activeStudy || !editedStudyTitle.trim()) {
+      return;
+    }
+
+    try {
+      const updated = await updateStudy(activeStudy.id, editedStudyTitle.trim());
+      setStudies((current) =>
+        current.map((study) =>
+          study.id === activeStudy.id ? { ...study, title: updated.title } : study,
+        ),
+      );
+      setActiveStudy((current) =>
+        current ? { ...current, title: updated.title } : null,
+      );
+      setIsEditingStudyTitle(false);
+    } catch (error) {
+      console.error('Không thể đổi tên nghiên cứu', error);
+      alert('Không thể đổi tên nghiên cứu.');
+    }
+  };
+
+  const handleCreateStudy = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!newStudyTitle.trim()) {
+      return;
+    }
+
     setSavingStudy(true);
     try {
       const study = await createStudy(projectId, newStudyTitle);
-      setStudies(prev => [study, ...prev]);
+      setStudies((current) => [study, ...current]);
       setActiveStudy(study);
       setNewStudyTitle('');
-    } catch (err) {
-      console.error('Không thể tạo nghiên cứu', err);
+    } catch (error) {
+      console.error('Không thể tạo nghiên cứu', error);
     } finally {
       setSavingStudy(false);
     }
   };
 
   const handleAddQuestion = async () => {
-    if (!activeStudy || !newQuestion.text.trim()) return;
+    if (!activeStudy || !newQuestion.text.trim()) {
+      return;
+    }
 
     const questionId = `q-${Date.now()}`;
-    const formattedOptions = newQuestion.type === 'single_choice' || newQuestion.type === 'multi_choice'
+    const formattedOptions = isChoiceQuestion(newQuestion.type)
       ? newQuestion.options
-          .filter(opt => opt.trim() !== '')
-          .map((opt, idx) => ({
-            id: `opt-${idx}-${Date.now()}`,
-            text: opt,
-            value: opt.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+          .filter((option) => option.trim() !== '')
+          .map((option, index) => ({
+            id: `opt-${index}-${Date.now()}`,
+            text: option,
+            value: option.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
           }))
       : [];
 
@@ -151,43 +159,47 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
       text: newQuestion.text,
       type: newQuestion.type,
       position: (activeStudy.questions?.length || 0) + 1,
-      options: formattedOptions
+      options: formattedOptions,
     };
 
     try {
       await addQuestion(activeStudy.id, questionData);
-      // Reload active study from backend to get refreshed questions list
-      loadInitialData();
-      // Reset question form
+      await loadInitialData();
       setNewQuestion({
         text: '',
         type: 'single_choice',
         options: ['', ''],
       });
-    } catch (err) {
-      console.error('Không thể thêm câu hỏi', err);
+    } catch (error) {
+      console.error('Không thể thêm câu hỏi', error);
     }
   };
 
   const handleRunSimulation = async () => {
-    if (!activeStudy) return;
+    if (!activeStudy) {
+      return;
+    }
+
     setRunningSim(true);
     setSimProgress(5);
     setSimStatusText('Đang khởi tạo nhóm mô phỏng...');
 
-    // Visual simulator progress interval
     const interval = setInterval(() => {
-      setSimProgress(prev => {
-        if (prev >= 90) {
+      setSimProgress((current) => {
+        if (current >= 90) {
           clearInterval(interval);
           return 90;
         }
+
         const step = Math.random() > 0.5 ? 15 : 5;
-        // Update messages based on progress
-        if (prev > 70) setSimStatusText('Đang tổng hợp insight và khuyến nghị...');
-        else if (prev > 40) setSimStatusText('Đang mô phỏng quy tắc ra quyết định...');
-        else if (prev > 20) setSimStatusText('Đang mô phỏng sở thích theo nhóm...');
-        return prev + step;
+        if (current > 70) {
+          setSimStatusText('Đang tổng hợp insight và khuyến nghị...');
+        } else if (current > 40) {
+          setSimStatusText('Đang mô phỏng quy tắc ra quyết định...');
+        } else if (current > 20) {
+          setSimStatusText('Đang mô phỏng sở thích theo nhóm...');
+        }
+        return current + step;
       });
     }, 400);
 
@@ -200,422 +212,106 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
         setRunningSim(false);
         onNavigateToResults(activeStudy.id);
       }, 1000);
-    } catch (err) {
+    } catch (error) {
       clearInterval(interval);
       setRunningSim(false);
-      alert('Chạy mô phỏng thất bại. Hãy kiểm tra rằng bạn đã tạo nhóm người tham gia trước.');
+      alert(
+        'Chạy mô phỏng thất bại. Hãy kiểm tra rằng bạn đã tạo nhóm người tham gia trước.',
+      );
     }
   };
 
   const addOptionField = () => {
-    setNewQuestion(prev => ({
-      ...prev,
-      options: [...prev.options, '']
+    setNewQuestion((current) => ({
+      ...current,
+      options: [...current.options, ''],
     }));
   };
 
-  const removeOptionField = (idx: number) => {
-    setNewQuestion(prev => ({
-      ...prev,
-      options: prev.options.filter((_, i) => i !== idx)
+  const removeOptionField = (index: number) => {
+    setNewQuestion((current) => ({
+      ...current,
+      options: current.options.filter((_, optionIndex) => optionIndex !== index),
     }));
   };
 
-  const handleOptionChange = (idx: number, value: string) => {
-    setNewQuestion(prev => {
-      const opts = [...prev.options];
-      opts[idx] = value;
-      return { ...prev, options: opts };
-    });
+  const togglePersona = (personaId: string) => {
+    setSelectedPersonas((current) =>
+      current.includes(personaId)
+        ? current.filter((id) => id !== personaId)
+        : [...current, personaId],
+    );
   };
 
   if (loading) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center py-24">
-        <Loader2 size={36} className="text-ml-blue animate-spin mb-4" />
-        <p className="text-xs font-semibold text-ml-ink-muted uppercase tracking-widest">Đang tải trình tạo nghiên cứu...</p>
-      </div>
-    );
+    return <StudyBuilderLoading />;
   }
 
   return (
-    <div className="flex-1 max-w-5xl mx-auto w-full px-6 py-6 space-y-6 text-ml-ink">
-      
-      {/* Simulation Overlay Progress Monitor */}
+    <div className="mx-auto flex-1 w-full max-w-5xl space-y-6 px-6 py-6 text-ml-ink">
       {runningSim && (
-        <div className="fixed inset-0 bg-ml-ink/80 backdrop-blur-xs flex items-center justify-center z-50 p-6">
-          <div className="bg-white rounded-lg border border-ml-border max-w-md w-full p-8 text-center space-y-6 shadow-xl">
-            <div className="w-16 h-16 bg-ml-blue-soft text-ml-blue rounded-full flex items-center justify-center mx-auto">
-              <Loader2 size={32} className="animate-spin" />
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-lg font-bold uppercase tracking-wide">Phiên chạy nghiên cứu mô phỏng</h3>
-              <p className="text-sm font-semibold text-ml-blue">{simStatusText}</p>
-            </div>
-            <div className="space-y-1">
-              <div className="w-full h-3 bg-ml-surface rounded-full overflow-hidden border border-ml-border">
-                <div 
-                  className="h-full bg-ml-blue transition-all duration-300 ease-out"
-                  style={{ width: `${simProgress}%` }}
-                ></div>
-              </div>
-              <div className="flex justify-between text-[11px] text-ml-ink-muted font-bold">
-                <span>0%</span>
-                <span>{simProgress}%</span>
-                <span>100%</span>
-              </div>
-            </div>
-            <div className="p-4 bg-ml-surface rounded border border-ml-border text-left">
-              <div className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider mb-1">Nhật ký thực thi</div>
-              <div className="text-[11px] font-mono text-ml-ink leading-relaxed space-y-0.5 max-h-24 overflow-y-auto">
-                <div className="text-ml-success">✔ Đã khởi tạo mô phỏng nghiên cứu</div>
-                <div>✔ Đã lấy {selectedPersonas.length} chân dung mục tiêu</div>
-                <div>✔ Đã tìm thấy 15 người tham gia mô phỏng</div>
-                {simProgress > 20 && <div>▶ Đang gửi tác vụ tới các nhóm ảo...</div>}
-                {simProgress > 50 && <div className="text-ml-success">✔ Đã lưu phản hồi mô phỏng</div>}
-                {simProgress > 80 && <div>▶ Đang trích xuất kết quả và tóm tắt...</div>}
-              </div>
-            </div>
-          </div>
-        </div>
+        <StudyBuilderSimulationOverlay
+          simProgress={simProgress}
+          simStatusText={simStatusText}
+          selectedPersonaCount={selectedPersonas.length}
+        />
       )}
 
-      {/* Hero Header */}
-      <div className="rounded-lg border border-ml-border bg-white p-6 border-l-4 border-l-ml-blue shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 text-[10px] font-bold tracking-wider text-white bg-ml-blue rounded uppercase">
-              MVP giai đoạn 1
-            </span>
-            <span className="text-[11px] font-bold text-ml-ink-muted uppercase tracking-wider">Khám phá thông điệp</span>
-          </div>
-          <h1 className="text-2xl font-black tracking-tight uppercase">Trình tạo nghiên cứu</h1>
-          <p className="text-xs text-ml-ink-muted font-medium">
-            Thiết kế khảo sát và chạy kiểm thử concept với các nhóm mô phỏng.
-          </p>
-        </div>
-
-        {/* Study Selector */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-          {isEditingStudyTitle ? (
-            <div className="flex items-center gap-1.5">
-              <input
-                type="text"
-                value={editedStudyTitle}
-                onChange={(e) => setEditedStudyTitle(e.target.value)}
-                className="border border-ml-border px-3 py-1.5 rounded-lg text-xs font-bold focus:outline-none focus:ring-1 focus:ring-ml-blue bg-white"
-              />
-              <button
-                onClick={handleRenameActiveStudy}
-                className="p-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 rounded-lg transition-colors cursor-pointer"
-                title="Lưu tiêu đề"
-              >
-                <Check size={14} />
-              </button>
-              <button
-                onClick={() => setIsEditingStudyTitle(false)}
-                className="p-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 rounded-lg transition-colors cursor-pointer"
-                title="Hủy"
-              >
-                <X size={14} />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1.5">
-              <div className="relative">
-                <select
-                  value={activeStudy?.id || ''}
-                  onChange={(e) => setActiveStudy(studies.find(s => s.id === e.target.value) || null)}
-                  className="bg-white border border-ml-border px-4 py-2 rounded-lg text-xs font-bold text-ml-ink focus:outline-none focus:ring-1 focus:ring-ml-blue pr-8 appearance-none cursor-pointer"
-                >
-                  <option value="" disabled>Chọn nghiên cứu...</option>
-                  {studies.map(s => (
-                    <option key={s.id} value={s.id}>
-                      {s.title} ({studyStatusLabel(s.status)})
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-ml-ink-muted text-xs">▼</div>
-              </div>
-              {activeStudy && (
-                <>
-                  <button
-                    onClick={() => {
-                      setEditedStudyTitle(activeStudy.title);
-                      setIsEditingStudyTitle(true);
-                    }}
-                    className="p-2 border border-ml-border hover:bg-ml-surface text-ml-ink-muted hover:text-ml-blue rounded-lg transition-colors cursor-pointer"
-                    title="Đổi tên nghiên cứu"
-                  >
-                    <Edit size={14} />
-                  </button>
-                  <button
-                    onClick={handleDeleteActiveStudy}
-                    className="p-2 border border-ml-border hover:bg-ml-surface text-ml-ink-muted hover:text-ml-danger rounded-lg transition-colors cursor-pointer"
-                    title="Xóa nghiên cứu"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </>
-              )}
-            </div>
-          )}
-
-          <form onSubmit={handleCreateStudy} className="flex gap-1.5">
-            <input
-              type="text"
-              placeholder="Tên nghiên cứu mới..."
-              value={newStudyTitle}
-              onChange={(e) => setNewStudyTitle(e.target.value)}
-              className="border border-ml-border px-3 py-2 rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-ml-blue bg-white w-full sm:w-44"
-            />
-            <button
-              type="submit"
-              disabled={savingStudy || !newStudyTitle.trim()}
-              className="px-3 py-2 bg-ml-ink hover:bg-ml-ink-muted disabled:bg-ml-border text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
-            >
-              {savingStudy ? <Loader2 size={12} className="animate-spin" /> : <Plus size={14} />}
-              TẠO
-            </button>
-          </form>
-        </div>
-      </div>
+      <StudyBuilderHeader
+        studies={studies}
+        activeStudy={activeStudy}
+        isEditingStudyTitle={isEditingStudyTitle}
+        editedStudyTitle={editedStudyTitle}
+        newStudyTitle={newStudyTitle}
+        savingStudy={savingStudy}
+        onEditedStudyTitleChange={setEditedStudyTitle}
+        onNewStudyTitleChange={setNewStudyTitle}
+        onSelectStudy={(studyId) =>
+          setActiveStudy(studies.find((study) => study.id === studyId) || null)
+        }
+        onStartRename={() => {
+          if (!activeStudy) {
+            return;
+          }
+          setEditedStudyTitle(activeStudy.title);
+          setIsEditingStudyTitle(true);
+        }}
+        onConfirmRename={handleRenameActiveStudy}
+        onCancelRename={() => setIsEditingStudyTitle(false)}
+        onDeleteActiveStudy={handleDeleteActiveStudy}
+        onCreateStudy={handleCreateStudy}
+      />
 
       {activeStudy ? (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-          
-          {/* Main Question Config Block */}
-          <div className="lg:col-span-2 space-y-6">
-            
-            {/* List of Existing Questions */}
-            <div className="bg-white rounded-lg border border-ml-border p-6 space-y-6">
-              <h2 className="text-sm font-black uppercase tracking-wider border-b border-ml-border pb-3 flex items-center gap-2">
-                <ClipboardList size={18} className="text-ml-blue" />
-                Câu hỏi nghiên cứu ({activeStudy.questions?.length || 0})
-              </h2>
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
+          <StudyBuilderQuestionBuilder
+            activeStudy={activeStudy}
+            newQuestion={newQuestion}
+            onQuestionChange={setNewQuestion}
+            onAddQuestion={handleAddQuestion}
+            onAddOptionField={addOptionField}
+            onRemoveOptionField={removeOptionField}
+          />
 
-              {activeStudy.questions && activeStudy.questions.length > 0 ? (
-                <div className="space-y-4">
-                  {activeStudy.questions
-                    .sort((a, b) => a.position - b.position)
-                    .map((q, idx) => (
-                      <div key={q.id} className="p-4 bg-ml-surface/40 border border-ml-border rounded-lg space-y-3 relative group">
-                        <div className="flex justify-between items-start gap-4">
-                          <div className="space-y-1">
-                            <span className="text-[10px] font-bold text-ml-blue bg-ml-blue-soft px-2 py-0.5 rounded border border-ml-blue/10 uppercase">
-                              Câu {idx + 1} • {q.type.replace('_', ' ')}
-                            </span>
-                            <h3 className="text-sm font-bold leading-relaxed">{q.text}</h3>
-                          </div>
-                        </div>
-
-                        {/* Options display */}
-                        {q.options && q.options.length > 0 && (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                            {q.options.map(opt => (
-                              <div key={opt.id} className="px-3 py-1.5 bg-white border border-ml-border/60 rounded text-xs text-ml-ink-muted font-medium">
-                                <span className="font-bold text-ml-ink mr-1">{opt.value.toUpperCase()}:</span> {opt.text}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 text-ml-ink-muted border border-dashed border-ml-border rounded-lg bg-ml-surface/20 space-y-2">
-                  <HelpCircle size={28} className="mx-auto text-ml-border" />
-                  <p className="text-xs font-bold uppercase tracking-wider">Chưa có câu hỏi nào</p>
-                  <p className="text-xs text-ml-ink-muted max-w-xs mx-auto">Hãy dùng khung bên dưới để tạo và thêm câu hỏi khảo sát đầu tiên.</p>
-                </div>
-              )}
-            </div>
-
-            {/* Create New Question Panel */}
-            <div className="bg-white rounded-lg border border-ml-border p-6 space-y-5">
-              <h2 className="text-sm font-black uppercase tracking-wider border-b border-ml-border pb-3 flex items-center gap-2">
-                <Plus size={18} className="text-ml-blue" />
-                Thêm câu hỏi
-              </h2>
-
-              <div className="space-y-4">
-                {/* Question Type */}
-                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                  <div className="sm:col-span-1">
-                    <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block mb-1">Loại câu hỏi</label>
-                    <select
-                      value={newQuestion.type}
-                      onChange={(e) => setNewQuestion(prev => ({ 
-                        ...prev, 
-                        type: e.target.value as any, 
-                        options: e.target.value === 'single_choice' || e.target.value === 'multi_choice' ? ['', ''] : [] 
-                      }))}
-                      className="w-full bg-white border border-ml-border px-3 py-2 rounded-lg text-xs font-bold focus:outline-none focus:ring-1 focus:ring-ml-blue"
-                    >
-                      <option value="single_choice">Một lựa chọn</option>
-                      <option value="multi_choice">Nhiều lựa chọn</option>
-                      <option value="likert">Thang Likert</option>
-                      <option value="open_text">Câu trả lời mở</option>
-                    </select>
-                  </div>
-
-                  {/* Question Text */}
-                  <div className="sm:col-span-3">
-                    <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block mb-1">Nội dung câu hỏi</label>
-                    <input
-                      type="text"
-                      placeholder="Ví dụ: Gói giá nào phù hợp với ngân sách của bạn?"
-                      value={newQuestion.text}
-                      onChange={(e) => setNewQuestion(prev => ({ ...prev, text: e.target.value }))}
-                      className="w-full border border-ml-border px-3 py-2 rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-ml-blue bg-white"
-                    />
-                  </div>
-                </div>
-
-                {/* Option inputs (choice types only) */}
-                {(newQuestion.type === 'single_choice' || newQuestion.type === 'multi_choice') && (
-                  <div className="space-y-2.5 p-4 bg-ml-surface/30 rounded-lg border border-ml-border">
-                    <div className="flex items-center justify-between">
-                      <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider">Các lựa chọn</label>
-                      <button
-                        type="button"
-                        onClick={addOptionField}
-                        className="text-[10px] font-bold text-ml-blue hover:underline uppercase flex items-center gap-0.5"
-                      >
-                        <Plus size={10} /> Thêm lựa chọn
-                      </button>
-                    </div>
-
-                    <div className="space-y-2">
-                      {newQuestion.options.map((opt, idx) => (
-                        <div key={idx} className="flex gap-2 items-center">
-                          <span className="text-xs font-mono text-ml-ink-muted">{idx + 1}.</span>
-                          <input
-                            type="text"
-                            placeholder={`Nội dung lựa chọn ${idx + 1}...`}
-                            value={opt}
-                            onChange={(e) => handleOptionChange(idx, e.target.value)}
-                            className="flex-1 border border-ml-border px-3 py-1.5 rounded text-xs font-medium focus:outline-none focus:ring-1 focus:ring-ml-blue bg-white"
-                          />
-                          {newQuestion.options.length > 2 && (
-                            <button
-                              type="button"
-                              onClick={() => removeOptionField(idx)}
-                              className="p-1.5 hover:bg-ml-danger/10 text-ml-danger rounded transition-colors"
-                            >
-                              <Trash2 size={13} />
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <button
-                  type="button"
-                  onClick={handleAddQuestion}
-                  disabled={!newQuestion.text.trim() || ((newQuestion.type === 'single_choice' || newQuestion.type === 'multi_choice') && newQuestion.options.filter(o => o.trim()).length < 2)}
-                  className="w-full flex items-center justify-center gap-1.5 py-2.5 px-4 bg-ml-ink hover:bg-ml-ink-muted disabled:bg-ml-border text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
-                >
-                  <Plus size={14} />
-                  THÊM VÀO KHẢO SÁT
-                </button>
-              </div>
-            </div>
-
-          </div>
-
-          {/* Right Sidebar: Panel Configuration & Execution Trigger */}
-          <div className="space-y-6">
-            
-            {/* Target Cohort Panel Selector */}
-            <div className="bg-white rounded-lg border border-ml-border p-6 space-y-6">
-              <div className="space-y-1">
-                <h2 className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
-                  <Sparkles size={18} className="text-ml-blue" />
-                  Chọn nhóm mục tiêu
-                </h2>
-                <p className="text-[11px] text-ml-ink-muted font-medium">Chọn các chân dung sẽ tham gia vào phiên mô phỏng nghiên cứu.</p>
-              </div>
-
-              <div className="space-y-3 border-t border-ml-border pt-4">
-                {personas.map(persona => {
-                  const isChecked = selectedPersonas.includes(persona.id);
-                  return (
-                    <label key={persona.id} className="flex items-start gap-3 p-2.5 rounded-lg border border-ml-border hover:bg-ml-surface/40 transition-colors cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => {
-                          setSelectedPersonas(prev => 
-                            isChecked ? prev.filter(id => id !== persona.id) : [...prev, persona.id]
-                          );
-                        }}
-                        className="mt-0.5 w-4 h-4 rounded text-ml-blue focus:ring-ml-blue focus:ring-offset-0 border-ml-border"
-                      />
-                      <div className="space-y-0.5">
-                        <div className="text-xs font-bold text-ml-ink">{persona.name}</div>
-                        <div className="text-[10px] text-ml-ink-muted font-bold uppercase tracking-wider">{persona.segment}</div>
-                        <div className="text-[10px] text-ml-blue font-semibold">Quy mô nhóm: 5 người mô phỏng</div>
-                      </div>
-                    </label>
-                  );
-                })}
-              </div>
-
-              {selectedPersonas.length === 0 && (
-                <div className="flex gap-2 p-3 bg-ml-danger/10 border border-ml-danger/20 rounded-lg text-ml-danger items-start">
-                  <AlertTriangle size={16} className="mt-0.5 shrink-0" />
-                  <span className="text-[10px] font-semibold leading-relaxed">Vui lòng chọn ít nhất một nhóm chân dung để tham gia mô phỏng.</span>
-                </div>
-              )}
-            </div>
-
-            {/* Run Study Trigger Card */}
-            <div className="bg-white rounded-lg border border-ml-border p-6 space-y-6">
-              <div className="space-y-1">
-                <h2 className="text-sm font-black uppercase tracking-wider">Khởi chạy mô phỏng</h2>
-                <p className="text-[11px] text-ml-ink-muted font-medium">Chi phí ước tính: ~0.02 USD (mô phỏng mẫu là miễn phí và offline)</p>
-              </div>
-
-              <div className="space-y-3.5 border-t border-ml-border pt-4 text-xs font-medium text-ml-ink-muted leading-relaxed">
-                <div className="flex justify-between border-b border-ml-border/50 pb-1.5">
-                  <span className="font-bold">Tổng số người tham gia:</span>
-                  <span className="font-bold text-ml-ink">{selectedPersonas.length * 5}</span>
-                </div>
-                <div className="flex justify-between border-b border-ml-border/50 pb-1.5">
-                  <span className="font-bold">Tổng số câu hỏi:</span>
-                  <span className="font-bold text-ml-ink">{activeStudy.questions?.length || 0}</span>
-                </div>
-                <div className="flex justify-between border-b border-ml-border/50 pb-1.5">
-                  <span className="font-bold">Bộ máy mô hình:</span>
-                  <span className="font-bold text-ml-blue">Rule-engine mô phỏng dự phòng</span>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleRunSimulation}
-                disabled={selectedPersonas.length === 0 || !activeStudy.questions || activeStudy.questions.length === 0}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-ml-blue hover:bg-ml-blue-strong disabled:bg-ml-border text-white text-xs font-bold rounded-lg transition-colors duration-150 shadow-xs cursor-pointer"
-              >
-                <Play size={14} fill="currentColor" />
-                CHẠY MÔ PHỎNG
-              </button>
-            </div>
-
-          </div>
-
+          <StudyBuilderSidebar
+            personas={personas}
+            selectedPersonas={selectedPersonas}
+            activeStudy={activeStudy}
+            onTogglePersona={togglePersona}
+            onRunSimulation={handleRunSimulation}
+          />
         </div>
       ) : (
-        <div className="text-center py-20 bg-white border border-ml-border rounded-lg space-y-3">
+        <div className="space-y-3 rounded-lg border border-ml-border bg-white py-20 text-center">
           <HelpCircle size={36} className="mx-auto text-ml-border" />
-          <h2 className="text-md font-bold uppercase tracking-wider">Chưa có nghiên cứu nào</h2>
-          <p className="text-xs text-ml-ink-muted max-w-sm mx-auto">Hãy tạo một nghiên cứu khảo sát bằng biểu mẫu ở phần đầu để bắt đầu xây dựng câu hỏi.</p>
+          <h2 className="text-md font-bold uppercase tracking-wider">
+            Chưa có nghiên cứu nào
+          </h2>
+          <p className="mx-auto max-w-sm text-xs text-ml-ink-muted">
+            Hãy tạo một nghiên cứu khảo sát bằng biểu mẫu ở phần đầu để bắt đầu xây dựng câu hỏi.
+          </p>
         </div>
       )}
-
     </div>
   );
 };
