@@ -33,17 +33,17 @@ interface PersonaCatalogProps {
 type PersonaTab = 'overview' | 'research' | 'buyer' | 'hybrid' | 'competitor';
 
 const EXAMPLE_PROMPTS = [
-  'Gen Z sneakerhead in New York who follows Nike SNKRS, resale prices, running culture, and streetwear.',
-  'Vietnamese final-year student preparing for IELTS speaking with a limited monthly budget.',
-  'Young professional buyer comparing AI productivity tools for a small marketing team.',
+  'Sinh viên năm cuối tại Việt Nam đang luyện IELTS Speaking với ngân sách hàng tháng hạn chế.',
+  'Nhân sự trẻ đang so sánh các công cụ AI tăng năng suất cho một đội marketing nhỏ.',
+  'Người mua mỹ phẩm Gen Z quan tâm tới routine chăm sóc da đơn giản, giá hợp lý và dễ duy trì.',
 ];
 
 const personaTabs: { id: PersonaTab; label: string; note?: string }[] = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'research', label: 'Research Persona' },
-  { id: 'buyer', label: 'Buyer Persona' },
-  { id: 'hybrid', label: 'Hybrid Persona' },
-  { id: 'competitor', label: 'Competitor Persona', note: 'Coming Soon' },
+  { id: 'overview', label: 'Tổng quan' },
+  { id: 'research', label: 'Persona nghiên cứu' },
+  { id: 'buyer', label: 'Persona người mua' },
+  { id: 'hybrid', label: 'Persona kết hợp' },
+  { id: 'competitor', label: 'Persona đối thủ', note: 'Sắp ra mắt' },
 ];
 
 const personaCreationOptions: {
@@ -66,105 +66,105 @@ const personaCreationOptions: {
 }[] = [
   {
     id: 'research',
-    eyebrow: '1. Research Persona',
-    title: 'Persona from External & Market Data',
-    subtitle: 'Research from surveys, interviews, reports, social listening, and public signals.',
+    eyebrow: '1. Persona nghiên cứu',
+    title: 'Persona từ dữ liệu thị trường bên ngoài',
+    subtitle: 'Tạo từ khảo sát, phỏng vấn, báo cáo, social listening và tín hiệu công khai.',
     description:
-      'Use when internal data is limited and you need to understand potential audiences, pain points, trends, motivations, and messaging hooks.',
+      'Dùng khi dữ liệu nội bộ còn ít và bạn cần hiểu đối tượng tiềm năng, nỗi đau, xu hướng, động lực và các điểm bám thông điệp.',
     badgeClass: 'bg-ml-blue text-white',
     iconClass: 'bg-ml-blue-soft text-ml-blue',
     icon: <Search size={26} />,
     learnMore: {
-      sourceLabel: 'Data Sources',
+      sourceLabel: 'Nguồn dữ liệu',
       sourceItems: [
-        'Surveys, interviews, market reports, and social media data',
-        'Hashtags, trends, online reviews, and public data',
-        'Target audience descriptions and research notes',
+        'Khảo sát, phỏng vấn, báo cáo thị trường và dữ liệu mạng xã hội',
+        'Hashtag, xu hướng, đánh giá online và dữ liệu công khai',
+        'Mô tả đối tượng mục tiêu và ghi chú nghiên cứu',
       ],
       purpose:
-        'Helps the team understand potential customers, pain points, behavioral trends, and initial messaging angles to test.',
+        'Giúp đội ngũ hiểu khách hàng tiềm năng, điểm đau, xu hướng hành vi và các hướng thông điệp ban đầu để kiểm thử.',
       exampleOutput:
-        "Example: 'Gen Z Urban Food Explorer' with core pain points, motivations, channels, and buying cues.",
+        "Ví dụ: 'Người trẻ thành thị thích khám phá ẩm thực' với điểm đau, động lực, kênh và tín hiệu mua hàng cốt lõi.",
     },
   },
   {
     id: 'buyer',
-    eyebrow: '2. Buyer Persona',
-    title: 'Persona from Real Business Data',
-    subtitle: 'Buyer view from CRM, sales, analytics, feedback, and purchase behavior.',
+    eyebrow: '2. Persona người mua',
+    title: 'Persona từ dữ liệu kinh doanh thực',
+    subtitle: 'Góc nhìn người mua từ CRM, bán hàng, phân tích, phản hồi và hành vi mua.',
     description:
-      'Use when first-party data is available to understand revenue-generating customers, high-value cohorts, or highly convertible segments.',
+      'Dùng khi đã có dữ liệu first-party để hiểu khách hàng tạo doanh thu, nhóm giá trị cao hoặc phân khúc dễ chuyển đổi.',
     badgeClass: 'bg-ml-success text-white',
     iconClass: 'bg-emerald-50 text-ml-success',
     icon: <BriefcaseBusiness size={26} />,
     learnMore: {
-      sourceLabel: 'Data Sources',
+      sourceLabel: 'Nguồn dữ liệu',
       sourceItems: [
-        'CRM, CSV, sales data, and purchase history',
-        'Google Analytics, website behavior, and campaign data',
-        'Customer feedback, retention signals, and conversion notes',
+        'CRM, CSV, dữ liệu bán hàng và lịch sử mua',
+        'Google Analytics, hành vi website và dữ liệu chiến dịch',
+        'Phản hồi khách hàng, tín hiệu giữ chân và ghi chú chuyển đổi',
       ],
       purpose:
-        'Helps the team understand existing customers, high-value cohorts, repurchase behavior, and real-world conversion barriers.',
+        'Giúp đội ngũ hiểu khách hàng hiện tại, nhóm giá trị cao, hành vi mua lại và rào cản chuyển đổi ngoài thực tế.',
       exampleOutput:
-        "Example: 'Repeat Office Buyer' with purchase habits, trust drivers, loyalty opportunities, and core objections.",
+        "Ví dụ: 'Nhân viên văn phòng mua lặp lại' với thói quen mua, yếu tố tạo niềm tin, cơ hội trung thành và phản đối cốt lõi.",
     },
   },
   {
     id: 'hybrid',
-    eyebrow: '3. Hybrid Persona',
-    title: 'Combine & Reconcile Research and Buyer',
-    subtitle: 'Combine market signals and business signals for more reliable personas.',
+    eyebrow: '3. Persona kết hợp',
+    title: 'Kết hợp dữ liệu nghiên cứu và người mua',
+    subtitle: 'Gộp tín hiệu thị trường và tín hiệu kinh doanh để tạo persona đáng tin cậy hơn.',
     description:
-      'Use to cross-reference market insights with internal data to build more practical personas for synthetic research.',
+      'Dùng để đối chiếu insight thị trường với dữ liệu nội bộ nhằm xây dựng persona thực tế hơn cho nghiên cứu mô phỏng.',
     badgeClass: 'bg-violet-500 text-white',
     iconClass: 'bg-violet-50 text-violet-600',
     icon: <Zap size={26} />,
     learnMore: {
-      sourceLabel: 'Data Sources',
+      sourceLabel: 'Nguồn dữ liệu',
       sourceItems: [
-        'Combine all sources from Research and Buyer Personas',
-        'Compare market assumptions with business evidence',
-        'Reconcile potential segments with current customer signals',
+        'Kết hợp toàn bộ nguồn từ persona nghiên cứu và persona người mua',
+        'So sánh giả định thị trường với bằng chứng kinh doanh',
+        'Đối chiếu phân khúc tiềm năng với tín hiệu khách hàng hiện tại',
       ],
       purpose:
-        'Creates more reliable, less subjective personas suitable for comparing insights before building digital twins or running message tests.',
+        'Tạo ra persona đáng tin cậy hơn, ít chủ quan hơn để so sánh insight trước khi dựng digital twin hoặc chạy kiểm thử thông điệp.',
       exampleOutput:
-        "Example: Compare 'Gen Z potential segment' with 'Office women current sales evidence' to identify overlaps and gaps.",
-      features: ['Insight check', 'Comparison table', 'Confidence score', 'Validate options'],
+        "Ví dụ: So sánh 'phân khúc Gen Z tiềm năng' với 'bằng chứng doanh số từ nữ nhân viên văn phòng' để tìm điểm giao và khoảng trống.",
+      features: ['Kiểm tra insight', 'Bảng so sánh', 'Điểm tin cậy', 'Tùy chọn xác thực'],
     },
   },
   {
     id: 'competitor',
-    eyebrow: '4. Competitor Persona',
-    title: 'Competitor Analysis',
-    subtitle: 'Optional layer to understand who competitors are targeting and what they are saying.',
+    eyebrow: '4. Persona đối thủ',
+    title: 'Phân tích đối thủ',
+    subtitle: 'Lớp bổ sung để hiểu đối thủ đang nhắm tới ai và họ đang nói điều gì.',
     description:
-      'Use to analyze competitors via domains, SEO, content, and pricing signals to discover market gaps and positioning opportunities.',
+      'Dùng để phân tích đối thủ qua domain, SEO, nội dung và tín hiệu về giá nhằm tìm ra khoảng trống thị trường và cơ hội định vị.',
     badgeClass: 'bg-zinc-500 text-white',
     iconClass: 'bg-zinc-100 text-zinc-600',
     icon: <Compass size={26} />,
     learnMore: {
-      sourceLabel: 'Data Sources',
+      sourceLabel: 'Nguồn dữ liệu',
       sourceItems: [
-        'Competitor domains, social presence, and SEO keywords',
-        'Landing pages, content structure, and pricing pages',
-        'Messaging angles, offer patterns, and audience cues',
+        'Domain đối thủ, hiện diện mạng xã hội và từ khóa SEO',
+        'Landing page, cấu trúc nội dung và trang giá',
+        'Hướng thông điệp, mô thức ưu đãi và tín hiệu đối tượng',
       ],
       purpose:
-        'Helps the team identify who competitors are targeting, which insights they emphasize, and which market gaps remain unclaimed.',
+        'Giúp đội ngũ nhận ra đối thủ đang nhắm tới ai, họ nhấn mạnh insight nào và khoảng trống thị trường nào còn bỏ ngỏ.',
       exampleOutput:
-        'Output is a competitor-facing persona hypothesis for strategic reference, not intended as the core feature of the workflow.',
-      note: 'Optional: suitable as an extra reference layer, not the central module of the persona workflow.',
+        'Đầu ra là giả thuyết persona theo góc nhìn đối thủ để tham khảo chiến lược, không phải tính năng cốt lõi của quy trình.',
+      note: 'Tùy chọn: phù hợp như lớp tham khảo bổ sung, không phải mô-đun trung tâm của luồng tạo persona.',
     },
   },
 ];
 
 const processingSteps = [
-  'Mapping audience context',
-  'Structuring behavior signals',
-  'Scoring channel affinity',
-  'Preparing read-only persona',
+  'Đang ánh xạ bối cảnh đối tượng',
+  'Đang cấu trúc tín hiệu hành vi',
+  'Đang chấm điểm mức độ phù hợp kênh',
+  'Đang chuẩn bị persona chỉ đọc',
 ];
 
 const clampWeight = (weight: number) => Math.max(0, Math.min(100, Math.round(weight)));
@@ -172,7 +172,7 @@ const clampWeight = (weight: number) => Math.max(0, Math.min(100, Math.round(wei
 const splitDemographic = (item: string) => {
   const [label, ...rest] = item.split(':');
   return {
-    label: rest.length > 0 ? label.trim() : 'Detail',
+    label: rest.length > 0 ? label.trim() : 'Chi tiết',
     value: rest.length > 0 ? rest.join(':').trim() : item,
   };
 };
@@ -219,7 +219,7 @@ const BulletList: React.FC<{ items?: string[]; tone?: 'blue' | 'green' | 'amber'
   };
 
   if (items.length === 0) {
-    return <p className="text-xs font-semibold text-ml-ink-muted">No signal mapped.</p>;
+    return <p className="text-xs font-semibold text-ml-ink-muted">Chưa có tín hiệu nào được ánh xạ.</p>;
   }
 
   return (
@@ -238,7 +238,7 @@ const SignalBars: React.FC<{ signals?: WeightedSignal[]; limit?: number }> = ({ 
   const visible = signals.slice(0, limit);
 
   if (visible.length === 0) {
-    return <p className="text-xs font-semibold text-ml-ink-muted">No weighted signal mapped.</p>;
+    return <p className="text-xs font-semibold text-ml-ink-muted">Chưa có tín hiệu trọng số nào được ánh xạ.</p>;
   }
 
   return (
@@ -265,7 +265,7 @@ const Chips: React.FC<{ items?: string[]; limit?: number }> = ({ items = [], lim
   const visible = items.slice(0, limit);
 
   if (visible.length === 0) {
-    return <p className="text-xs font-semibold text-ml-ink-muted">No tags mapped.</p>;
+    return <p className="text-xs font-semibold text-ml-ink-muted">Chưa có thẻ nào được ánh xạ.</p>;
   }
 
   return (
@@ -287,7 +287,7 @@ const KeyValueGrid: React.FC<{ items: { label: string; value?: string | number |
     {items.map((item) => (
       <div key={item.label} className="border border-ml-border rounded-md p-3 bg-ml-surface/40">
         <div className="text-[10px] font-black uppercase tracking-wide text-ml-ink-muted">{item.label}</div>
-        <div className="mt-1 text-sm font-bold text-ml-ink">{item.value || 'Unknown'}</div>
+        <div className="mt-1 text-sm font-bold text-ml-ink">{item.value || 'Không xác định'}</div>
       </div>
     ))}
   </div>
@@ -364,10 +364,10 @@ const PersonaOverview: React.FC<PersonaOverviewProps> = ({ onSelect }) => {
     <div className="space-y-8">
       <div className="pt-3">
         <div className="text-xs font-black uppercase tracking-[0.18em] text-ml-blue">
-          Persona Framework
+          Khung tạo persona
         </div>
         <h1 className="mt-4 text-[28px] md:text-[40px] font-black tracking-normal leading-tight text-ml-ink">
-          4 persona types for synthetic research
+          4 loại persona cho nghiên cứu mô phỏng
         </h1>
       </div>
 
@@ -421,7 +421,7 @@ const PersonaOverview: React.FC<PersonaOverviewProps> = ({ onSelect }) => {
                     : 'border-ml-border bg-white text-ml-blue hover:border-ml-blue/30 hover:bg-ml-blue-soft/30'
                 }`}
               >
-                Learn more
+                Xem chi tiết
               </button>
             </article>
           );
@@ -446,14 +446,14 @@ const PersonaOverview: React.FC<PersonaOverviewProps> = ({ onSelect }) => {
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
             <div className="rounded-lg border border-ml-blue/20 bg-ml-blue-soft/50 px-4 py-3 text-xs font-bold leading-5 text-ml-blue max-w-xs">
-              Use the tabs above to enter the detailed workspace for each persona type.
+              Dùng các tab phía trên để mở không gian làm việc chi tiết cho từng loại persona.
             </div>
             <button
               type="button"
               onClick={() => onSelect(selectedCard)}
               className="h-11 px-5 rounded-md bg-ml-blue hover:bg-ml-blue-strong text-white text-xs font-black uppercase tracking-wide transition-colors flex items-center justify-center gap-2"
             >
-              <span>Open Workspace</span>
+              <span>Mở không gian làm việc</span>
               <ExternalLink size={14} />
             </button>
           </div>
@@ -477,7 +477,7 @@ const PersonaOverview: React.FC<PersonaOverviewProps> = ({ onSelect }) => {
 
             {selectedOption.learnMore.features && (
               <div className="rounded-lg border border-ml-border bg-white p-4">
-                <div className="text-[10px] font-black uppercase tracking-wide text-ml-ink-muted">Features</div>
+                <div className="text-[10px] font-black uppercase tracking-wide text-ml-ink-muted">Tính năng</div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {selectedOption.learnMore.features.map((feature) => (
                     <span
@@ -494,14 +494,14 @@ const PersonaOverview: React.FC<PersonaOverviewProps> = ({ onSelect }) => {
 
           <div className="space-y-4">
             <div className="rounded-lg border border-ml-border bg-white p-4">
-              <div className="text-[10px] font-black uppercase tracking-wide text-ml-ink-muted">Purpose</div>
+              <div className="text-[10px] font-black uppercase tracking-wide text-ml-ink-muted">Mục đích</div>
               <p className="mt-3 text-sm font-medium leading-6 text-ml-ink">
                 {selectedOption.learnMore.purpose}
               </p>
             </div>
 
             <div className="rounded-lg border border-ml-border bg-white p-4">
-              <div className="text-[10px] font-black uppercase tracking-wide text-ml-ink-muted">Example Output</div>
+              <div className="text-[10px] font-black uppercase tracking-wide text-ml-ink-muted">Ví dụ đầu ra</div>
               <p className="mt-3 text-sm font-medium leading-6 text-ml-ink">
                 {selectedOption.learnMore.exampleOutput}
               </p>
@@ -543,7 +543,7 @@ const PersonaMockPanel: React.FC<{
           </div>
         </div>
         <span className="self-start md:self-center px-3 py-1.5 rounded-md bg-ml-blue text-white text-[10px] font-black uppercase tracking-wide">
-          Synthetic mock
+          Bản mô phỏng mẫu
         </span>
       </div>
       <p className="mt-5 max-w-3xl text-sm md:text-base font-semibold text-white/80 leading-relaxed">
@@ -554,11 +554,11 @@ const PersonaMockPanel: React.FC<{
     <div className="p-6 md:p-7 grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6">
       <div className="space-y-4">
         <div className="border border-ml-border rounded-lg p-5 bg-ml-surface/40">
-          <h2 className="text-xs font-black uppercase tracking-wide text-ml-ink">Input Blueprint</h2>
+          <h2 className="text-xs font-black uppercase tracking-wide text-ml-ink">Khung dữ liệu đầu vào</h2>
           <textarea
             rows={8}
             className="mt-3 w-full resize-none rounded-md border border-ml-border bg-white px-3 py-3 text-sm font-medium leading-relaxed text-ml-ink outline-none focus:border-ml-blue focus:ring-2 focus:ring-ml-blue/20"
-            defaultValue="Describe the segment, buying context, blockers, desired outcome, and channels you want Market Lab to model."
+            defaultValue="Mô tả phân khúc, bối cảnh mua hàng, rào cản, kết quả mong muốn và các kênh mà bạn muốn Market Lab mô phỏng."
             disabled={comingSoon}
           />
           <button
@@ -566,23 +566,23 @@ const PersonaMockPanel: React.FC<{
             disabled={comingSoon}
             className="mt-4 w-full h-11 rounded-md bg-ml-blue disabled:bg-ml-border disabled:text-ml-ink-muted text-white text-xs font-black uppercase tracking-wide"
           >
-            {comingSoon ? 'Coming Soon' : 'Generate Draft'}
+            {comingSoon ? 'Sắp ra mắt' : 'Tạo bản nháp'}
           </button>
         </div>
         <div className="border border-ml-warning/30 bg-amber-50 rounded-lg p-4 text-xs font-bold text-ml-warning leading-relaxed">
-          Synthetic persona drafts are assumptions and require human validation before research decisions.
+          Các bản nháp persona mô phỏng chỉ là giả định và cần được kiểm chứng bằng người thật trước khi dùng cho quyết định nghiên cứu.
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {['Structured profile', 'Decision triggers', 'Objections', 'Channel signals'].map((item) => (
+        {['Hồ sơ có cấu trúc', 'Tác nhân ra quyết định', 'Phản đối', 'Tín hiệu kênh'].map((item) => (
           <div key={item} className="border border-ml-border rounded-lg p-5 bg-white">
             <div className="text-[10px] font-black uppercase tracking-wide text-ml-ink-muted">{item}</div>
             <div className="mt-3 h-2 rounded-full bg-ml-surface overflow-hidden">
               <div className="h-full w-2/3 bg-ml-blue" />
             </div>
             <p className="mt-4 text-sm font-semibold leading-relaxed text-ml-ink-muted">
-              Mock placeholder content will be replaced by the relevant persona workflow.
+              Nội dung minh họa tạm thời sẽ được thay bằng dữ liệu của luồng persona tương ứng.
             </p>
           </div>
         ))}
@@ -611,14 +611,14 @@ const PersonaDetail: React.FC<{ persona: Persona }> = ({ persona }) => {
               <div className="min-w-0">
                 <div className="flex flex-wrap gap-2 mb-3">
                   <span className="px-2.5 py-1 rounded-md bg-ml-blue text-white text-[10px] font-black uppercase tracking-wide">
-                    Synthetic persona
+                    Persona mô phỏng
                   </span>
                   <span className="px-2.5 py-1 rounded-md bg-white/10 border border-white/20 text-white text-[10px] font-black uppercase tracking-wide flex items-center gap-1">
                     <Lock size={11} />
-                    Read-only
+                    Chỉ đọc
                   </span>
                   <span className="px-2.5 py-1 rounded-md bg-white/10 border border-white/20 text-white text-[10px] font-black uppercase tracking-wide">
-                    Requires human validation
+                    Cần xác thực bởi người thật
                   </span>
                 </div>
                 <h1 className="text-3xl md:text-4xl font-black uppercase tracking-normal leading-tight">
@@ -632,7 +632,7 @@ const PersonaDetail: React.FC<{ persona: Persona }> = ({ persona }) => {
               </div>
             </div>
             <div className="w-full lg:w-52 bg-white/10 border border-white/20 rounded-lg p-4">
-              <div className="text-[10px] font-black uppercase tracking-wide text-white/70">Confidence</div>
+              <div className="text-[10px] font-black uppercase tracking-wide text-white/70">Độ tin cậy</div>
               <div className="mt-1 text-3xl font-black text-white">{Math.round(persona.confidence_score)}%</div>
               <div className="mt-3 h-2 rounded-full bg-white/20 overflow-hidden">
                 <div className="h-full bg-ml-blue" style={{ width: `${clampWeight(persona.confidence_score)}%` }} />
@@ -660,16 +660,16 @@ const PersonaDetail: React.FC<{ persona: Persona }> = ({ persona }) => {
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <Section title="Profile Information" icon={<FileText size={17} />}>
+        <Section title="Thông tin hồ sơ" icon={<FileText size={17} />}>
           <div className="space-y-4">
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-1">Summary</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-1">Tóm tắt</h3>
               <p className="text-sm leading-relaxed font-medium text-ml-ink">
-                {profile?.profile_information?.summary || persona.assumptions[0] || 'Synthetic profile summary unavailable.'}
+                {profile?.profile_information?.summary || persona.assumptions[0] || 'Chưa có tóm tắt hồ sơ mô phỏng.'}
               </p>
             </div>
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-1">Personal Aspirations</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-1">Khát vọng cá nhân</h3>
               <p className="text-sm leading-relaxed font-medium text-ml-ink">
                 {profile?.profile_information?.personal_aspirations || persona.goals.join(' ')}
               </p>
@@ -677,55 +677,55 @@ const PersonaDetail: React.FC<{ persona: Persona }> = ({ persona }) => {
           </div>
         </Section>
 
-        <Section title="Work & Lifestyle" icon={<BriefcaseBusiness size={17} />}>
+        <Section title="Công việc và lối sống" icon={<BriefcaseBusiness size={17} />}>
           <KeyValueGrid
             items={[
-              { label: 'Occupation', value: occupation },
-              { label: 'Industry', value: profile?.work_lifestyle?.industry },
-              { label: 'Income', value: profile?.work_lifestyle?.income || getDemographicValue(persona, 'Income') },
-              { label: 'Status', value: profile?.work_lifestyle?.marital_status },
-              { label: 'Housing', value: profile?.work_lifestyle?.housing_status },
-              { label: 'Location', value: location },
+              { label: 'Nghề nghiệp', value: occupation },
+              { label: 'Ngành', value: profile?.work_lifestyle?.industry },
+              { label: 'Thu nhập', value: profile?.work_lifestyle?.income || getDemographicValue(persona, 'Income') },
+              { label: 'Tình trạng', value: profile?.work_lifestyle?.marital_status },
+              { label: 'Nhà ở', value: profile?.work_lifestyle?.housing_status },
+              { label: 'Khu vực', value: location },
             ]}
           />
         </Section>
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <Section title="Buying Behavior" icon={<ShoppingBag size={17} />}>
+        <Section title="Hành vi mua hàng" icon={<ShoppingBag size={17} />}>
           <div className="space-y-4">
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Decision Factors</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Yếu tố quyết định</h3>
               <BulletList items={profile?.buying_behavior?.purchase_decision_factors || persona.buying_behavior} />
             </div>
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Triggers</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Tác nhân kích hoạt</h3>
               <BulletList items={profile?.buying_behavior?.triggers || persona.decision_rules} tone="green" />
             </div>
           </div>
         </Section>
 
-        <Section title="Psychological Drivers" icon={<HeartPulse size={17} />}>
+        <Section title="Động lực tâm lý" icon={<HeartPulse size={17} />}>
           <div className="space-y-4">
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Goals</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Mục tiêu</h3>
               <BulletList items={profile?.psychological_drivers?.goals || persona.goals} tone="green" />
             </div>
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Key Needs</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Nhu cầu chính</h3>
               <BulletList items={profile?.psychological_drivers?.key_needs || persona.product_fit?.must_haves} />
             </div>
           </div>
         </Section>
 
-        <Section title="Key Obstacles" icon={<ShieldAlert size={17} />}>
+        <Section title="Rào cản chính" icon={<ShieldAlert size={17} />}>
           <div className="space-y-4">
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Core Challenges</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Thách thức cốt lõi</h3>
               <BulletList items={profile?.key_obstacles?.core_challenges || persona.pain_points} tone="red" />
             </div>
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Perceived Barriers</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Rào cản cảm nhận</h3>
               <BulletList items={profile?.key_obstacles?.perceived_barriers || persona.objections} tone="amber" />
             </div>
           </div>
@@ -733,43 +733,43 @@ const PersonaDetail: React.FC<{ persona: Persona }> = ({ persona }) => {
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <Section title="Communication & Media" icon={<MessageCircle size={17} />}>
+        <Section title="Giao tiếp và truyền thông" icon={<MessageCircle size={17} />}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Communication</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Giao tiếp</h3>
               <SignalBars signals={communication} />
             </div>
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Content Types</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Loại nội dung</h3>
               <SignalBars signals={profile?.media_digital?.content_types} />
             </div>
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Media Sources</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Nguồn truyền thông</h3>
               <SignalBars signals={profile?.media_digital?.media_news_sources} />
             </div>
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Social Networks</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Mạng xã hội</h3>
               <SignalBars signals={profile?.media_digital?.social_networks} />
             </div>
           </div>
         </Section>
 
-        <Section title="Brands & Commerce" icon={<Tags size={17} />}>
+        <Section title="Thương hiệu và thương mại" icon={<Tags size={17} />}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Brands</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Thương hiệu</h3>
               <SignalBars signals={profile?.brand_commerce?.brands} />
             </div>
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Websites Visited</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Website đã truy cập</h3>
               <SignalBars signals={profile?.media_digital?.websites_visited} />
             </div>
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Products</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Sản phẩm</h3>
               <SignalBars signals={profile?.brand_commerce?.products || fallbackSignals(persona.product_fit?.must_haves)} />
             </div>
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Shopping Websites</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Website mua sắm</h3>
               <SignalBars signals={profile?.brand_commerce?.shopping_websites} />
             </div>
           </div>
@@ -777,89 +777,89 @@ const PersonaDetail: React.FC<{ persona: Persona }> = ({ persona }) => {
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <Section title="Digital Signals" icon={<Globe2 size={17} />}>
+        <Section title="Tín hiệu số" icon={<Globe2 size={17} />}>
           <div className="space-y-5">
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Hashtags</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Hashtag</h3>
               <Chips items={profile?.media_digital?.hashtags} />
             </div>
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Subreddits</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Subreddit</h3>
               <Chips items={profile?.media_digital?.subreddits} />
             </div>
           </div>
         </Section>
 
-        <Section title="Website Interaction" icon={<Activity size={17} />}>
+        <Section title="Tương tác website" icon={<Activity size={17} />}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <KeyValueGrid
               items={[
-                { label: 'First day', value: profile?.website_interaction?.first_interaction_day },
-                { label: 'First time', value: profile?.website_interaction?.first_interaction_time },
+                { label: 'Ngày đầu tiên', value: profile?.website_interaction?.first_interaction_day },
+                { label: 'Giờ đầu tiên', value: profile?.website_interaction?.first_interaction_time },
               ]}
             />
             <div>
-              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Influential Resources</h3>
+              <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Nguồn ảnh hưởng chính</h3>
               <SignalBars signals={profile?.website_interaction?.influential_resources} />
             </div>
           </div>
         </Section>
       </section>
 
-      <Section title="Preferences" icon={<Compass size={17} />}>
+      <Section title="Sở thích và ưu tiên" icon={<Compass size={17} />}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div>
-            <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Sports</h3>
+            <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Thể thao</h3>
             <SignalBars signals={profile?.preferences?.sports} />
           </div>
           <div>
-            <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Values</h3>
+            <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Giá trị</h3>
             <SignalBars signals={profile?.preferences?.values || fallbackSignals(persona.psychographics?.core_values)} />
           </div>
           <div>
-            <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Hobbies</h3>
+            <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Sở thích</h3>
             <SignalBars signals={profile?.preferences?.hobbies} />
           </div>
           <div>
-            <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Places Likely To Visit</h3>
+            <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Địa điểm hay ghé</h3>
             <SignalBars signals={profile?.preferences?.places_likely_to_visit} />
           </div>
           <div>
-            <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Events</h3>
+            <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Sự kiện</h3>
             <SignalBars signals={profile?.preferences?.events_conferences} />
           </div>
           <div>
-            <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Tools</h3>
+            <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-3">Công cụ</h3>
             <SignalBars signals={profile?.preferences?.tools} />
           </div>
         </div>
       </Section>
 
-      <Section title="Resonating Topics" icon={<Megaphone size={17} />}>
+      <Section title="Chủ đề cộng hưởng" icon={<Megaphone size={17} />}>
         <SignalBars signals={profile?.website_interaction?.resonating_topics || fallbackSignals(persona.motivations, 90)} limit={10} />
       </Section>
 
-      <Section title="Industry Specific Insights" icon={<BarChart3 size={17} />}>
+      <Section title="Insight theo ngành" icon={<BarChart3 size={17} />}>
         <div className="space-y-6">
-          <IndustrySignals title="Apparel & Fashion" groups={profile?.industry_specific_insights?.apparel_fashion} />
-          <IndustrySignals title="Sporting Goods" groups={profile?.industry_specific_insights?.sporting_goods} />
-          <IndustrySignals title="Consumer Goods" groups={profile?.industry_specific_insights?.consumer_goods} />
+          <IndustrySignals title="Thời trang" groups={profile?.industry_specific_insights?.apparel_fashion} />
+          <IndustrySignals title="Đồ thể thao" groups={profile?.industry_specific_insights?.sporting_goods} />
+          <IndustrySignals title="Hàng tiêu dùng" groups={profile?.industry_specific_insights?.consumer_goods} />
         </div>
       </Section>
 
-      <Section title="Validation & Assumptions" icon={<CheckCircle2 size={17} />}>
+      <Section title="Xác thực và giả định" icon={<CheckCircle2 size={17} />}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div className="lg:col-span-2">
-            <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Synthetic Assumptions</h3>
+            <h3 className="text-xs font-black uppercase tracking-wide text-ml-ink-muted mb-2">Giả định mô phỏng</h3>
             <BulletList items={persona.assumptions} />
           </div>
           <div className="border border-ml-border rounded-md p-4 bg-ml-surface/40">
-            <div className="text-[10px] font-black uppercase tracking-wide text-ml-ink-muted">Human validation</div>
+            <div className="text-[10px] font-black uppercase tracking-wide text-ml-ink-muted">Xác thực bởi con người</div>
             <div className="mt-1 text-lg font-black text-ml-ink">
-              {validation?.is_human_validated ? 'Validated' : 'Not validated'}
+              {validation?.is_human_validated ? 'Đã xác thực' : 'Chưa xác thực'}
             </div>
             <div className="mt-3 text-xs font-semibold text-ml-ink-muted">
-              {(validation?.evidence_sources || ['Synthetic prompt-based generation']).join(', ')}
+              {(validation?.evidence_sources || ['Sinh từ prompt mô phỏng']).join(', ')}
             </div>
           </div>
         </div>
@@ -900,7 +900,7 @@ export const PersonaCatalog: React.FC<PersonaCatalogProps> = ({ projectId }) => 
         setSelectedPersonaId((current) => current || data[0]?.id || null);
       } catch (err) {
         if (!cancelled) {
-          const message = err instanceof Error ? err.message : 'Failed to load personas.';
+          const message = err instanceof Error ? err.message : 'Không thể tải danh sách persona.';
           setError(message);
         }
       } finally {
@@ -920,7 +920,7 @@ export const PersonaCatalog: React.FC<PersonaCatalogProps> = ({ projectId }) => 
     const customPrompt = prompt.trim();
 
     if (customPrompt.length < 5) {
-      setError('Audience request must contain at least 5 characters.');
+      setError('Mô tả đối tượng phải có ít nhất 5 ký tự.');
       return;
     }
 
@@ -933,7 +933,7 @@ export const PersonaCatalog: React.FC<PersonaCatalogProps> = ({ projectId }) => 
       setSelectedPersonaId(persona.id);
       setActiveTab('research');
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to generate persona.';
+      const message = err instanceof Error ? err.message : 'Không thể tạo persona.';
       setError(message);
     } finally {
       setGenerating(false);
@@ -948,27 +948,27 @@ export const PersonaCatalog: React.FC<PersonaCatalogProps> = ({ projectId }) => 
 
       {activeTab === 'buyer' && (
         <PersonaMockPanel
-          title="Buyer Persona"
-          badge="Purchase intelligence"
-          description="A temporary workspace for customer, social, and purchase-oriented persona creation. This mock keeps the workflow visible while backend CRUD and generation rules evolve."
+          title="Persona người mua"
+          badge="Tín hiệu mua hàng"
+          description="Không gian tạm cho việc tạo persona thiên về khách hàng, hành vi xã hội và hành vi mua. Phần mô phỏng này giữ luồng làm việc rõ ràng trong khi backend còn được hoàn thiện."
           icon={<ShoppingBag size={28} />}
         />
       )}
 
       {activeTab === 'hybrid' && (
         <PersonaMockPanel
-          title="Hybrid Persona"
-          badge="Mixed signal model"
-          description="Blend audience notes, website behavior, decision criteria, and channel assumptions into one practical persona draft for concept testing."
+          title="Persona kết hợp"
+          badge="Mô hình tín hiệu hỗn hợp"
+          description="Kết hợp ghi chú đối tượng, hành vi website, tiêu chí ra quyết định và giả định về kênh thành một bản nháp persona thực tế cho kiểm thử concept."
           icon={<Tags size={28} />}
         />
       )}
 
       {activeTab === 'competitor' && (
         <PersonaMockPanel
-          title="Competitor Persona"
-          badge="Competitor intelligence"
-          description="Coming soon: a competitor-domain workflow for target persona discovery, keyword context, and marketing strategy assumptions."
+          title="Persona đối thủ"
+          badge="Tín hiệu đối thủ"
+          description="Sắp ra mắt: luồng phân tích domain đối thủ để khám phá persona mục tiêu, ngữ cảnh từ khóa và các giả định chiến lược marketing."
           icon={<Compass size={28} />}
           comingSoon
         />
@@ -980,18 +980,18 @@ export const PersonaCatalog: React.FC<PersonaCatalogProps> = ({ projectId }) => 
             <div>
               <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-ml-blue-soft text-ml-blue-strong text-[10px] font-black uppercase tracking-wide border border-ml-blue/20">
                 <Sparkles size={13} />
-                Persona Intelligence
+                Trí tuệ persona
               </div>
               <h1 className="mt-3 text-[28px] md:text-[36px] font-black uppercase tracking-normal leading-tight">
-                AI Persona Generator
+                Trình tạo persona AI
               </h1>
               <p className="mt-2 text-sm font-semibold text-ml-ink-muted max-w-2xl leading-relaxed">
-                One audience request becomes a structured synthetic persona profile for message testing.
+                Chỉ từ một mô tả đối tượng, hệ thống tạo ra hồ sơ persona mô phỏng có cấu trúc để kiểm thử thông điệp.
               </p>
             </div>
             <div className="flex items-center gap-2 text-xs font-bold text-ml-ink-muted">
               <Lock size={14} className="text-ml-blue" />
-              Read-only output
+              Kết quả chỉ đọc
             </div>
           </div>
 
@@ -1016,7 +1016,7 @@ export const PersonaCatalog: React.FC<PersonaCatalogProps> = ({ projectId }) => 
                   <form onSubmit={handleGenerate} className="space-y-4">
                     <div>
                       <label htmlFor="persona-prompt" className="text-xs font-black uppercase tracking-wide text-ml-ink">
-                        Audience Request
+                        Mô tả đối tượng
                       </label>
                       <textarea
                         id="persona-prompt"
@@ -1033,13 +1033,13 @@ export const PersonaCatalog: React.FC<PersonaCatalogProps> = ({ projectId }) => 
                       className="w-full h-11 rounded-md bg-ml-blue hover:bg-ml-blue-strong disabled:bg-ml-border disabled:text-ml-ink-muted text-white text-xs font-black uppercase tracking-wide flex items-center justify-center gap-2 transition-colors"
                     >
                       {generating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
-                      Generate Persona
+                      Tạo persona
                     </button>
                   </form>
                 </section>
 
                 <section className="bg-white border border-ml-border rounded-lg p-5">
-                  <h2 className="text-xs font-black uppercase tracking-wide text-ml-ink mb-3">Prompt Starters</h2>
+                  <h2 className="text-xs font-black uppercase tracking-wide text-ml-ink mb-3">Gợi ý prompt</h2>
                   <div className="space-y-2">
                     {EXAMPLE_PROMPTS.map((example) => (
                       <button
@@ -1056,13 +1056,13 @@ export const PersonaCatalog: React.FC<PersonaCatalogProps> = ({ projectId }) => 
 
                 <section className="bg-white border border-ml-border rounded-lg p-5">
                   <div className="flex items-center justify-between gap-3 mb-3">
-                    <h2 className="text-xs font-black uppercase tracking-wide text-ml-ink">Generated Profiles</h2>
+                    <h2 className="text-xs font-black uppercase tracking-wide text-ml-ink">Hồ sơ đã tạo</h2>
                     <span className="text-[10px] font-black text-ml-blue">{personas.length}</span>
                   </div>
                   {personas.length === 0 ? (
                     <div className="rounded-md border border-dashed border-ml-border p-4 text-center">
                       <Search className="mx-auto text-ml-ink-muted mb-2" size={20} />
-                      <p className="text-xs font-semibold text-ml-ink-muted">No personas generated yet.</p>
+                      <p className="text-xs font-semibold text-ml-ink-muted">Chưa có persona nào được tạo.</p>
                     </div>
                   ) : (
                     <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
@@ -1099,10 +1099,10 @@ export const PersonaCatalog: React.FC<PersonaCatalogProps> = ({ projectId }) => 
                         <Loader2 size={34} className="animate-spin" />
                       </div>
                       <h2 className="mt-5 text-2xl font-black uppercase tracking-normal text-ml-ink">
-                        Building Persona
+                        Đang dựng persona
                       </h2>
                       <p className="mt-2 text-sm font-semibold text-ml-ink-muted">
-                        Synthetic output will remain read-only and require human validation.
+                        Kết quả mô phỏng sẽ ở chế độ chỉ đọc và cần xác thực bằng người thật.
                       </p>
                       <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
                         {processingSteps.map((step, index) => (
@@ -1122,9 +1122,9 @@ export const PersonaCatalog: React.FC<PersonaCatalogProps> = ({ projectId }) => 
                   <section className="bg-white border border-ml-border rounded-lg min-h-[620px] flex items-center justify-center p-8 text-center">
                     <div className="max-w-md">
                       <Zap className="mx-auto text-ml-blue mb-4" size={42} />
-                      <h2 className="text-2xl font-black uppercase tracking-normal text-ml-ink">Ready To Generate</h2>
+                      <h2 className="text-2xl font-black uppercase tracking-normal text-ml-ink">Sẵn sàng tạo persona</h2>
                       <p className="mt-2 text-sm font-semibold text-ml-ink-muted">
-                        Submit an audience request to create the first read-only synthetic persona.
+                        Hãy nhập mô tả đối tượng để tạo persona mô phỏng đầu tiên ở chế độ chỉ đọc.
                       </p>
                     </div>
                   </section>

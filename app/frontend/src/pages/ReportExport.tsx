@@ -19,6 +19,20 @@ export const ReportExport: React.FC<ReportExportProps> = ({
   projectId,
   studyId,
 }) => {
+  const budgetLabel = (value: string) =>
+    value === 'High' ? 'Cao' : value === 'Medium' ? 'Trung bình' : value === 'Low' ? 'Thấp' : value;
+  const techLabel = (value: string) =>
+    value === 'High' ? 'Cao' : value === 'Medium' ? 'Trung bình' : value === 'Low' ? 'Thấp' : value;
+  const riskLabel = (value: string) =>
+    value === 'Risk-seeking'
+      ? 'Ưa rủi ro'
+      : value === 'Risk-averse'
+        ? 'Ngại rủi ro'
+        : value === 'Neutral'
+          ? 'Trung lập'
+          : value;
+  const priorityLabel = (value: string) =>
+    value === 'High' ? 'Cao' : value === 'Medium' ? 'Trung bình' : value === 'Low' ? 'Thấp' : value;
   const [study, setStudy] = useState<Study | null>(null);
   const [results, setResults] = useState<StudyResults | null>(null);
   const [respondents, setRespondents] = useState<Respondent[]>([]);
@@ -43,8 +57,8 @@ export const ReportExport: React.FC<ReportExportProps> = ({
         setLoading(false);
       })
       .catch(err => {
-        console.error('Failed to load report data', err);
-        setError('Study results not found. Make sure to complete a study simulation before accessing reports.');
+        console.error('Không thể tải dữ liệu báo cáo', err);
+        setError('Không tìm thấy kết quả nghiên cứu. Hãy hoàn tất mô phỏng trước khi mở báo cáo.');
         setLoading(false);
       });
   }, [studyId, projectId]);
@@ -63,25 +77,25 @@ export const ReportExport: React.FC<ReportExportProps> = ({
 
     // Create CSV headers
     const csvHeaders = [
-      'Respondent ID', 
-      'Respondent Name', 
-      'Persona Name',
-      'Persona Segment', 
-      'Age', 
-      'Location', 
-      'Budget', 
-      'Motivation', 
-      'Tech Savviness', 
-      'Risk Attitude', 
-      'Preferred Channel',
-      'Question ID',
-      'Question Text',
-      'Answer Value'
+      'ID người tham gia',
+      'Tên người tham gia',
+      'Tên chân dung',
+      'Phân khúc chân dung',
+      'Tuổi',
+      'Khu vực',
+      'Ngân sách',
+      'Động lực',
+      'Mức am hiểu công nghệ',
+      'Thái độ rủi ro',
+      'Kênh ưa thích',
+      'ID câu hỏi',
+      'Nội dung câu hỏi',
+      'Câu trả lời'
     ];
 
     // Create warning header line
     const warningRow = [
-      '# WARNING: SIMULATED RESEARCH - HUMAN VALIDATION REQUIRED. These results represent synthetic models of customer behavior and have not been validated by real human research.'
+      '# CẢNH BÁO: NGHIÊN CỨU MÔ PHỎNG - CẦN XÁC THỰC BẰNG NGƯỜI THẬT. Các kết quả này là mô hình hành vi khách hàng tổng hợp và chưa được kiểm chứng bằng nghiên cứu thực tế.'
     ];
 
     const rows = [warningRow, csvHeaders];
@@ -92,8 +106,8 @@ export const ReportExport: React.FC<ReportExportProps> = ({
     // Let's format and extract them from respondents
     respondents.forEach(resp => {
       const p = personasDict[resp.persona_id];
-      const pName = p ? p.name : 'Unknown';
-      const pSeg = p ? p.segment : 'Unknown';
+      const pName = p ? p.name : 'Không xác định';
+      const pSeg = p ? p.segment : 'Không xác định';
 
       // For the seeded project questions, let's export responses
       // In a real database, we would query Responses directly. Since we have responses list in backend,
@@ -103,21 +117,21 @@ export const ReportExport: React.FC<ReportExportProps> = ({
         
         // Match response pattern based on segment
         if (q.question_id === 'q-price') {
-          if (resp.budget === 'Low') answer = '1 (Strongly Disagree)';
-          else if (resp.budget === 'Medium') answer = '3 (Neutral)';
-          else answer = '5 (Strongly Agree)';
+          if (resp.budget === 'Low') answer = '1 (Hoàn toàn không đồng ý)';
+          else if (resp.budget === 'Medium') answer = '3 (Trung lập)';
+          else answer = '5 (Hoàn toàn đồng ý)';
         } else if (q.question_id === 'q-feature') {
-          if (pSeg.toLowerCase().includes('price-sensitive')) answer = 'opt-vocab-streaks';
-          else if (pSeg.toLowerCase().includes('career')) answer = 'opt-job-interview';
+          if (resp.persona_id === 'persona-price-sensitive') answer = 'opt-vocab-streaks';
+          else if (resp.persona_id === 'persona-career-focused') answer = 'opt-job-interview';
           else answer = 'opt-casual-game';
         } else {
           // open text concern
-          if (pSeg.toLowerCase().includes('price-sensitive')) {
-            answer = 'I am worried about hidden costs or credit card payment blocks.';
-          } else if (pSeg.toLowerCase().includes('career')) {
-            answer = 'I want a detailed IELTS report and realistic mock interviews.';
+          if (resp.persona_id === 'persona-price-sensitive') {
+            answer = 'Tôi lo về chi phí ẩn hoặc việc bị chặn thanh toán bằng thẻ.';
+          } else if (resp.persona_id === 'persona-career-focused') {
+            answer = 'Tôi muốn có báo cáo IELTS chi tiết và phỏng vấn thử thật hơn.';
           } else {
-            answer = 'The lessons should be under 15 minutes and fun to practice.';
+            answer = 'Bài học nên dưới 15 phút và tạo cảm giác thú vị khi luyện tập.';
           }
         }
 
@@ -128,10 +142,10 @@ export const ReportExport: React.FC<ReportExportProps> = ({
           pSeg,
           resp.age.toString(),
           resp.location,
-          resp.budget,
+          budgetLabel(resp.budget),
           resp.motivation.replace(/"/g, '""'),
-          resp.tech_savviness,
-          resp.risk_attitude,
+          techLabel(resp.tech_savviness),
+          riskLabel(resp.risk_attitude),
           resp.channel,
           q.question_id,
           q.question_text.replace(/"/g, '""'),
@@ -160,7 +174,7 @@ export const ReportExport: React.FC<ReportExportProps> = ({
     return (
       <div className="flex-1 flex flex-col items-center justify-center py-24">
         <Loader2 size={36} className="text-ml-blue animate-spin mb-4" />
-        <p className="text-xs font-semibold text-ml-ink-muted uppercase tracking-widest">Generating Report Layout...</p>
+        <p className="text-xs font-semibold text-ml-ink-muted uppercase tracking-widest">Đang tạo bố cục báo cáo...</p>
       </div>
     );
   }
@@ -171,9 +185,9 @@ export const ReportExport: React.FC<ReportExportProps> = ({
         <div className="w-16 h-16 bg-ml-warning/10 border border-ml-warning/20 rounded-full flex items-center justify-center text-ml-warning mb-5">
           <AlertTriangle size={32} />
         </div>
-        <h2 className="text-lg font-bold text-ml-ink uppercase tracking-wider mb-2">Report Not Found</h2>
+        <h2 className="text-lg font-bold text-ml-ink uppercase tracking-wider mb-2">Không tìm thấy báo cáo</h2>
         <p className="text-xs text-ml-ink-muted leading-relaxed mb-6">
-          {error || 'Run a study simulation first to generate reports.'}
+          {error || 'Hãy chạy mô phỏng nghiên cứu trước để tạo báo cáo.'}
         </p>
       </div>
     );
@@ -186,7 +200,7 @@ export const ReportExport: React.FC<ReportExportProps> = ({
       <div className="rounded-lg border border-ml-border bg-white p-4 shadow-xs flex flex-wrap gap-3 items-center justify-between print:hidden">
         <div className="flex items-center gap-2">
           <FileText className="text-ml-blue" size={20} />
-          <span className="text-xs font-bold uppercase tracking-wider">Report Actions</span>
+          <span className="text-xs font-bold uppercase tracking-wider">Thao tác báo cáo</span>
         </div>
         <div className="flex gap-2">
           <button
@@ -194,22 +208,22 @@ export const ReportExport: React.FC<ReportExportProps> = ({
             className="flex items-center gap-1.5 px-3 py-2 border border-ml-border hover:bg-ml-surface rounded-lg text-xs font-bold transition-colors cursor-pointer"
           >
             <Download size={14} />
-            EXPORT RAW CSV
+            XUẤT CSV THÔ
           </button>
           <button
             onClick={handlePrint}
             className="flex items-center gap-1.5 px-3.5 py-2 bg-ml-blue hover:bg-ml-blue-strong text-white rounded-lg text-xs font-bold transition-colors shadow-xs cursor-pointer"
           >
             <Printer size={14} />
-            PRINT REPORT / SAVE PDF
+            IN BÁO CÁO / LƯU PDF
           </button>
         </div>
       </div>
 
       {/* Print Warning Banner - Visible only in print */}
       <div className="hidden print:block text-center p-3 border border-ml-warning/30 bg-amber-50 rounded-lg text-ml-warning text-[10px] font-bold uppercase tracking-wider mb-6">
-        Simulated Research Report - Human Validation Required.
-        These results represent AI synthetic respondents and have not been validated by real human research.
+        Báo cáo nghiên cứu mô phỏng - cần xác thực bằng người thật.
+        Các kết quả này được tạo từ người tham gia tổng hợp bằng AI và chưa được kiểm chứng bằng nghiên cứu thực tế.
       </div>
 
       {/* Report Document Wrapper */}
@@ -218,37 +232,37 @@ export const ReportExport: React.FC<ReportExportProps> = ({
         {/* Document Header */}
         <div className="border-b border-ml-ink pb-6 flex justify-between items-start">
           <div className="space-y-2">
-            <span className="text-[10px] font-bold text-ml-blue uppercase tracking-widest">Market Lab Executive Insight Summary</span>
+            <span className="text-[10px] font-bold text-ml-blue uppercase tracking-widest">Tóm tắt insight điều hành Market Lab</span>
             <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight leading-none">{study.title}</h1>
-            <p className="text-xs text-ml-ink-muted font-medium">Generated: {new Date(study.created_at).toLocaleDateString()}</p>
+            <p className="text-xs text-ml-ink-muted font-medium">Ngày tạo: {new Date(study.created_at).toLocaleDateString('vi-VN')}</p>
           </div>
 
           <div className="text-right">
             <div className="font-black text-lg tracking-tight">
               <span className="text-ml-blue">MARKET</span><span>LAB</span>
             </div>
-            <div className="text-[9px] font-bold text-ml-ink-muted uppercase tracking-wider">Synthetic Sandbox</div>
+            <div className="text-[9px] font-bold text-ml-ink-muted uppercase tracking-wider">Môi trường mô phỏng</div>
           </div>
         </div>
 
         {/* Project Context */}
         <div className="space-y-3">
-          <h2 className="text-xs font-black uppercase tracking-wider text-ml-blue border-b border-ml-border pb-1">1. Study Context</h2>
+          <h2 className="text-xs font-black uppercase tracking-wider text-ml-blue border-b border-ml-border pb-1">1. Bối cảnh nghiên cứu</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div>
-              <div className="font-bold text-ml-ink-muted uppercase text-[9px] tracking-wider mb-0.5">Tested Value Proposition</div>
+                <div className="font-bold text-ml-ink-muted uppercase text-[9px] tracking-wider mb-0.5">Giá trị được kiểm thử</div>
               <p className="font-medium leading-relaxed">
-                An AI-powered mobile app designed to help Vietnamese university students practice speaking English confidently IELTS & job interviews.
+                Ứng dụng di động dùng AI giúp sinh viên Việt Nam luyện nói tiếng Anh tự tin hơn cho IELTS và phỏng vấn xin việc.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <div className="font-bold text-ml-ink-muted uppercase text-[9px] tracking-wider mb-0.5">Cohort Panel Size</div>
-                <p className="font-extrabold text-sm text-ml-ink">{results.total_respondents} respondents</p>
+                <div className="font-bold text-ml-ink-muted uppercase text-[9px] tracking-wider mb-0.5">Quy mô nhóm</div>
+                <p className="font-extrabold text-sm text-ml-ink">{results.total_respondents} người</p>
               </div>
               <div>
-                <div className="font-bold text-ml-ink-muted uppercase text-[9px] tracking-wider mb-0.5">Target Audience</div>
-                <p className="font-extrabold text-xs text-ml-ink">Vietnamese Students (18-24)</p>
+                <div className="font-bold text-ml-ink-muted uppercase text-[9px] tracking-wider mb-0.5">Đối tượng mục tiêu</div>
+                <p className="font-extrabold text-xs text-ml-ink">Sinh viên Việt Nam (18-24)</p>
               </div>
             </div>
           </div>
@@ -256,7 +270,7 @@ export const ReportExport: React.FC<ReportExportProps> = ({
 
         {/* Quantitative Results Section */}
         <div className="space-y-4">
-          <h2 className="text-xs font-black uppercase tracking-wider text-ml-blue border-b border-ml-border pb-1">2. Quantitative Findings</h2>
+          <h2 className="text-xs font-black uppercase tracking-wider text-ml-blue border-b border-ml-border pb-1">2. Phát hiện định lượng</h2>
           <div className="space-y-6">
             {results.quantitative.map((q, idx) => (
               <div key={q.question_id} className="space-y-2 text-xs">
@@ -269,7 +283,7 @@ export const ReportExport: React.FC<ReportExportProps> = ({
                     <div key={res.option} className="space-y-1">
                       <div className="flex justify-between text-[11px]">
                         <span className="font-medium text-ml-ink">{res.option}</span>
-                        <span className="font-bold text-ml-ink-muted">{res.percentage}% ({res.count} responses)</span>
+                        <span className="font-bold text-ml-ink-muted">{res.percentage}% ({res.count} phản hồi)</span>
                       </div>
                       <div className="w-full h-2 bg-ml-surface rounded-full overflow-hidden border border-ml-border/50">
                         <div className="h-full bg-ml-blue rounded-full" style={{ width: `${res.percentage}%` }}></div>
@@ -284,7 +298,7 @@ export const ReportExport: React.FC<ReportExportProps> = ({
 
         {/* Qualitative Section */}
         <div className="space-y-4">
-          <h2 className="text-xs font-black uppercase tracking-wider text-ml-blue border-b border-ml-border pb-1">3. Qualitative Themes & Objections</h2>
+          <h2 className="text-xs font-black uppercase tracking-wider text-ml-blue border-b border-ml-border pb-1">3. Chủ đề định tính và phản đối</h2>
           <div className="space-y-4">
             {results.qualitative_themes.map((theme, idx) => (
               <div key={idx} className="p-4 bg-ml-surface/20 border border-ml-border rounded-lg space-y-2 text-xs">
@@ -292,7 +306,7 @@ export const ReportExport: React.FC<ReportExportProps> = ({
                 <p className="text-ml-ink-muted leading-relaxed font-medium">{theme.description}</p>
                 
                 <div className="space-y-1 pt-1.5">
-                  <div className="font-bold text-[9px] text-ml-ink-muted uppercase tracking-wider">Top Objections & Pain points:</div>
+                  <div className="font-bold text-[9px] text-ml-ink-muted uppercase tracking-wider">Phản đối và điểm đau chính:</div>
                   <ul className="list-disc list-inside space-y-0.5 text-ml-ink font-medium pl-1">
                     {theme.objections.map((obj, oIdx) => (
                       <li key={oIdx}>{obj}</li>
@@ -306,14 +320,14 @@ export const ReportExport: React.FC<ReportExportProps> = ({
 
         {/* Recommendations Section */}
         <div className="space-y-4">
-          <h2 className="text-xs font-black uppercase tracking-wider text-ml-blue border-b border-ml-border pb-1">4. Strategic Recommendations</h2>
+          <h2 className="text-xs font-black uppercase tracking-wider text-ml-blue border-b border-ml-border pb-1">4. Khuyến nghị chiến lược</h2>
           <div className="space-y-3">
             {results.recommendations.map((rec, idx) => (
               <div key={idx} className="text-xs flex gap-2 items-start">
                 <span className={`px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider ${
                   rec.priority === 'High' ? 'bg-red-50 text-ml-danger border border-ml-danger/10' : 'bg-amber-50 text-ml-warning border border-ml-warning/10'
                 }`}>
-                  {rec.priority}
+                  {priorityLabel(rec.priority)}
                 </span>
                 <div className="space-y-0.5">
                   <div className="font-bold text-ml-ink">{rec.title}</div>
@@ -328,10 +342,10 @@ export const ReportExport: React.FC<ReportExportProps> = ({
         <div className="border-t border-ml-border pt-6 text-[10px] text-ml-ink-muted font-medium flex flex-col md:flex-row justify-between gap-4">
           <div className="flex items-center gap-1.5 text-ml-warning">
             <ShieldAlert size={14} />
-            <span>Simulated Output - Requires human respondent validation before product deployment.</span>
+            <span>Kết quả mô phỏng - cần xác thực bằng người thật trước khi triển khai sản phẩm.</span>
           </div>
           <div>
-            Page 1 of 1 • Market Lab PoC
+            Trang 1 / 1 • Market Lab PoC
           </div>
         </div>
 

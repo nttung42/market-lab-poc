@@ -30,6 +30,8 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
   projectId,
   onNavigateToResults,
 }) => {
+  const studyStatusLabel = (status: Study['status']) =>
+    status === 'completed' ? 'HOÀN TẤT' : status === 'running' ? 'ĐANG CHẠY' : 'BẢN NHÁP';
   const [studies, setStudies] = useState<Study[]>([]);
   const [activeStudy, setActiveStudy] = useState<Study | null>(null);
   const [personas, setPersonas] = useState<Persona[]>([]);
@@ -56,7 +58,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
 
   const handleDeleteActiveStudy = async () => {
     if (!activeStudy) return;
-    if (!confirm(`Are you sure you want to delete the study "${activeStudy.title}"? This will permanently delete all simulated responses.`)) {
+    if (!confirm(`Bạn có chắc muốn xóa nghiên cứu "${activeStudy.title}"? Thao tác này sẽ xóa vĩnh viễn toàn bộ phản hồi mô phỏng.`)) {
       return;
     }
     
@@ -67,8 +69,8 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
       setStudies(list);
       setActiveStudy(list[0] || null);
     } catch (err) {
-      console.error('Failed to delete study', err);
-      alert('Failed to delete study.');
+      console.error('Không thể xóa nghiên cứu', err);
+      alert('Không thể xóa nghiên cứu.');
     } finally {
       setLoading(false);
     }
@@ -82,8 +84,8 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
       setActiveStudy(prev => prev ? { ...prev, title: updated.title } : null);
       setIsEditingStudyTitle(false);
     } catch (err) {
-      console.error('Failed to rename study', err);
-      alert('Failed to rename study.');
+      console.error('Không thể đổi tên nghiên cứu', err);
+      alert('Không thể đổi tên nghiên cứu.');
     }
   };
 
@@ -107,7 +109,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
       const draft = studiesData.find(s => s.status === 'draft');
       setActiveStudy(completed || draft || studiesData[0] || null);
     } catch (err) {
-      console.error('Failed to load initial data', err);
+      console.error('Không thể tải dữ liệu ban đầu', err);
     } finally {
       setLoading(false);
     }
@@ -124,7 +126,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
       setActiveStudy(study);
       setNewStudyTitle('');
     } catch (err) {
-      console.error('Failed to create study', err);
+      console.error('Không thể tạo nghiên cứu', err);
     } finally {
       setSavingStudy(false);
     }
@@ -163,7 +165,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
         options: ['', ''],
       });
     } catch (err) {
-      console.error('Failed to add question', err);
+      console.error('Không thể thêm câu hỏi', err);
     }
   };
 
@@ -171,7 +173,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
     if (!activeStudy) return;
     setRunningSim(true);
     setSimProgress(5);
-    setSimStatusText('Initializing synthetic panel...');
+    setSimStatusText('Đang khởi tạo nhóm mô phỏng...');
 
     // Visual simulator progress interval
     const interval = setInterval(() => {
@@ -182,9 +184,9 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
         }
         const step = Math.random() > 0.5 ? 15 : 5;
         // Update messages based on progress
-        if (prev > 70) setSimStatusText('Aggregating insights and recommendations...');
-        else if (prev > 40) setSimStatusText('Simulating respondent decision rules...');
-        else if (prev > 20) setSimStatusText('Simulating cohort preferences...');
+        if (prev > 70) setSimStatusText('Đang tổng hợp insight và khuyến nghị...');
+        else if (prev > 40) setSimStatusText('Đang mô phỏng quy tắc ra quyết định...');
+        else if (prev > 20) setSimStatusText('Đang mô phỏng sở thích theo nhóm...');
         return prev + step;
       });
     }, 400);
@@ -193,7 +195,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
       await runStudy(activeStudy.id, selectedPersonas);
       clearInterval(interval);
       setSimProgress(100);
-      setSimStatusText('Simulation complete!');
+      setSimStatusText('Mô phỏng hoàn tất!');
       setTimeout(() => {
         setRunningSim(false);
         onNavigateToResults(activeStudy.id);
@@ -201,7 +203,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
     } catch (err) {
       clearInterval(interval);
       setRunningSim(false);
-      alert('Simulation failed. Please verify that respondents have been generated first.');
+      alert('Chạy mô phỏng thất bại. Hãy kiểm tra rằng bạn đã tạo nhóm người tham gia trước.');
     }
   };
 
@@ -231,7 +233,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
     return (
       <div className="flex-1 flex flex-col items-center justify-center py-24">
         <Loader2 size={36} className="text-ml-blue animate-spin mb-4" />
-        <p className="text-xs font-semibold text-ml-ink-muted uppercase tracking-widest">Loading Study Builder...</p>
+        <p className="text-xs font-semibold text-ml-ink-muted uppercase tracking-widest">Đang tải trình tạo nghiên cứu...</p>
       </div>
     );
   }
@@ -247,7 +249,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
               <Loader2 size={32} className="animate-spin" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-lg font-bold uppercase tracking-wide">Synthetic Study Run</h3>
+              <h3 className="text-lg font-bold uppercase tracking-wide">Phiên chạy nghiên cứu mô phỏng</h3>
               <p className="text-sm font-semibold text-ml-blue">{simStatusText}</p>
             </div>
             <div className="space-y-1">
@@ -264,14 +266,14 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
               </div>
             </div>
             <div className="p-4 bg-ml-surface rounded border border-ml-border text-left">
-              <div className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider mb-1">Execution Log</div>
+              <div className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider mb-1">Nhật ký thực thi</div>
               <div className="text-[11px] font-mono text-ml-ink leading-relaxed space-y-0.5 max-h-24 overflow-y-auto">
-                <div className="text-ml-success">✔ Initialized study simulation</div>
-                <div>✔ Fetched {selectedPersonas.length} target personas</div>
-                <div>✔ Found 15 synthetic respondents</div>
-                {simProgress > 20 && <div>▶ Prompting virtual panels...</div>}
-                {simProgress > 50 && <div className="text-ml-success">✔ Saved simulated responses</div>}
-                {simProgress > 80 && <div>▶ Extracting results and summaries...</div>}
+                <div className="text-ml-success">✔ Đã khởi tạo mô phỏng nghiên cứu</div>
+                <div>✔ Đã lấy {selectedPersonas.length} chân dung mục tiêu</div>
+                <div>✔ Đã tìm thấy 15 người tham gia mô phỏng</div>
+                {simProgress > 20 && <div>▶ Đang gửi tác vụ tới các nhóm ảo...</div>}
+                {simProgress > 50 && <div className="text-ml-success">✔ Đã lưu phản hồi mô phỏng</div>}
+                {simProgress > 80 && <div>▶ Đang trích xuất kết quả và tóm tắt...</div>}
               </div>
             </div>
           </div>
@@ -283,13 +285,13 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="px-2 py-0.5 text-[10px] font-bold tracking-wider text-white bg-ml-blue rounded uppercase">
-              Phase 1 MVP
+              MVP giai đoạn 1
             </span>
-            <span className="text-[11px] font-bold text-ml-ink-muted uppercase tracking-wider">Campaign Discovery</span>
+            <span className="text-[11px] font-bold text-ml-ink-muted uppercase tracking-wider">Khám phá thông điệp</span>
           </div>
-          <h1 className="text-2xl font-black tracking-tight uppercase">Study Builder</h1>
+          <h1 className="text-2xl font-black tracking-tight uppercase">Trình tạo nghiên cứu</h1>
           <p className="text-xs text-ml-ink-muted font-medium">
-            Design surveys and run concepts tests against synthetic cohorts.
+            Thiết kế khảo sát và chạy kiểm thử concept với các nhóm mô phỏng.
           </p>
         </div>
 
@@ -306,14 +308,14 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
               <button
                 onClick={handleRenameActiveStudy}
                 className="p-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 rounded-lg transition-colors cursor-pointer"
-                title="Save Title"
+                title="Lưu tiêu đề"
               >
                 <Check size={14} />
               </button>
               <button
                 onClick={() => setIsEditingStudyTitle(false)}
                 className="p-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 rounded-lg transition-colors cursor-pointer"
-                title="Cancel"
+                title="Hủy"
               >
                 <X size={14} />
               </button>
@@ -326,10 +328,10 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
                   onChange={(e) => setActiveStudy(studies.find(s => s.id === e.target.value) || null)}
                   className="bg-white border border-ml-border px-4 py-2 rounded-lg text-xs font-bold text-ml-ink focus:outline-none focus:ring-1 focus:ring-ml-blue pr-8 appearance-none cursor-pointer"
                 >
-                  <option value="" disabled>Select Study...</option>
+                  <option value="" disabled>Chọn nghiên cứu...</option>
                   {studies.map(s => (
                     <option key={s.id} value={s.id}>
-                      {s.title} ({s.status.toUpperCase()})
+                      {s.title} ({studyStatusLabel(s.status)})
                     </option>
                   ))}
                 </select>
@@ -343,14 +345,14 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
                       setIsEditingStudyTitle(true);
                     }}
                     className="p-2 border border-ml-border hover:bg-ml-surface text-ml-ink-muted hover:text-ml-blue rounded-lg transition-colors cursor-pointer"
-                    title="Rename Study"
+                    title="Đổi tên nghiên cứu"
                   >
                     <Edit size={14} />
                   </button>
                   <button
                     onClick={handleDeleteActiveStudy}
                     className="p-2 border border-ml-border hover:bg-ml-surface text-ml-ink-muted hover:text-ml-danger rounded-lg transition-colors cursor-pointer"
-                    title="Delete Study"
+                    title="Xóa nghiên cứu"
                   >
                     <Trash2 size={14} />
                   </button>
@@ -362,7 +364,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
           <form onSubmit={handleCreateStudy} className="flex gap-1.5">
             <input
               type="text"
-              placeholder="New Study Title..."
+              placeholder="Tên nghiên cứu mới..."
               value={newStudyTitle}
               onChange={(e) => setNewStudyTitle(e.target.value)}
               className="border border-ml-border px-3 py-2 rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-ml-blue bg-white w-full sm:w-44"
@@ -373,7 +375,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
               className="px-3 py-2 bg-ml-ink hover:bg-ml-ink-muted disabled:bg-ml-border text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
             >
               {savingStudy ? <Loader2 size={12} className="animate-spin" /> : <Plus size={14} />}
-              CREATE
+              TẠO
             </button>
           </form>
         </div>
@@ -389,7 +391,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
             <div className="bg-white rounded-lg border border-ml-border p-6 space-y-6">
               <h2 className="text-sm font-black uppercase tracking-wider border-b border-ml-border pb-3 flex items-center gap-2">
                 <ClipboardList size={18} className="text-ml-blue" />
-                Study Questions ({activeStudy.questions?.length || 0})
+                Câu hỏi nghiên cứu ({activeStudy.questions?.length || 0})
               </h2>
 
               {activeStudy.questions && activeStudy.questions.length > 0 ? (
@@ -401,7 +403,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
                         <div className="flex justify-between items-start gap-4">
                           <div className="space-y-1">
                             <span className="text-[10px] font-bold text-ml-blue bg-ml-blue-soft px-2 py-0.5 rounded border border-ml-blue/10 uppercase">
-                              Question {idx + 1} • {q.type.replace('_', ' ')}
+                              Câu {idx + 1} • {q.type.replace('_', ' ')}
                             </span>
                             <h3 className="text-sm font-bold leading-relaxed">{q.text}</h3>
                           </div>
@@ -423,8 +425,8 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
               ) : (
                 <div className="text-center py-12 text-ml-ink-muted border border-dashed border-ml-border rounded-lg bg-ml-surface/20 space-y-2">
                   <HelpCircle size={28} className="mx-auto text-ml-border" />
-                  <p className="text-xs font-bold uppercase tracking-wider">No Questions Added Yet</p>
-                  <p className="text-xs text-ml-ink-muted max-w-xs mx-auto">Use the panel below to build and add your first concept survey question.</p>
+                  <p className="text-xs font-bold uppercase tracking-wider">Chưa có câu hỏi nào</p>
+                  <p className="text-xs text-ml-ink-muted max-w-xs mx-auto">Hãy dùng khung bên dưới để tạo và thêm câu hỏi khảo sát đầu tiên.</p>
                 </div>
               )}
             </div>
@@ -433,14 +435,14 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
             <div className="bg-white rounded-lg border border-ml-border p-6 space-y-5">
               <h2 className="text-sm font-black uppercase tracking-wider border-b border-ml-border pb-3 flex items-center gap-2">
                 <Plus size={18} className="text-ml-blue" />
-                Add Question
+                Thêm câu hỏi
               </h2>
 
               <div className="space-y-4">
                 {/* Question Type */}
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                   <div className="sm:col-span-1">
-                    <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block mb-1">Question Type</label>
+                    <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block mb-1">Loại câu hỏi</label>
                     <select
                       value={newQuestion.type}
                       onChange={(e) => setNewQuestion(prev => ({ 
@@ -450,19 +452,19 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
                       }))}
                       className="w-full bg-white border border-ml-border px-3 py-2 rounded-lg text-xs font-bold focus:outline-none focus:ring-1 focus:ring-ml-blue"
                     >
-                      <option value="single_choice">Single Choice</option>
-                      <option value="multi_choice">Multiple Choice</option>
-                      <option value="likert">Likert Scale</option>
-                      <option value="open_text">Open Text / Free Text</option>
+                      <option value="single_choice">Một lựa chọn</option>
+                      <option value="multi_choice">Nhiều lựa chọn</option>
+                      <option value="likert">Thang Likert</option>
+                      <option value="open_text">Câu trả lời mở</option>
                     </select>
                   </div>
 
                   {/* Question Text */}
                   <div className="sm:col-span-3">
-                    <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block mb-1">Question Description</label>
+                    <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block mb-1">Nội dung câu hỏi</label>
                     <input
                       type="text"
-                      placeholder="e.g., Which pricing plan fits your budget?"
+                      placeholder="Ví dụ: Gói giá nào phù hợp với ngân sách của bạn?"
                       value={newQuestion.text}
                       onChange={(e) => setNewQuestion(prev => ({ ...prev, text: e.target.value }))}
                       className="w-full border border-ml-border px-3 py-2 rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-ml-blue bg-white"
@@ -474,13 +476,13 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
                 {(newQuestion.type === 'single_choice' || newQuestion.type === 'multi_choice') && (
                   <div className="space-y-2.5 p-4 bg-ml-surface/30 rounded-lg border border-ml-border">
                     <div className="flex items-center justify-between">
-                      <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider">Question Options</label>
+                      <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider">Các lựa chọn</label>
                       <button
                         type="button"
                         onClick={addOptionField}
                         className="text-[10px] font-bold text-ml-blue hover:underline uppercase flex items-center gap-0.5"
                       >
-                        <Plus size={10} /> Add Option
+                        <Plus size={10} /> Thêm lựa chọn
                       </button>
                     </div>
 
@@ -490,7 +492,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
                           <span className="text-xs font-mono text-ml-ink-muted">{idx + 1}.</span>
                           <input
                             type="text"
-                            placeholder={`Option ${idx + 1} text...`}
+                            placeholder={`Nội dung lựa chọn ${idx + 1}...`}
                             value={opt}
                             onChange={(e) => handleOptionChange(idx, e.target.value)}
                             className="flex-1 border border-ml-border px-3 py-1.5 rounded text-xs font-medium focus:outline-none focus:ring-1 focus:ring-ml-blue bg-white"
@@ -517,7 +519,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
                   className="w-full flex items-center justify-center gap-1.5 py-2.5 px-4 bg-ml-ink hover:bg-ml-ink-muted disabled:bg-ml-border text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
                 >
                   <Plus size={14} />
-                  ADD TO SURVEY
+                  THÊM VÀO KHẢO SÁT
                 </button>
               </div>
             </div>
@@ -532,9 +534,9 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
               <div className="space-y-1">
                 <h2 className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
                   <Sparkles size={18} className="text-ml-blue" />
-                  Target Cohort Panel
+                  Chọn nhóm mục tiêu
                 </h2>
-                <p className="text-[11px] text-ml-ink-muted font-medium">Select which persona respondents participate in the study simulation.</p>
+                <p className="text-[11px] text-ml-ink-muted font-medium">Chọn các chân dung sẽ tham gia vào phiên mô phỏng nghiên cứu.</p>
               </div>
 
               <div className="space-y-3 border-t border-ml-border pt-4">
@@ -555,7 +557,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
                       <div className="space-y-0.5">
                         <div className="text-xs font-bold text-ml-ink">{persona.name}</div>
                         <div className="text-[10px] text-ml-ink-muted font-bold uppercase tracking-wider">{persona.segment}</div>
-                        <div className="text-[10px] text-ml-blue font-semibold">Cohort size: 5 synthetic respondents</div>
+                        <div className="text-[10px] text-ml-blue font-semibold">Quy mô nhóm: 5 người mô phỏng</div>
                       </div>
                     </label>
                   );
@@ -565,7 +567,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
               {selectedPersonas.length === 0 && (
                 <div className="flex gap-2 p-3 bg-ml-danger/10 border border-ml-danger/20 rounded-lg text-ml-danger items-start">
                   <AlertTriangle size={16} className="mt-0.5 shrink-0" />
-                  <span className="text-[10px] font-semibold leading-relaxed">Please select at least one persona cohort to participate in the simulation.</span>
+                  <span className="text-[10px] font-semibold leading-relaxed">Vui lòng chọn ít nhất một nhóm chân dung để tham gia mô phỏng.</span>
                 </div>
               )}
             </div>
@@ -573,22 +575,22 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
             {/* Run Study Trigger Card */}
             <div className="bg-white rounded-lg border border-ml-border p-6 space-y-6">
               <div className="space-y-1">
-                <h2 className="text-sm font-black uppercase tracking-wider">Simulation Launchpad</h2>
-                <p className="text-[11px] text-ml-ink-muted font-medium">Estimated cost: ~0.02 USD (Mock generation is free & offline)</p>
+                <h2 className="text-sm font-black uppercase tracking-wider">Khởi chạy mô phỏng</h2>
+                <p className="text-[11px] text-ml-ink-muted font-medium">Chi phí ước tính: ~0.02 USD (mô phỏng mẫu là miễn phí và offline)</p>
               </div>
 
               <div className="space-y-3.5 border-t border-ml-border pt-4 text-xs font-medium text-ml-ink-muted leading-relaxed">
                 <div className="flex justify-between border-b border-ml-border/50 pb-1.5">
-                  <span className="font-bold">Total Respondents:</span>
+                  <span className="font-bold">Tổng số người tham gia:</span>
                   <span className="font-bold text-ml-ink">{selectedPersonas.length * 5}</span>
                 </div>
                 <div className="flex justify-between border-b border-ml-border/50 pb-1.5">
-                  <span className="font-bold">Total Questions:</span>
+                  <span className="font-bold">Tổng số câu hỏi:</span>
                   <span className="font-bold text-ml-ink">{activeStudy.questions?.length || 0}</span>
                 </div>
                 <div className="flex justify-between border-b border-ml-border/50 pb-1.5">
-                  <span className="font-bold">Model Engine:</span>
-                  <span className="font-bold text-ml-blue">Mock Rule-Engine Fallback</span>
+                  <span className="font-bold">Bộ máy mô hình:</span>
+                  <span className="font-bold text-ml-blue">Rule-engine mô phỏng dự phòng</span>
                 </div>
               </div>
 
@@ -599,7 +601,7 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
                 className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-ml-blue hover:bg-ml-blue-strong disabled:bg-ml-border text-white text-xs font-bold rounded-lg transition-colors duration-150 shadow-xs cursor-pointer"
               >
                 <Play size={14} fill="currentColor" />
-                RUN STUDY SIMULATION
+                CHẠY MÔ PHỎNG
               </button>
             </div>
 
@@ -609,8 +611,8 @@ export const StudyBuilder: React.FC<StudyBuilderProps> = ({
       ) : (
         <div className="text-center py-20 bg-white border border-ml-border rounded-lg space-y-3">
           <HelpCircle size={36} className="mx-auto text-ml-border" />
-          <h2 className="text-md font-bold uppercase tracking-wider">No Studies Created</h2>
-          <p className="text-xs text-ml-ink-muted max-w-sm mx-auto">Create a survey study using the form in the header to get started building questions.</p>
+          <h2 className="text-md font-bold uppercase tracking-wider">Chưa có nghiên cứu nào</h2>
+          <p className="text-xs text-ml-ink-muted max-w-sm mx-auto">Hãy tạo một nghiên cứu khảo sát bằng biểu mẫu ở phần đầu để bắt đầu xây dựng câu hỏi.</p>
         </div>
       )}
 

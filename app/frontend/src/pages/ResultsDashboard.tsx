@@ -23,6 +23,8 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
   studyId,
   onNavigateToReports,
 }) => {
+  const priorityLabel = (value: string) =>
+    value === 'High' ? 'Cao' : value === 'Medium' ? 'Trung bình' : value === 'Low' ? 'Thấp' : value;
   const [study, setStudy] = useState<Study | null>(null);
   const [results, setResults] = useState<StudyResults | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,8 +44,8 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
         setLoading(false);
       })
       .catch(err => {
-        console.error('Failed to load study results', err);
-        setError('No completed study results found. Please configure a study in the Study Builder and click "Run Study" first.');
+        console.error('Không thể tải kết quả nghiên cứu', err);
+        setError('Không tìm thấy kết quả nghiên cứu đã hoàn tất. Hãy cấu hình nghiên cứu trong trình tạo nghiên cứu và bấm "Chạy mô phỏng" trước.');
         setLoading(false);
       });
   }, [studyId]);
@@ -52,7 +54,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
     return (
       <div className="flex-1 flex flex-col items-center justify-center py-24">
         <Loader2 size={36} className="text-ml-blue animate-spin mb-4" />
-        <p className="text-xs font-semibold text-ml-ink-muted uppercase tracking-widest">Generating Results Dashboard...</p>
+        <p className="text-xs font-semibold text-ml-ink-muted uppercase tracking-widest">Đang tạo bảng kết quả...</p>
       </div>
     );
   }
@@ -63,15 +65,15 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
         <div className="w-16 h-16 bg-ml-warning/10 border border-ml-warning/20 rounded-full flex items-center justify-center text-ml-warning mb-5">
           <AlertTriangle size={32} />
         </div>
-        <h2 className="text-lg font-bold text-ml-ink uppercase tracking-wider mb-2">No Results Available</h2>
+        <h2 className="text-lg font-bold text-ml-ink uppercase tracking-wider mb-2">Chưa có kết quả</h2>
         <p className="text-xs text-ml-ink-muted leading-relaxed mb-6">
-          {error || 'This study has not been executed yet. Run a simulated study first to view synthetic dashboard metrics.'}
+          {error || 'Nghiên cứu này chưa được chạy. Hãy chạy mô phỏng trước để xem các chỉ số tổng hợp.'}
         </p>
         <button
           onClick={() => window.location.reload()}
           className="px-4 py-2 bg-ml-blue hover:bg-ml-blue-strong text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
         >
-          Reload Dashboard
+          Tải lại
         </button>
       </div>
     );
@@ -85,13 +87,13 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="px-2 py-0.5 text-[9px] font-bold tracking-wider text-ml-success bg-emerald-50 border border-ml-success/20 rounded uppercase">
-              Completed Simulation
+              Đã hoàn tất mô phỏng
             </span>
-            <span className="text-[11px] font-bold text-ml-ink-muted uppercase tracking-wider">Concept Validation Dashboard</span>
+            <span className="text-[11px] font-bold text-ml-ink-muted uppercase tracking-wider">Bảng kiểm chứng concept</span>
           </div>
           <h1 className="text-2xl font-black tracking-tight uppercase">{study.title}</h1>
           <p className="text-xs text-ml-ink-muted font-medium">
-            Based on {results.total_respondents} synthetic respondent profiles representing 3 structured target segments.
+            Dựa trên {results.total_respondents} hồ sơ người tham gia mô phỏng đại diện cho 3 phân khúc mục tiêu có cấu trúc.
           </p>
         </div>
 
@@ -99,7 +101,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
           onClick={onNavigateToReports}
           className="group flex items-center justify-center gap-1.5 py-2.5 px-4 bg-ml-blue hover:bg-ml-blue-strong text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
         >
-          View Executive Report
+          Xem báo cáo tổng hợp
           <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
         </button>
       </div>
@@ -114,7 +116,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
               : 'text-ml-ink-muted hover:text-ml-ink hover:bg-ml-surface/50'
           }`}
         >
-          QUANTITATIVE METRICS
+          CHỈ SỐ ĐỊNH LƯỢNG
         </button>
         <button
           onClick={() => setActiveTab('qualitative')}
@@ -124,7 +126,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
               : 'text-ml-ink-muted hover:text-ml-ink hover:bg-ml-surface/50'
           }`}
         >
-          QUALITATIVE INSIGHTS
+          INSIGHT ĐỊNH TÍNH
         </button>
         <button
           onClick={() => setActiveTab('recommendations')}
@@ -134,7 +136,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
               : 'text-ml-ink-muted hover:text-ml-ink hover:bg-ml-surface/50'
           }`}
         >
-          AI RECOMMENDATIONS
+          KHUYẾN NGHỊ AI
         </button>
       </div>
 
@@ -148,15 +150,15 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
             {/* KPI Cards Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <div className="bg-white rounded-lg border border-ml-border p-5 space-y-2">
-                <div className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider">Total Simulated Panel</div>
+                <div className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider">Tổng số người mô phỏng</div>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-black">{results.total_respondents}</span>
-                  <span className="text-xs font-semibold text-ml-ink-muted">respondents</span>
+                  <span className="text-xs font-semibold text-ml-ink-muted">người</span>
                 </div>
               </div>
               
               <div className="bg-white rounded-lg border border-ml-border p-5 space-y-2">
-                <div className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider">Pricing Concern Likert Avg</div>
+                <div className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider">Điểm trung bình mối quan tâm về giá</div>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-black text-ml-blue">
                     {results.quantitative.find(q => q.question_type === 'likert')?.average_rating || 'N/A'}
@@ -166,10 +168,10 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
               </div>
 
               <div className="bg-white rounded-lg border border-ml-border p-5 space-y-2">
-                <div className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider">Confidence Level</div>
+                <div className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider">Mức độ tin cậy</div>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-black text-ml-success">85%</span>
-                  <span className="text-xs font-semibold text-ml-success bg-emerald-50 px-1.5 py-0.5 rounded border border-ml-success/15 uppercase">Stable</span>
+                  <span className="text-xs font-semibold text-ml-success bg-emerald-50 px-1.5 py-0.5 rounded border border-ml-success/15 uppercase">Ổn định</span>
                 </div>
               </div>
             </div>
@@ -178,7 +180,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
             <div className="bg-white rounded-lg border border-ml-border p-6 space-y-8">
               <h2 className="text-sm font-black uppercase tracking-wider border-b border-ml-border pb-3 flex items-center gap-2">
                 <BarChart3 size={18} className="text-ml-blue" />
-                Response Distribution Charts
+                Biểu đồ phân bố phản hồi
               </h2>
 
               <div className="space-y-10">
@@ -186,7 +188,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
                   <div key={q.question_id} className="space-y-4">
                     <div className="space-y-1">
                       <span className="text-[10px] font-bold text-ml-blue bg-ml-blue-soft px-2 py-0.5 rounded border border-ml-blue/10 uppercase">
-                        Question {idx + 1} • {q.question_type.replace('_', ' ')}
+                        Câu {idx + 1} • {q.question_type.replace('_', ' ')}
                       </span>
                       <h3 className="text-sm font-extrabold">{q.question_text}</h3>
                     </div>
@@ -214,10 +216,10 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
                         {/* Likert Statistics */}
                         <div className="p-6 bg-ml-surface/40 rounded-lg border border-ml-border flex flex-col items-center justify-center text-center space-y-2">
                           <TrendingUp size={28} className="text-ml-blue" />
-                          <div className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider">Average Cohort Rating</div>
+                          <div className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider">Điểm trung bình của nhóm</div>
                           <div className="text-4xl font-black">{q.average_rating}</div>
                           <p className="text-xs text-ml-ink-muted font-medium max-w-xs">
-                            An average score above 4.0 indicates that pricing and value transparency are key factors for this target group.
+                            Điểm trung bình trên 4.0 cho thấy giá và tính minh bạch về giá trị là yếu tố quan trọng với nhóm mục tiêu này.
                           </p>
                         </div>
                       </div>
@@ -258,7 +260,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
                 <div key={idx} className="bg-white rounded-lg border border-ml-border p-6 space-y-4 flex flex-col justify-between">
                   <div className="space-y-3">
                     <span className="px-2 py-0.5 text-[10px] font-bold text-ml-blue bg-ml-blue-soft border border-ml-blue/15 rounded uppercase">
-                      Cohort Segment {idx + 1}
+                      Phân khúc {idx + 1}
                     </span>
                     <h3 className="text-sm font-extrabold uppercase tracking-wide">{theme.theme}</h3>
                     <p className="text-xs text-ml-ink-muted leading-relaxed font-medium">
@@ -280,7 +282,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
             <div className="bg-white rounded-lg border border-ml-border p-6 space-y-6">
               <h2 className="text-sm font-black uppercase tracking-wider border-b border-ml-border pb-3 flex items-center gap-2">
                 <MessageSquare size={18} className="text-ml-blue" />
-                Objections & Friction Points
+                Phản đối và điểm ma sát
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -305,7 +307,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
             {/* Quotes Gallery */}
             <div className="bg-white rounded-lg border border-ml-border p-6 space-y-6">
               <h2 className="text-sm font-black uppercase tracking-wider border-b border-ml-border pb-3">
-                Verbatim Synthetic Responses
+                Phản hồi mô phỏng tiêu biểu
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -329,9 +331,9 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
             <div className="border-b border-ml-border pb-3 flex items-center justify-between">
               <h2 className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
                 <Sparkles size={18} className="text-ml-blue" fill="currentColor" />
-                Actionable AI Strategy Recommendations
+                Khuyến nghị chiến lược từ AI
               </h2>
-              <span className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider">Simulated Insight Summary</span>
+              <span className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider">Tóm tắt insight mô phỏng</span>
             </div>
 
             <div className="divide-y divide-ml-border/60">
@@ -342,7 +344,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
                       ? 'bg-red-50 text-ml-danger border border-ml-danger/20' 
                       : 'bg-amber-50 text-ml-warning border border-ml-warning/20'
                   }`}>
-                    {rec.priority} Priority
+                    Ưu tiên {priorityLabel(rec.priority)}
                   </span>
                   <div className="space-y-1">
                     <h3 className="text-sm font-bold text-ml-ink flex items-center gap-1.5">
@@ -369,10 +371,10 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
         <div className="space-y-1">
           <h3 className="text-xs font-bold text-ml-warning uppercase tracking-wider flex items-center gap-1.5">
             <ShieldCheck size={14} />
-            Synthetic Output Calibration Warning
+            Cảnh báo hiệu chỉnh dữ liệu mô phỏng
           </h3>
           <p className="text-[11px] text-ml-ink-muted leading-relaxed font-medium">
-            The results shown represent simulated responses synthesized using AI models of student behavior segments (Minh Thu, Nam, Khanh Vy). Objections and recommendations are logical conclusions calculated under specific prompt constraints. These metrics are designed to help validate early hypothesis positioning and must be confirmed by real-world human customer surveys before making heavy marketing or product investments.
+            Kết quả hiển thị là phản hồi mô phỏng được tổng hợp từ các mô hình AI cho những phân khúc hành vi sinh viên như Minh Thu, Hoàng Nam và Khánh Vy. Các phản đối và khuyến nghị là kết luận logic dưới những ràng buộc mô phỏng cụ thể. Những chỉ số này chỉ nên dùng để kiểm tra giả thuyết ban đầu và phải được xác nhận lại bằng khảo sát người thật trước khi đầu tư lớn cho marketing hoặc sản phẩm.
           </p>
         </div>
       </div>

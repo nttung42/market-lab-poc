@@ -46,34 +46,34 @@ type WorkspaceSuggestion = {
 
 const workspaceSuggestions: WorkspaceSuggestion[] = [
   {
-    label: 'AI English Coach',
-    name: 'AI Business English Coach',
-    product_description: 'An AI speaking coach that helps early-career professionals practice business English, prepare for meetings, and get feedback on clarity and confidence.',
+    label: 'Huấn luyện tiếng Anh AI',
+    name: 'Trợ lý luyện tiếng Anh công việc bằng AI',
+    product_description: 'Một trợ lý nói tiếng Anh bằng AI giúp người đi làm giai đoạn đầu luyện tiếng Anh công việc, chuẩn bị họp và nhận phản hồi về độ rõ ràng cũng như sự tự tin.',
     industry: 'EdTech, SaaS',
     market: 'Vietnam, Southeast Asia',
-    target_audience: 'University students, junior professionals',
-    research_objective: 'Choose the stronger messaging angle for confidence-building versus convenience.',
-    study_type: 'Synthetic Concept / Message Test',
+    target_audience: 'Sinh viên đại học, nhân sự mới đi làm',
+    research_objective: 'Chọn thông điệp mạnh hơn giữa xây dựng sự tự tin và tính tiện lợi.',
+    study_type: 'Kiểm thử concept / thông điệp mô phỏng',
   },
   {
-    label: 'SME Sales Dashboard',
-    name: 'Social Commerce Sales Dashboard',
-    product_description: 'A lightweight analytics workspace that helps small online sellers track orders, campaigns, and repeat buyers across social commerce channels.',
+    label: 'Dashboard bán hàng SME',
+    name: 'Dashboard doanh số social commerce',
+    product_description: 'Không gian phân tích gọn nhẹ giúp người bán online quy mô nhỏ theo dõi đơn hàng, chiến dịch và khách mua lại trên các kênh social commerce.',
     industry: 'RetailTech, SaaS',
     market: 'Vietnam',
-    target_audience: 'SME owners, social commerce operators',
-    research_objective: 'Identify which positioning drives more interest: growth visibility or time-saving operations.',
-    study_type: 'Synthetic Concept / Message Test',
+    target_audience: 'Chủ SME, người vận hành social commerce',
+    research_objective: 'Xác định định vị nào thu hút hơn: nhìn rõ tăng trưởng hay tiết kiệm thời gian vận hành.',
+    study_type: 'Kiểm thử concept / thông điệp mô phỏng',
   },
   {
-    label: 'Skincare Routine App',
-    name: 'Personalized Skincare Routine App',
-    product_description: 'A mobile app that recommends simple skincare routines based on skin concerns, budget, and lifestyle, then nudges users to stay consistent.',
+    label: 'Ứng dụng skincare',
+    name: 'Ứng dụng gợi ý routine skincare cá nhân hóa',
+    product_description: 'Ứng dụng di động gợi ý quy trình chăm sóc da đơn giản dựa trên vấn đề da, ngân sách và lối sống, đồng thời nhắc người dùng duy trì đều đặn.',
     industry: 'Consumer Health, Mobile App',
     market: 'Urban Vietnam',
-    target_audience: 'Gen Z and millennial skincare shoppers',
-    research_objective: 'Test whether trust-led or convenience-led messaging resonates more strongly.',
-    study_type: 'Synthetic Concept / Message Test',
+    target_audience: 'Người mua mỹ phẩm Gen Z và Millennials',
+    research_objective: 'Kiểm thử xem thông điệp nhấn mạnh niềm tin hay sự tiện lợi phù hợp hơn.',
+    study_type: 'Kiểm thử concept / thông điệp mô phỏng',
   },
 ];
 
@@ -86,15 +86,15 @@ const getErrorMessage = (error: unknown, fallback: string) => {
 
 const formatDate = (value?: string) => {
   if (!value) {
-    return 'N/A';
+    return 'Không có';
   }
 
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) {
-    return 'N/A';
+    return 'Không có';
   }
 
-  return parsed.toLocaleDateString('en-GB', {
+  return parsed.toLocaleDateString('vi-VN', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
@@ -137,7 +137,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
   const [formMarket, setFormMarket] = useState('');
   const [formAudience, setFormAudience] = useState('');
   const [formObjective, setFormObjective] = useState('');
-  const [formStudyType, setFormStudyType] = useState('Synthetic Concept / Message Test');
+  const [formStudyType, setFormStudyType] = useState('Kiểm thử concept / thông điệp mô phỏng');
 
   const [saving, setSaving] = useState(false);
 
@@ -148,7 +148,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
     setFormMarket('');
     setFormAudience('');
     setFormObjective('');
-    setFormStudyType('Synthetic Concept / Message Test');
+    setFormStudyType('Kiểm thử concept / thông điệp mô phỏng');
   };
 
   const applySuggestion = (suggestion: WorkspaceSuggestion) => {
@@ -167,7 +167,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
       setProjects(list);
     } catch (error: unknown) {
       console.error(error);
-      setError(getErrorMessage(error, 'Failed to load projects list.'));
+      setError(getErrorMessage(error, 'Không thể tải danh sách dự án.'));
     }
   };
 
@@ -192,7 +192,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
       setStudies(studiesData);
     } catch (error: unknown) {
       console.error(error);
-      setError(getErrorMessage(error, 'Failed to load project details.'));
+      setError(getErrorMessage(error, 'Không thể tải chi tiết dự án.'));
     }
   };
 
@@ -225,7 +225,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
   const handleCreateOrUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formName.trim() || !formDesc.trim() || !formIndustry.trim() || !formMarket.trim() || !formAudience.trim() || !formObjective.trim()) {
-      alert('Please fill in all fields.');
+      alert('Vui lòng điền đầy đủ tất cả trường.');
       return;
     }
 
@@ -256,7 +256,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
       resetForm();
     } catch (error: unknown) {
       console.error(error);
-      alert(getErrorMessage(error, 'Error saving project.'));
+      alert(getErrorMessage(error, 'Không thể lưu dự án.'));
     } finally {
       setSaving(false);
     }
@@ -264,7 +264,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
 
   const handleDelete = async (projectId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm('Are you sure you want to delete this project? This will permanently delete all associated personas, respondents, studies, and responses.')) {
+    if (!confirm('Bạn có chắc muốn xóa dự án này? Thao tác này sẽ xóa vĩnh viễn các chân dung, người tham gia, nghiên cứu và phản hồi liên quan.')) {
       return;
     }
     
@@ -278,7 +278,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
       await loadProjectsList();
     } catch (error: unknown) {
       console.error(error);
-      alert(getErrorMessage(error, 'Error deleting project.'));
+      alert(getErrorMessage(error, 'Không thể xóa dự án.'));
     } finally {
       setLoading(false);
     }
@@ -300,7 +300,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
         <div className="flex items-center justify-between border-b border-ml-border/60 pb-4">
           <h2 className="text-sm font-black uppercase tracking-wider flex items-center gap-1.5">
             {mode === 'edit' ? <Edit className="text-ml-blue" size={16} /> : <Plus className="text-ml-blue" size={16} />}
-            {mode === 'edit' ? 'Edit Research Workspace' : 'Initialize Research Workspace'}
+            {mode === 'edit' ? 'Chỉnh sửa không gian nghiên cứu' : 'Khởi tạo không gian nghiên cứu'}
           </h2>
           {onClose && (
             <button 
@@ -319,9 +319,9 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
               <div className="space-y-2 rounded-lg border border-ml-border bg-ml-surface/60 p-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-ml-ink-muted">Quick-Start Suggestions</div>
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-ml-ink-muted">Gợi ý điền nhanh</div>
                     <p className="mt-1 text-[11px] font-medium text-ml-ink-muted">
-                      Tap a preset to auto-fill the form.
+                      Chọn một mẫu để tự động điền biểu mẫu.
                     </p>
                   </div>
                   <button
@@ -329,7 +329,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                     onClick={resetForm}
                     className="shrink-0 rounded-md border border-ml-border bg-white px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-ml-ink hover:border-ml-blue/40 hover:text-ml-blue transition-colors cursor-pointer"
                   >
-                    Clear
+                    Xóa trắng
                   </button>
                 </div>
 
@@ -351,10 +351,10 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
             )}
 
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block">Product Name / Concept</label>
+              <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block">Tên sản phẩm / concept</label>
               <input
                 type="text"
-                placeholder="e.g., AI Business English Coach"
+                placeholder="Ví dụ: Trợ lý luyện tiếng Anh công việc bằng AI"
                 value={formName}
                 onChange={e => setFormName(e.target.value)}
                 className="w-full border border-ml-border px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-ml-blue bg-white text-sm"
@@ -363,9 +363,9 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block">Product Description</label>
+              <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block">Mô tả sản phẩm</label>
               <textarea
-                placeholder="What does it do, and how does it create value for users?"
+                placeholder="Sản phẩm làm gì và tạo giá trị gì cho người dùng?"
                 value={formDesc}
                 onChange={e => setFormDesc(e.target.value)}
                 rows={3}
@@ -376,10 +376,10 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block">Industry</label>
+                <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block">Ngành</label>
                 <input
                   type="text"
-                  placeholder="e.g., EdTech, SaaS"
+                  placeholder="Ví dụ: EdTech, SaaS"
                   value={formIndustry}
                   onChange={e => setFormIndustry(e.target.value)}
                   className="w-full border border-ml-border px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-ml-blue bg-white text-sm"
@@ -387,10 +387,10 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block">Market / Location</label>
+                <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block">Thị trường / khu vực</label>
                 <input
                   type="text"
-                  placeholder="e.g., Vietnam, Southeast Asia"
+                  placeholder="Ví dụ: Việt Nam, Đông Nam Á"
                   value={formMarket}
                   onChange={e => setFormMarket(e.target.value)}
                   className="w-full border border-ml-border px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-ml-blue bg-white text-sm"
@@ -401,10 +401,10 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block">Target Audience</label>
+                <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block">Đối tượng mục tiêu</label>
                 <input
                   type="text"
-                  placeholder="e.g., University students, junior developers"
+                  placeholder="Ví dụ: Sinh viên đại học, nhân sự mới đi làm"
                   value={formAudience}
                   onChange={e => setFormAudience(e.target.value)}
                   className="w-full border border-ml-border px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-ml-blue bg-white text-sm"
@@ -413,10 +413,10 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block">Research Objective</label>
+                <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block">Mục tiêu nghiên cứu</label>
                 <input
                   type="text"
-                  placeholder="e.g., Choose the stronger messaging angle"
+                  placeholder="Ví dụ: Chọn hướng thông điệp mạnh hơn"
                   value={formObjective}
                   onChange={e => setFormObjective(e.target.value)}
                   className="w-full border border-ml-border px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-ml-blue bg-white text-sm"
@@ -426,15 +426,15 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block">Study Methodology</label>
+              <label className="text-[10px] font-bold text-ml-ink-muted uppercase tracking-wider block">Phương pháp nghiên cứu</label>
               <select
                 value={formStudyType}
                 onChange={e => setFormStudyType(e.target.value)}
                 className="w-full bg-white border border-ml-border px-4 py-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-ml-blue text-sm"
               >
-                <option value="Synthetic Concept / Message Test">Synthetic Concept / Message Test</option>
-                <option value="Pricing Sensitivity Test">Pricing Sensitivity Test</option>
-                <option value="Feature Prioritization survey">Feature Prioritization survey</option>
+                <option value="Kiểm thử concept / thông điệp mô phỏng">Kiểm thử concept / thông điệp mô phỏng</option>
+                <option value="Kiểm thử độ nhạy về giá">Kiểm thử độ nhạy về giá</option>
+                <option value="Khảo sát ưu tiên tính năng">Khảo sát ưu tiên tính năng</option>
               </select>
             </div>
 
@@ -452,14 +452,14 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                 }}
                 className="flex-1 py-3 px-4 border border-ml-border hover:bg-ml-surface text-ml-ink text-xs font-bold rounded-lg transition-colors cursor-pointer text-center"
               >
-                CANCEL
+                HỦY
               </button>
               <button
                 type="submit"
                 disabled={saving}
                 className="flex-1 flex items-center justify-center gap-1.5 py-3 px-4 bg-ml-blue hover:bg-ml-blue-strong disabled:bg-ml-border text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
               >
-                {saving ? <RefreshCw size={14} className="animate-spin" /> : mode === 'edit' ? 'UPDATE WORKSPACE' : 'INITIALIZE WORKSPACE'}
+                {saving ? <RefreshCw size={14} className="animate-spin" /> : mode === 'edit' ? 'CẬP NHẬT DỰ ÁN' : 'KHỞI TẠO DỰ ÁN'}
               </button>
             </div>
           </form>
@@ -490,10 +490,10 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
           <div>
             <h1 className="text-2xl md:text-3xl font-black tracking-tight uppercase flex items-center gap-2">
               <Folder className="text-ml-blue" size={28} />
-              Project Directory
+              Danh sách dự án
             </h1>
             <p className="text-sm text-ml-ink-muted font-medium mt-1">
-              Select an active customer research workspace or create a new one.
+              Chọn một không gian nghiên cứu đang hoạt động hoặc tạo mới.
             </p>
           </div>
           <button
@@ -501,23 +501,23 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
             className="flex items-center gap-1.5 px-4 py-2.5 bg-ml-blue hover:bg-ml-blue-strong text-white text-xs font-bold rounded-lg shadow-xs cursor-pointer transition-colors"
           >
             <Plus size={14} />
-            INITIALIZE NEW WORKSPACE
+            TẠO DỰ ÁN MỚI
           </button>
         </div>
 
         <div className="space-y-4">
-          <h2 className="text-xs font-bold text-ml-ink-muted uppercase tracking-wider">Available Workspaces ({projects.length})</h2>
+          <h2 className="text-xs font-bold text-ml-ink-muted uppercase tracking-wider">Các dự án hiện có ({projects.length})</h2>
           
           {projects.length === 0 ? (
             <div className="text-center py-20 bg-white border border-ml-border border-dashed rounded-lg space-y-4 shadow-2xs">
               <Folder size={48} className="mx-auto text-ml-border" />
-              <h3 className="text-sm font-bold uppercase tracking-wider">No Workspaces Found</h3>
-              <p className="text-xs text-ml-ink-muted max-w-xs mx-auto">Create your first concept workspace to start testing messages.</p>
+              <h3 className="text-sm font-bold uppercase tracking-wider">Chưa có dự án nào</h3>
+              <p className="text-xs text-ml-ink-muted max-w-xs mx-auto">Tạo dự án đầu tiên để bắt đầu kiểm thử thông điệp.</p>
               <button
                 onClick={onCreateProject}
                 className="inline-flex items-center gap-1.5 px-4 py-2 bg-ml-blue hover:bg-ml-blue-strong text-white text-xs font-bold rounded-lg cursor-pointer"
               >
-                <Plus size={14} /> Initialize Workspace
+                <Plus size={14} /> Tạo dự án
               </button>
             </div>
           ) : (
@@ -546,7 +546,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                           <span className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/30 bg-white/20 text-lg font-black backdrop-blur-sm">
                             {projectInitial}
                           </span>
-                          <span className="text-[10px] font-black uppercase tracking-wider text-white/80">Research Workspace</span>
+                          <span className="text-[10px] font-black uppercase tracking-wider text-white/80">Không gian nghiên cứu</span>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {proj.is_seeded && (
@@ -556,7 +556,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                           )}
                           {isActive && (
                             <span className="rounded border border-white/40 bg-white px-2 py-1 text-[9px] font-black uppercase tracking-wider text-ml-blue">
-                              Active
+                              Đang chọn
                             </span>
                           )}
                         </div>
@@ -582,20 +582,20 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
 
                       <div className="flex items-center justify-between border-t border-ml-border/60 pt-4" onClick={e => e.stopPropagation()}>
                         <span className="text-[10px] font-black uppercase tracking-wider text-ml-ink/80 transition-colors group-hover:text-ml-blue">
-                          Open Workspace
+                          Mở dự án
                         </span>
                         <div className="flex gap-1.5">
                           <button
                             onClick={() => onEditProject(proj.id)}
                             className="p-2 border border-ml-border hover:border-ml-blue/30 hover:bg-ml-blue-soft/20 text-ml-ink-muted hover:text-ml-blue rounded-lg transition-colors cursor-pointer"
-                            title="Edit Workspace"
+                            title="Chỉnh sửa dự án"
                           >
                             <Edit size={14} />
                           </button>
                           <button
                             onClick={(e) => handleDelete(proj.id, e)}
                             className="p-2 border border-ml-border hover:border-ml-danger/30 hover:bg-ml-danger/10 text-ml-ink-muted hover:text-ml-danger rounded-lg transition-colors cursor-pointer"
-                            title="Delete Workspace"
+                            title="Xóa dự án"
                           >
                             <Trash2 size={14} />
                           </button>
@@ -632,13 +632,13 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
         <div className="w-16 h-16 bg-ml-danger/10 border border-ml-danger/30 rounded-full flex items-center justify-center text-ml-danger mb-4">
           <ShieldAlert size={32} />
         </div>
-        <h2 className="text-xl font-bold text-ml-ink mb-2">Failed to Load Project</h2>
-        <p className="text-sm text-ml-ink-muted mb-6">{error || 'Project data could not be retrieved.'}</p>
+        <h2 className="text-xl font-bold text-ml-ink mb-2">Không thể tải dự án</h2>
+        <p className="text-sm text-ml-ink-muted mb-6">{error || 'Không thể truy xuất dữ liệu dự án.'}</p>
         <button
           onClick={() => onSelectProject(null)}
           className="px-4 py-2 bg-ml-blue hover:bg-ml-blue-strong text-white font-bold rounded-lg transition-colors duration-150"
         >
-          Go to Directory
+          Về danh sách dự án
         </button>
       </div>
     );
@@ -651,10 +651,10 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
     ? Math.round(personas.reduce((sum, persona) => sum + persona.confidence_score, 0) / personas.length)
     : 0;
   const readinessSteps = [
-    { label: 'Personas defined', complete: personas.length > 0, value: `${personas.length}` },
-    { label: 'Respondent panel ready', complete: respondents.length > 0, value: `${respondents.length}` },
-    { label: 'Study drafted', complete: studies.length > 0, value: `${studies.length}` },
-    { label: 'Results available', complete: completedStudies.length > 0, value: `${completedStudies.length}` },
+    { label: 'Đã có chân dung', complete: personas.length > 0, value: `${personas.length}` },
+    { label: 'Đã có nhóm mô phỏng', complete: respondents.length > 0, value: `${respondents.length}` },
+    { label: 'Đã tạo nghiên cứu', complete: studies.length > 0, value: `${studies.length}` },
+    { label: 'Đã có kết quả', complete: completedStudies.length > 0, value: `${completedStudies.length}` },
   ];
   const readinessCompleted = readinessSteps.filter((step) => step.complete).length;
   const readinessPercent = Math.round((readinessCompleted / readinessSteps.length) * 100);
@@ -665,10 +665,12 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
   const personaHighlights = personas.slice(0, 3);
   const statusTone =
     readinessPercent >= 100
-      ? 'Ready to review simulated findings'
+      ? 'Sẵn sàng xem kết quả mô phỏng'
       : readinessPercent >= 50
-        ? 'Core setup in progress'
-        : 'Needs setup before downstream modules';
+        ? 'Đang hoàn thiện thiết lập cốt lõi'
+        : 'Cần thiết lập thêm trước khi dùng các mô-đun tiếp theo';
+  const studyStatusLabel = (status: Study['status']) =>
+    status === 'completed' ? 'hoàn tất' : status === 'running' ? 'đang chạy' : 'bản nháp';
 
   return (
     <div className="flex-1 max-w-6xl mx-auto w-full px-5 py-6 md:px-6 md:py-8 space-y-6 text-ml-ink">
@@ -680,15 +682,15 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
               <div className="flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-1 rounded-full border border-ml-blue/20 bg-ml-blue-soft px-3 py-1 text-[10px] font-black uppercase tracking-wider text-ml-blue">
                   <BarChart3 size={12} />
-                  Active Workspace
+                  Dự án đang hoạt động
                 </span>
                 {project.is_seeded && (
                   <span className="rounded-full border border-ml-border bg-white px-3 py-1 text-[10px] font-black uppercase tracking-wider text-ml-ink">
-                    Seeded Demo
+                    Dữ liệu mẫu
                   </span>
                 )}
                 <span className="rounded-full border border-ml-border bg-white px-3 py-1 text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">
-                  Created {formatDate(project.created_at)}
+                  Tạo ngày {formatDate(project.created_at)}
                 </span>
               </div>
 
@@ -703,15 +705,15 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
 
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="rounded-lg border border-ml-border bg-white/90 p-3">
-                  <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Industry</div>
+                  <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Ngành</div>
                   <div className="mt-1 text-sm font-bold text-ml-ink">{project.industry}</div>
                 </div>
                 <div className="rounded-lg border border-ml-border bg-white/90 p-3">
-                  <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Market</div>
+                  <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Thị trường</div>
                   <div className="mt-1 text-sm font-bold text-ml-ink">{project.market}</div>
                 </div>
                 <div className="rounded-lg border border-ml-border bg-white/90 p-3">
-                  <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Method</div>
+                  <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Phương pháp</div>
                   <div className="mt-1 text-sm font-bold text-ml-ink">{project.study_type}</div>
                 </div>
               </div>
@@ -721,7 +723,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
           <aside className="flex flex-col justify-between gap-5 border-t border-ml-border bg-[linear-gradient(180deg,rgba(219,234,250,0.72),rgba(255,255,255,0.98))] p-6 text-ml-ink lg:border-t-0">
             <div className="space-y-4">
               <div>
-                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-ml-blue">Workspace Readiness</div>
+                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-ml-blue">Mức độ sẵn sàng</div>
                 <div className="mt-2 text-3xl font-black text-ml-ink">{readinessPercent}%</div>
                 <p className="mt-1 text-sm font-semibold leading-6 text-ml-ink-muted">{statusTone}</p>
               </div>
@@ -751,7 +753,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                 onClick={onNavigateToPersonas}
                 className="group flex items-center justify-center gap-2 rounded-lg bg-ml-blue px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-ml-blue-strong cursor-pointer"
               >
-                Open Persona Catalog
+                Mở danh mục chân dung
                 <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
               </button>
               <div className="flex gap-2">
@@ -759,13 +761,13 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                   onClick={() => onEditProject(project.id)}
                   className="flex-1 rounded-lg border border-ml-border bg-white px-4 py-3 text-xs font-bold uppercase tracking-wider text-ml-ink transition-colors hover:border-ml-blue/30 hover:bg-ml-blue-soft/25 cursor-pointer"
                 >
-                  Edit
+                  Sửa
                 </button>
                 <button
                   onClick={() => onSelectProject(null)}
                   className="flex-1 rounded-lg border border-ml-border bg-white px-4 py-3 text-xs font-bold uppercase tracking-wider text-ml-blue transition-colors hover:border-ml-blue/30 hover:bg-ml-blue-soft/25 cursor-pointer"
                 >
-                  Switch
+                  Đổi dự án
                 </button>
               </div>
             </div>
@@ -776,47 +778,47 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <article className="rounded-lg border border-ml-border bg-white p-4">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Personas</span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Chân dung</span>
             <Users className="text-ml-blue" size={16} />
           </div>
           <div className="mt-3 text-3xl font-black text-ml-ink">{personas.length}</div>
           <p className="mt-2 text-xs font-medium leading-5 text-ml-ink-muted">
-            Avg. confidence {avgConfidence}% across the current audience model set.
+            Độ tin cậy trung bình {avgConfidence}% trên bộ chân dung hiện tại.
           </p>
         </article>
 
         <article className="rounded-lg border border-ml-border bg-white p-4">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Respondents</span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Người tham gia</span>
             <Layers3 className="text-ml-blue" size={16} />
           </div>
           <div className="mt-3 text-3xl font-black text-ml-ink">{respondents.length}</div>
           <p className="mt-2 text-xs font-medium leading-5 text-ml-ink-muted">
-            Synthetic panel size currently available for simulation runs.
+            Quy mô nhóm mô phỏng hiện có để chạy nghiên cứu.
           </p>
         </article>
 
         <article className="rounded-lg border border-ml-border bg-white p-4">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Studies</span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Nghiên cứu</span>
             <ClipboardList className="text-ml-blue" size={16} />
           </div>
           <div className="mt-3 text-3xl font-black text-ml-ink">{studies.length}</div>
           <p className="mt-2 text-xs font-medium leading-5 text-ml-ink-muted">
-            {completedStudies.length} completed, {draftStudies.length} draft, {totalQuestions} total questions.
+            {completedStudies.length} đã hoàn tất, {draftStudies.length} bản nháp, {totalQuestions} câu hỏi tổng cộng.
           </p>
         </article>
 
         <article className="rounded-lg border border-ml-border bg-white p-4">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Latest Activity</span>
+            <span className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Hoạt động gần nhất</span>
             <CalendarDays className="text-ml-blue" size={16} />
           </div>
           <div className="mt-3 text-lg font-black leading-tight text-ml-ink">
-            {latestStudy ? formatDate(latestStudy.created_at) : 'No study yet'}
+            {latestStudy ? formatDate(latestStudy.created_at) : 'Chưa có nghiên cứu'}
           </div>
           <p className="mt-2 text-xs font-medium leading-5 text-ml-ink-muted">
-            {latestStudy ? `${latestStudy.title} is the most recent study in this workspace.` : 'Create a study to start capturing simulated findings.'}
+            {latestStudy ? `${latestStudy.title} là nghiên cứu mới nhất trong dự án này.` : 'Hãy tạo nghiên cứu để bắt đầu thu thập kết quả mô phỏng.'}
           </p>
         </article>
       </section>
@@ -826,7 +828,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
           <article className="rounded-lg border border-ml-border bg-white p-5 md:p-6">
             <div className="flex items-center gap-2 border-b border-ml-border pb-3">
               <Target className="text-ml-blue" size={18} />
-              <h2 className="text-base font-black uppercase tracking-wide text-ml-ink">Research Snapshot</h2>
+              <h2 className="text-base font-black uppercase tracking-wide text-ml-ink">Tóm tắt nghiên cứu</h2>
             </div>
 
             <div className="mt-5 grid gap-5 md:grid-cols-2">
@@ -836,7 +838,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                     <Activity size={16} />
                   </div>
                   <div>
-                    <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Research Objective</div>
+                    <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Mục tiêu nghiên cứu</div>
                     <div className="mt-1 text-sm font-semibold leading-6 text-ml-ink">{project.research_objective}</div>
                   </div>
                 </div>
@@ -846,7 +848,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                     <Users size={16} />
                   </div>
                   <div>
-                    <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Target Audience</div>
+                    <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Đối tượng mục tiêu</div>
                     <div className="mt-1 text-sm font-semibold leading-6 text-ml-ink">{project.target_audience}</div>
                   </div>
                 </div>
@@ -858,7 +860,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                     <MapPin size={16} />
                   </div>
                   <div>
-                    <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Market Context</div>
+                    <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Bối cảnh thị trường</div>
                     <div className="mt-1 text-sm font-semibold leading-6 text-ml-ink">{project.market}</div>
                   </div>
                 </div>
@@ -868,7 +870,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                     <BookOpen size={16} />
                   </div>
                   <div>
-                    <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Study Method</div>
+                    <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Phương pháp nghiên cứu</div>
                     <div className="mt-1 text-sm font-semibold leading-6 text-ml-ink">{project.study_type}</div>
                   </div>
                 </div>
@@ -880,14 +882,14 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
             <div className="flex items-center justify-between gap-3 border-b border-ml-border pb-3">
               <div className="flex items-center gap-2">
                 <Users className="text-ml-blue" size={18} />
-                <h2 className="text-base font-black uppercase tracking-wide text-ml-ink">Persona Coverage</h2>
+                <h2 className="text-base font-black uppercase tracking-wide text-ml-ink">Phạm vi chân dung</h2>
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">{personas.length} segments</span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">{personas.length} phân khúc</span>
             </div>
 
             {personaHighlights.length === 0 ? (
               <div className="mt-5 rounded-lg border border-dashed border-ml-border bg-ml-surface/60 p-5 text-sm font-medium text-ml-ink-muted">
-                No persona set yet. Add audience segments to unlock more meaningful downstream simulations.
+                Chưa có bộ chân dung nào. Hãy thêm phân khúc đối tượng để mở khóa các mô phỏng có ý nghĩa hơn.
               </div>
             ) : (
               <div className="mt-5 grid gap-4 md:grid-cols-3">
@@ -923,7 +925,7 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
           <article className="rounded-lg border border-ml-border bg-white p-5">
             <div className="flex items-center gap-2 border-b border-ml-border pb-3">
               <Clock3 className="text-ml-blue" size={18} />
-              <h2 className="text-base font-black uppercase tracking-wide text-ml-ink">Study Activity</h2>
+              <h2 className="text-base font-black uppercase tracking-wide text-ml-ink">Hoạt động nghiên cứu</h2>
             </div>
 
             {latestStudy ? (
@@ -936,28 +938,28 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                         ? 'bg-ml-blue-soft text-ml-blue'
                         : 'bg-ml-surface text-ml-ink-muted'
                     }`}>
-                      {latestStudy.status}
+                      {studyStatusLabel(latestStudy.status)}
                     </span>
                   </div>
                   <div className="mt-3 text-xs font-medium leading-5 text-ml-ink-muted">
-                    Created on {formatDate(latestStudy.created_at)} with {latestStudy.questions?.length ?? 0} questions configured.
+                    Tạo ngày {formatDate(latestStudy.created_at)} với {latestStudy.questions?.length ?? 0} câu hỏi đã cấu hình.
                   </div>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="rounded-lg border border-ml-border p-3">
-                    <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Completed Studies</div>
+                    <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Nghiên cứu hoàn tất</div>
                     <div className="mt-2 text-2xl font-black text-ml-ink">{completedStudies.length}</div>
                   </div>
                   <div className="rounded-lg border border-ml-border p-3">
-                    <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Question Bank</div>
+                    <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Ngân hàng câu hỏi</div>
                     <div className="mt-2 text-2xl font-black text-ml-ink">{totalQuestions}</div>
                   </div>
                 </div>
               </div>
             ) : (
               <div className="mt-5 rounded-lg border border-dashed border-ml-border bg-ml-surface/60 p-5 text-sm font-medium leading-6 text-ml-ink-muted">
-                This workspace does not have any study yet. Create one from Study Builder after you finish the audience setup.
+                Dự án này chưa có nghiên cứu nào. Hãy tạo một nghiên cứu sau khi hoàn tất thiết lập chân dung và người tham gia.
               </div>
             )}
           </article>
@@ -965,27 +967,27 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
           <article className="rounded-lg border border-ml-border bg-white p-5">
             <div className="flex items-center gap-2 border-b border-ml-border pb-3">
               <CheckCircle2 className="text-ml-blue" size={18} />
-              <h2 className="text-base font-black uppercase tracking-wide text-ml-ink">Signal Summary</h2>
+              <h2 className="text-base font-black uppercase tracking-wide text-ml-ink">Tóm tắt tín hiệu</h2>
             </div>
 
             <div className="mt-5 space-y-4">
               <div>
-                <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Top Channels</div>
+                <div className="text-[10px] font-black uppercase tracking-wider text-ml-ink-muted">Kênh nổi bật</div>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {topChannels.length > 0 ? topChannels.map((channel) => (
                     <span key={channel} className="rounded-full border border-ml-border bg-ml-surface px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-ml-ink">
                       {channel}
                     </span>
                   )) : (
-                    <span className="text-sm font-medium text-ml-ink-muted">No channel signals yet.</span>
+                    <span className="text-sm font-medium text-ml-ink-muted">Chưa có tín hiệu kênh nào.</span>
                   )}
                 </div>
               </div>
 
               <div className="rounded-lg border border-ml-blue/20 bg-ml-blue-soft/55 p-4">
-                <div className="text-[10px] font-black uppercase tracking-wider text-ml-blue">Simulation Note</div>
+                <div className="text-[10px] font-black uppercase tracking-wider text-ml-blue">Ghi chú mô phỏng</div>
                 <p className="mt-2 text-xs font-medium leading-5 text-ml-ink">
-                  Workspace metrics and downstream insights are synthetic directional signals, useful for fast concept exploration before human validation.
+                  Các chỉ số và insight trong dự án là tín hiệu mô phỏng mang tính định hướng, hữu ích cho việc khám phá concept nhanh trước khi xác thực bằng người thật.
                 </p>
               </div>
             </div>

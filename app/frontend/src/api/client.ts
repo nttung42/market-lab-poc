@@ -14,7 +14,7 @@ const findProject = (projectId: string) => projects.find((project) => project.id
 const findPersona = (personaId: string) => personas.find((persona) => persona.id === personaId);
 const findStudy = (studyId: string) => studies.find((study) => study.id === studyId);
 
-const notFound = (label: string) => new Error(`${label} not found in frontend mock data.`);
+const notFound = (label: string) => new Error(`Không tìm thấy ${label} trong dữ liệu mô phỏng phía frontend.`);
 
 const slug = (value: string) =>
   value
@@ -31,29 +31,29 @@ const getProjectScopedRespondents = (projectId: string) =>
   respondents.filter((respondent) => respondent.project_id === projectId);
 
 const makeGeneratedPersona = (projectId: string, customPrompt: string): Persona => {
-  const label = customPrompt.split(/[,.]/)[0]?.trim() || 'Custom audience';
+  const label = customPrompt.split(/[,.]/)[0]?.trim() || 'Đối tượng tùy chỉnh';
   const name = label
     .split(' ')
     .filter(Boolean)
     .slice(0, 2)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
-    .join(' ') || 'Custom Persona';
+    .join(' ') || 'Persona tùy chỉnh';
 
   return {
     id: `persona-${slug(label) || mockId('persona')}`,
     project_id: projectId,
     name,
     segment: label,
-    quote: `I would consider this if the value is clear for someone like me: ${customPrompt}`,
-    demographics: ['Age: 22', 'Location: Vietnam', 'Occupation: Synthetic respondent profile', 'Source: Frontend mock'],
-    goals: ['Understand whether the product fits daily needs', 'Compare the offer against familiar alternatives', 'Reduce decision uncertainty before paying'],
-    pain_points: ['Unclear pricing or value proof', 'Too much onboarding friction', 'Generic messaging that does not match the situation'],
-    motivations: ['Save time', 'Feel confident before choosing', 'See visible progress quickly'],
-    buying_behavior: ['Reads reviews first', 'Compares alternatives', 'Starts with a trial before committing'],
-    decision_rules: ['Must explain value quickly', 'Must be easy to try', 'Must feel trustworthy'],
-    objections: ['Needs stronger proof of outcomes', 'May be too expensive for early use', 'Concerned about generic AI output'],
-    channels: ['TikTok', 'Facebook', 'Peer recommendation'],
-    assumptions: ['Generated locally from the typed audience prompt', 'Synthetic profile requiring human validation'],
+    quote: `Tôi sẽ cân nhắc nếu giá trị đủ rõ với một người như tôi: ${customPrompt}`,
+    demographics: ['Tuổi: 22', 'Khu vực: Việt Nam', 'Nghề nghiệp: Hồ sơ mô phỏng', 'Nguồn: Frontend mock'],
+    goals: ['Xem sản phẩm có phù hợp nhu cầu hằng ngày không', 'So sánh đề xuất với lựa chọn quen thuộc', 'Giảm bớt do dự trước khi trả tiền'],
+    pain_points: ['Giá hoặc giá trị chưa rõ', 'Onboarding quá rườm rà', 'Thông điệp quá chung chung'],
+    motivations: ['Tiết kiệm thời gian', 'Tự tin hơn trước khi chọn', 'Thấy tiến bộ nhanh'],
+    buying_behavior: ['Đọc review trước', 'So sánh nhiều phương án', 'Thích bắt đầu bằng dùng thử'],
+    decision_rules: ['Phải giải thích giá trị nhanh', 'Phải dễ thử', 'Phải tạo cảm giác đáng tin'],
+    objections: ['Cần bằng chứng kết quả rõ hơn', 'Có thể quá đắt ở giai đoạn đầu', 'Lo ngại nội dung AI quá chung'],
+    channels: ['TikTok', 'Facebook', 'Bạn bè giới thiệu'],
+    assumptions: ['Được tạo cục bộ từ prompt mô tả đối tượng', 'Hồ sơ mô phỏng cần xác thực bằng người thật'],
     confidence_score: 72,
     validation: {
       is_human_validated: false,
@@ -61,33 +61,33 @@ const makeGeneratedPersona = (projectId: string, customPrompt: string): Persona 
     },
     insight_profile: {
       profile_information: {
-        summary: `A synthetic segment modeled from the prompt: ${customPrompt}`,
-        personal_aspirations: 'Find a solution that feels relevant, trustworthy, and easy to evaluate before committing.',
+        summary: `Phân khúc mô phỏng được dựng từ prompt: ${customPrompt}`,
+        personal_aspirations: 'Tìm ra giải pháp phù hợp, đáng tin và dễ đánh giá trước khi cam kết.',
       },
       buying_behavior: {
-        purchase_decision_factors: ['Clear proof of value', 'Low-friction trial', 'Transparent pricing', 'Social validation'],
-        triggers: ['Peer recommendation', 'Short demo', 'Visible before-after outcome', 'Limited-time student-friendly offer'],
+        purchase_decision_factors: ['Bằng chứng giá trị rõ ràng', 'Dùng thử ít ma sát', 'Giá minh bạch', 'Xác thực xã hội'],
+        triggers: ['Bạn bè giới thiệu', 'Demo ngắn', 'Kết quả trước-sau dễ thấy', 'Ưu đãi giới hạn thân thiện với sinh viên'],
       },
       psychological_drivers: {
-        goals: ['Reduce uncertainty', 'Save time', 'Make a confident purchase decision'],
-        motivations: ['Convenience', 'Outcome clarity', 'Trust'],
-        key_needs: ['Fast onboarding', 'Credible examples', 'Relevant use cases'],
+        goals: ['Giảm bớt bất định', 'Tiết kiệm thời gian', 'Ra quyết định mua tự tin hơn'],
+        motivations: ['Tiện lợi', 'Rõ kết quả', 'Niềm tin'],
+        key_needs: ['Onboarding nhanh', 'Ví dụ đáng tin', 'Tình huống sử dụng phù hợp'],
       },
       key_obstacles: {
-        core_challenges: ['Generic messaging', 'Unclear differentiation', 'Weak proof points'],
-        day_to_day_pain_points: ['Limited attention', 'Many competing products', 'Low tolerance for setup work'],
-        perceived_barriers: ['May not fit my specific context', 'Could be too expensive', 'AI output may feel generic'],
+        core_challenges: ['Thông điệp quá chung', 'Khác biệt chưa rõ', 'Bằng chứng còn yếu'],
+        day_to_day_pain_points: ['Khoảng chú ý hạn chế', 'Quá nhiều sản phẩm cạnh tranh', 'Không thích thiết lập phức tạp'],
+        perceived_barriers: ['Có thể không hợp bối cảnh riêng', 'Có thể quá đắt', 'Đầu ra AI có thể thiếu cá nhân hóa'],
       },
       communication: [
-        { label: 'Outcome-led messaging', weight: 88 },
-        { label: 'Short proof demos', weight: 83 },
-        { label: 'Peer testimonials', weight: 79 },
+        { label: 'Thông điệp xoay quanh kết quả', weight: 88 },
+        { label: 'Demo ngắn có bằng chứng', weight: 83 },
+        { label: 'Chứng thực từ người dùng tương tự', weight: 79 },
       ],
       media_digital: {
         media_news_sources: [
-          { label: 'TikTok search', weight: 82 },
-          { label: 'YouTube reviews', weight: 76 },
-          { label: 'Facebook communities', weight: 70 },
+          { label: 'Tìm kiếm trên TikTok', weight: 82 },
+          { label: 'Review trên YouTube', weight: 76 },
+          { label: 'Cộng đồng Facebook', weight: 70 },
         ],
         social_networks: [
           { label: 'TikTok', weight: 86 },
@@ -95,30 +95,30 @@ const makeGeneratedPersona = (projectId: string, customPrompt: string): Persona 
           { label: 'Instagram', weight: 68 },
         ],
         websites_visited: [
-          { label: 'Google search', weight: 81 },
-          { label: 'App store pages', weight: 74 },
-          { label: 'Competitor websites', weight: 62 },
+          { label: 'Tìm kiếm Google', weight: 81 },
+          { label: 'Trang app store', weight: 74 },
+          { label: 'Website đối thủ', weight: 62 },
         ],
         subreddits: ['r/startups', 'r/productivity'],
-        hashtags: ['#aitools', '#productivity', '#studentlife'],
+        hashtags: ['#congcuaAI', '#nangsuat', '#doisongsinhvien'],
         content_types: [
-          { label: 'Quick comparison posts', weight: 84 },
-          { label: 'Demo videos', weight: 81 },
-          { label: 'Review snippets', weight: 77 },
+          { label: 'Bài so sánh nhanh', weight: 84 },
+          { label: 'Video demo', weight: 81 },
+          { label: 'Trích đoạn review', weight: 77 },
         ],
       },
       website_interaction: {
-        first_interaction_day: 'Wednesday',
+        first_interaction_day: 'Thứ tư',
         first_interaction_time: '21:00',
         influential_resources: [
-          { label: 'Use-case landing section', weight: 86 },
-          { label: 'Pricing block', weight: 80 },
-          { label: 'Example output', weight: 78 },
+          { label: 'Khối use case trên landing', weight: 86 },
+          { label: 'Khối thông tin giá', weight: 80 },
+          { label: 'Ví dụ đầu ra', weight: 78 },
         ],
         resonating_topics: [
-          { label: 'Try before paying', weight: 88 },
-          { label: 'Personalized output', weight: 82 },
-          { label: 'Clear next step', weight: 75 },
+          { label: 'Thử trước khi trả tiền', weight: 88 },
+          { label: 'Đầu ra cá nhân hóa', weight: 82 },
+          { label: 'Bước tiếp theo rõ ràng', weight: 75 },
         ],
       },
     },
@@ -139,14 +139,14 @@ const buildRespondentsForPersona = (persona: Persona, count: number): Respondent
       id: `resp-${slug(persona.name)}-${index + 1}-${Math.random().toString(16).slice(2, 6)}`,
       persona_id: persona.id,
       project_id: persona.project_id,
-      name: `${persona.name.split(' ')[0]} Mock ${index + 1}`,
+      name: `${persona.name.split(' ')[0]} Mẫu ${index + 1}`,
       age: 18 + ((index + persona.name.length) % 9),
       location: template.location,
       budget: template.budget,
-      motivation: persona.motivations[index % persona.motivations.length] || 'Evaluate the product value before committing.',
+      motivation: persona.motivations[index % persona.motivations.length] || 'Đánh giá giá trị sản phẩm trước khi cam kết.',
       tech_savviness: template.tech_savviness,
       risk_attitude: template.risk_attitude,
-      channel: persona.channels[index % persona.channels.length] || 'Social Media',
+      channel: persona.channels[index % persona.channels.length] || 'Mạng xã hội',
       decision_rules: persona.decision_rules.slice(0, 2),
     };
   });
@@ -157,14 +157,13 @@ const choiceIndexForRespondent = (respondent: Respondent, optionsLength: number)
     return 0;
   }
 
-  const segment = persona.segment.toLowerCase();
-  if (segment.includes('price')) {
+  if (persona.id === 'persona-price-sensitive') {
     return Math.max(0, optionsLength - 1);
   }
-  if (segment.includes('career')) {
+  if (persona.id === 'persona-career-focused') {
     return Math.min(1, optionsLength - 1);
   }
-  if (segment.includes('casual')) {
+  if (persona.id === 'persona-casual-learner') {
     return Math.min(2, optionsLength - 1);
   }
 
@@ -188,7 +187,7 @@ const buildQuestionResult = (question: Question, scopedRespondents: Respondent[]
       total_responses: total,
       average_rating: total ? Number((totalScore / total).toFixed(2)) : 0,
       results: counts.map((count, index) => {
-        const labels = ['Strongly Disagree (1)', 'Disagree (2)', 'Neutral (3)', 'Agree (4)', 'Strongly Agree (5)'];
+        const labels = ['Hoàn toàn không đồng ý (1)', 'Không đồng ý (2)', 'Trung lập (3)', 'Đồng ý (4)', 'Hoàn toàn đồng ý (5)'];
         return {
           option: labels[index],
           count,
@@ -238,38 +237,37 @@ const buildQuestionResult = (question: Question, scopedRespondents: Respondent[]
 const buildQualitativeThemes = (projectId: string, scopedRespondents: Respondent[]): QualitativeTheme[] =>
   getProjectScopedPersonas(projectId).map((persona) => {
     const samples = scopedRespondents.filter((respondent) => respondent.persona_id === persona.id).slice(0, 3);
-    const segment = persona.segment.toLowerCase();
-    const quoteBank = segment.includes('price')
+    const quoteBank = persona.id === 'persona-price-sensitive'
       ? [
-          'I would try it if the free tier is useful enough before asking me to pay.',
-          'The price can work, but I need to know there is no automatic renewal trap.',
-          'Show me one clear improvement after the first session and I will keep using it.',
+          'Mình sẽ thử nếu gói miễn phí đủ hữu ích trước khi bắt đầu thu phí.',
+          'Mức giá có thể chấp nhận được, nhưng mình cần chắc rằng không có bẫy tự gia hạn.',
+          'Hãy cho mình thấy một cải thiện rõ ràng ngay sau buổi đầu và mình sẽ tiếp tục dùng.',
         ]
-      : segment.includes('career')
+      : persona.id === 'persona-career-focused'
         ? [
-            'The interview module has to feel serious, not like a casual language game.',
-            'I care less about cute streaks and more about grammar, pronunciation, and professional vocabulary.',
-            'If the report helps me prepare for an internship interview, I can justify paying.',
+            'Module phỏng vấn phải đủ nghiêm túc chứ không giống một trò chơi ngôn ngữ.',
+            'Mình quan tâm ngữ pháp, phát âm và từ vựng công việc hơn là các streak dễ thương.',
+            'Nếu báo cáo giúp mình chuẩn bị phỏng vấn thực tập tốt hơn thì mình sẵn sàng trả phí.',
           ]
-        : segment.includes('casual')
+        : persona.id === 'persona-casual-learner'
           ? [
-              'I want it to feel like chatting with a friendly coach, not doing homework.',
-              'Short daily speaking games would keep me coming back after class.',
-              'The AI voice has to sound natural, otherwise I would stop after a few tries.',
+              'Mình muốn cảm giác như đang trò chuyện với một người hướng dẫn thân thiện chứ không phải làm bài tập về nhà.',
+              'Các trò luyện nói ngắn mỗi ngày sẽ khiến mình quay lại sau giờ học.',
+              'Giọng AI phải tự nhiên, nếu không mình sẽ dừng sau vài lần thử.',
             ]
           : [
-              'I need to understand how this fits my routine before I commit.',
-              'The value has to be obvious from the first interaction.',
-              'I would compare it with familiar alternatives before paying.',
+              'Mình cần hiểu nó phù hợp với thói quen hằng ngày thế nào trước khi cam kết.',
+              'Giá trị phải rõ ngay từ lần tương tác đầu tiên.',
+              'Mình sẽ so sánh với các lựa chọn quen thuộc trước khi trả tiền.',
             ];
 
     return {
-      theme: `${persona.segment} Feedback & Objections`,
-      description: `${persona.name}'s synthetic cohort reacts through the lens of ${persona.goals[0]?.toLowerCase() || 'their primary goal'}, while weighing trust, price, and fit risks.`,
+      theme: `Phản hồi và phản đối của nhóm ${persona.segment}`,
+      description: `Nhóm mô phỏng của ${persona.name} phản ứng dựa trên mục tiêu ${persona.goals[0]?.toLowerCase() || 'chính của họ'}, đồng thời cân nhắc niềm tin, giá và mức độ phù hợp.`,
       objections: persona.objections.slice(0, 3),
       quotes: samples.length
         ? samples.map((respondent, index) => `"${quoteBank[index % quoteBank.length]}" - ${respondent.name}`)
-        : [`"I need the value to be obvious before I commit." - ${persona.name}`],
+        : [`"Mình cần thấy giá trị thật rõ trước khi cam kết." - ${persona.name}`],
     };
   });
 
@@ -289,23 +287,23 @@ const buildStudyResults = (studyId: string): StudyResults => {
     recommendations: [
       {
         priority: 'High',
-        title: 'Create a two-lane positioning system',
-        details: 'Use separate acquisition angles for budget-safe daily practice and career-grade interview preparation. The current single message is too broad for the strongest segments.',
+        title: 'Tách định vị thành hai hướng rõ ràng',
+        details: 'Dùng hai góc thu hút riêng cho nhu cầu luyện tập hằng ngày tiết kiệm và nhu cầu chuẩn bị phỏng vấn mang tính sự nghiệp. Một thông điệp duy nhất hiện tại quá rộng cho các phân khúc mạnh nhất.',
       },
       {
         priority: 'High',
-        title: 'Make proof visible in the first session',
-        details: 'Show a before-after pronunciation score, one corrected phrase, and a next-step recommendation before any payment prompt to reduce skepticism toward AI feedback.',
+        title: 'Hiển thị bằng chứng giá trị ngay buổi đầu',
+        details: 'Cho người dùng thấy điểm phát âm trước-sau, một câu được sửa và gợi ý bước tiếp theo trước bất kỳ lời nhắc thanh toán nào để giảm hoài nghi với phản hồi AI.',
       },
       {
         priority: 'Medium',
-        title: 'Treat pricing as a trust signal',
-        details: 'Promote a localized student plan, no-card trial, and explicit cancellation copy. This turns price anxiety into a credibility advantage for the Minh Thu cohort.',
+        title: 'Biến giá thành tín hiệu tạo niềm tin',
+        details: 'Nhấn mạnh gói sinh viên nội địa hóa, dùng thử không cần thẻ và nội dung hủy gói thật rõ ràng. Điều này biến nỗi lo về giá thành lợi thế tin cậy cho nhóm Minh Thu.',
       },
       {
         priority: 'Medium',
-        title: 'Use channel-specific creative variants',
-        details: 'Run TikTok creator demos for casual learners, LinkedIn-style interview report screenshots for career-focused students, and Facebook student-group proof posts for price-sensitive users.',
+        title: 'Tạo biến thể creative theo từng kênh',
+        details: 'Dùng video demo của creator trên TikTok cho nhóm học thoải mái, ảnh báo cáo kiểu LinkedIn cho nhóm định hướng sự nghiệp và bài viết chứng thực trong nhóm sinh viên Facebook cho nhóm nhạy cảm về giá.',
       },
     ],
   };
