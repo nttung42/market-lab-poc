@@ -11,13 +11,13 @@ import {
 import { appRoutes } from './workspaceShell.constants';
 import type { SidebarItem, SidebarSection } from './workspaceShell.types';
 
-export const buildHomeItem = (activeProjectId: string | null): SidebarItem => ({
+export const buildHomeItem = (_activeProjectId: string | null): SidebarItem => ({
   id: 'home',
   label: 'Home',
   icon: House,
   kind: 'route',
-  to: activeProjectId ? appRoutes.workspace(activeProjectId) : appRoutes.workspaceRoot,
-  end: !!activeProjectId,
+  to: appRoutes.home,
+  end: true,
 });
 
 export const projectItem: SidebarItem = {

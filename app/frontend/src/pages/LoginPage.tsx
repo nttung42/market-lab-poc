@@ -41,12 +41,11 @@ export const LoginPage = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate successful login, direct to project overview workspaceRoot
-    navigate(appRoutes.workspaceRoot);
+    navigate(appRoutes.home);
   };
 
   const handleSocialLogin = () => {
-    navigate(appRoutes.workspaceRoot);
+    navigate(appRoutes.home);
   };
 
   return (

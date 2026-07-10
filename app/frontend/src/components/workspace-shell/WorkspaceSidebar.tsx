@@ -157,7 +157,7 @@ export const WorkspaceSidebar = ({
     <nav className="flex-1 overflow-y-auto px-3 pb-4">
       <div className="space-y-2">
         <QuickSidebarLink item={homeItem} />
-        <QuickSidebarLink item={projectItem} fallbackDisabled={!activeProjectId && projectItem.kind === 'route'} />
+        <QuickSidebarLink item={projectItem} />
       </div>
 
       <div className="mt-5 space-y-5">

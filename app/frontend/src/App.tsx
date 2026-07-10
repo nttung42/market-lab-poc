@@ -15,6 +15,7 @@ import {
   LandingFaq,
   LandingPricing,
 } from './pages/LandingPage';
+import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
 import { PersonaCatalog } from './pages/PersonaCatalog';
 import { ProjectOverview } from './pages/ProjectOverview';
@@ -57,6 +58,8 @@ const ProjectDirectoryRoute = () => {
     />
   );
 };
+
+const HomeRoute = () => <HomePage />;
 
 const ProjectCreateRoute = () => {
   const workspace = useWorkspaceContext();
@@ -198,17 +201,20 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/landing" element={<Navigate to="/" replace />} />
       <Route path="/projects/*" element={<LegacyProjectsRedirect />} />
-      <Route path="/project" element={<WorkspaceShell />}>
-        <Route index element={<ProjectDirectoryRoute />} />
-        <Route path="new" element={<ProjectCreateRoute />} />
-        <Route path=":projectId">
-          <Route index element={<ProjectDetailRoute />} />
-          <Route path="edit" element={<ProjectEditRoute />} />
-          <Route path="personas" element={<PersonaCatalogRoute />} />
-          <Route path="respondents" element={<RespondentsRoute />} />
-          <Route path="study-builder" element={<StudyBuilderRoute />} />
-          <Route path="results/:studyId" element={<ResultsRoute />} />
-          <Route path="reports/:studyId" element={<ReportsRoute />} />
+      <Route element={<WorkspaceShell />}>
+        <Route path="/home" element={<HomeRoute />} />
+        <Route path="/project">
+          <Route index element={<ProjectDirectoryRoute />} />
+          <Route path="new" element={<ProjectCreateRoute />} />
+          <Route path=":projectId">
+            <Route index element={<ProjectDetailRoute />} />
+            <Route path="edit" element={<ProjectEditRoute />} />
+            <Route path="personas" element={<PersonaCatalogRoute />} />
+            <Route path="respondents" element={<RespondentsRoute />} />
+            <Route path="study-builder" element={<StudyBuilderRoute />} />
+            <Route path="results/:studyId" element={<ResultsRoute />} />
+            <Route path="reports/:studyId" element={<ReportsRoute />} />
+          </Route>
         </Route>
       </Route>
       <Route path="*" element={<Navigate to={appRoutes.landing} replace />} />

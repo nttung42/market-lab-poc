@@ -47,8 +47,8 @@ export const ProjectOverview = ({
     useState<ProjectFormValues>(defaultProjectFormValues);
 
   const metrics = useMemo(
-    () => buildProjectOverviewMetrics(personas, respondents.length, studies),
-    [personas, respondents.length, studies],
+    () => buildProjectOverviewMetrics(personas, respondents, studies),
+    [personas, respondents, studies],
   );
 
   const resetForm = () => setFormValues(defaultProjectFormValues);

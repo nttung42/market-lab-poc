@@ -5,6 +5,7 @@ export const defaultStudyId = 'study-concept-test';
 export const appRoutes = {
   landing: '/',
   login: '/login',
+  home: '/home',
   workspaceRoot: '/project',
   workspaceCreate: '/project/new',
   workspace(projectId: string) {

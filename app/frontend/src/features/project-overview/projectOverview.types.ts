@@ -37,6 +37,7 @@ export interface ProjectOverviewProps {
 export interface ProjectOverviewDetailMetrics {
   completedStudies: Study[];
   draftStudies: Study[];
+  runningStudies: Study[];
   totalQuestions: number;
   avgConfidence: number;
   readinessSteps: Array<{ label: string; complete: boolean; value: string }>;
@@ -45,6 +46,39 @@ export interface ProjectOverviewDetailMetrics {
   topChannels: string[];
   personaHighlights: Persona[];
   statusTone: string;
+  respondentsPerPersona: Array<{
+    id: string;
+    name: string;
+    segment: string;
+    count: number;
+    confidenceScore: number;
+    topChannel: string;
+    primaryNeed: string;
+  }>;
+  channelMix: Array<{
+    label: string;
+    value: number;
+    share: number;
+  }>;
+  studyTimeline: Array<{
+    id: string;
+    title: string;
+    status: Study['status'];
+    createdAt: string;
+    questionCount: number;
+  }>;
+  highlights: Array<{
+    title: string;
+    detail: string;
+    tone: 'info' | 'success' | 'warning';
+  }>;
+  nextActions: string[];
+  recentActivities: Array<{
+    id: string;
+    title: string;
+    detail: string;
+    timestamp?: string;
+  }>;
 }
 
 export interface ProjectOverviewDetailViewProps {

@@ -87,6 +87,10 @@ export const WorkspaceShell = () => {
   }, []);
 
   const activeProjectName = useMemo(() => {
+    if (location.pathname === appRoutes.home) {
+      return 'Tổng quan';
+    }
+
     if (!activeProjectId) {
       return 'Danh sách dự án';
     }
@@ -99,7 +103,7 @@ export const WorkspaceShell = () => {
       projects.find((project) => project.id === activeProjectId)?.name ??
       'Dự án không tồn tại'
     );
-  }, [activeProjectId, projects]);
+  }, [activeProjectId, location.pathname, projects]);
 
   const openProjectDirectory = () => navigate(appRoutes.workspaceRoot);
   const openProjectDetail = (projectId: string) => navigate(appRoutes.workspace(projectId));
